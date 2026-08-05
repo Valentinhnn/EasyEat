@@ -810,12 +810,38 @@ function stopScanner(){
 }
 
 let lastDetectedCode = null;
+function isValidEanChecksum(code){
+  if (!/^\d{8}$|^\d{13}$/.test(code)) return false;
+  const digits = code.split('').map(Number);
+  const checkDigit = digits.pop();
+  let sum = 0;
+  const weights = code.length === 13 ? [1,3] : [3,1]; // EAN-13 vs EAN-8
+  digits.reverse().forEach((d, i) => { sum += d * weights[i % 2]; });
+  const calculated = (10 - (sum % 10)) % 10;
+  return calculated === checkDigit;
+}
+
+let pendingCode = null;
+let pendingCount = 0;
+
 function onBarcodeDetected(result){
   const code = result.codeResult.code;
-  if (!code || code === lastDetectedCode) return;
-  lastDetectedCode = code;
-  stopScanner();
-  lookupProduct(code);
+  if (!code || !isValidEanChecksum(code)) return; // rejette silencieusement les lectures invalides
+
+  if (code === pendingCode){
+    pendingCount++;
+  } else {
+    pendingCode = code;
+    pendingCount = 1;
+  }
+
+  // Exige 2 lectures identiques et valides d'affilée avant de valider,
+  // pour éviter qu'une erreur ponctuelle de la caméra ne déclenche une recherche
+  if (pendingCount >= 2 && code !== lastDetectedCode){
+    lastDetectedCode = code;
+    stopScanner();
+    lookupProduct(code);
+  }
 }
 
 manualBarcodeBtn.addEventListener('click', () => {
