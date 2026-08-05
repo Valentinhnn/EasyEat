@@ -773,12 +773,68 @@ let scannerRunning = false;
 
 startScannerZone.addEventListener('click', startScanner);
 
+let usingQuagga = false;
+let nativeStream = null;
+let nativeDetector = null;
+let nativeVideoEl = null;
+let nativeLoopId = null;
+
 function startScanner(){
   errorBarcode.classList.remove('active');
   resultsBarcode.classList.remove('active');
   startScannerZone.style.display = 'none';
   scannerLive.classList.add('active');
+  scannerViewport.innerHTML = '';
 
+  if ('BarcodeDetector' in window){
+    startNativeScanner(); // rapide + fiable (décodeur natif du téléphone)
+  } else {
+    startQuaggaScanner(); // repli JS pur (Safari/iOS notamment)
+  }
+}
+
+async function startNativeScanner(){
+  try{
+    nativeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+    nativeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    nativeVideoEl = document.createElement('video');
+    nativeVideoEl.setAttribute('playsinline', '');
+    nativeVideoEl.style.width = '100%';
+    nativeVideoEl.style.height = '100%';
+    nativeVideoEl.style.objectFit = 'cover';
+    nativeVideoEl.srcObject = nativeStream;
+    scannerViewport.appendChild(nativeVideoEl);
+    await nativeVideoEl.play();
+    scannerRunning = true;
+    nativeLoop();
+  } catch(e){
+    showBarcodeError("Impossible d'accéder à la caméra. Utilisez la saisie manuelle ci-dessous.");
+    stopScanner();
+  }
+}
+
+async function nativeLoop(){
+  if (!scannerRunning) return;
+  try{
+    const barcodes = await nativeDetector.detect(nativeVideoEl);
+    if (barcodes.length){
+      const code = barcodes[0].rawValue;
+      // Le décodeur natif est déjà fiable : on garde tout de même la
+      // vérification du chiffre de contrôle par sécurité, mais pas besoin
+      // d'attendre plusieurs lectures identiques (contrairement à Quagga).
+      if (code && isValidEanChecksum(code) && code !== lastDetectedCode){
+        lastDetectedCode = code;
+        stopScanner();
+        lookupProduct(code);
+        return;
+      }
+    }
+  } catch(e){ /* erreur de détection ponctuelle, on continue la boucle */ }
+  nativeLoopId = requestAnimationFrame(nativeLoop);
+}
+
+function startQuaggaScanner(){
+  usingQuagga = true;
   Quagga.init({
     inputStream: {
       type: "LiveStream",
@@ -802,9 +858,15 @@ function startScanner(){
 
 function stopScanner(){
   if (scannerRunning){
-    try { Quagga.stop(); } catch(e){}
+    if (usingQuagga){
+      try { Quagga.stop(); } catch(e){}
+    } else {
+      if (nativeLoopId) cancelAnimationFrame(nativeLoopId);
+      if (nativeStream) nativeStream.getTracks().forEach(t => t.stop());
+    }
     scannerRunning = false;
   }
+  usingQuagga = false;
   scannerLive.classList.remove('active');
   startScannerZone.style.display = 'block';
 }
@@ -821,12 +883,20 @@ function isValidEanChecksum(code){
   return calculated === checkDigit;
 }
 
+function averageQuaggaError(result){
+  const codes = result.codeResult.decodedCodes || [];
+  const errors = codes.map(c => c.error).filter(e => typeof e === 'number');
+  if (!errors.length) return 1; // pas d'info de confiance → on se méfie par défaut
+  return errors.reduce((a, b) => a + b, 0) / errors.length;
+}
+
 let pendingCode = null;
 let pendingCount = 0;
 
 function onBarcodeDetected(result){
   const code = result.codeResult.code;
-  if (!code || !isValidEanChecksum(code)) return; // rejette silencieusement les lectures invalides
+  if (!code || !isValidEanChecksum(code)) return; // chiffre de contrôle invalide → lecture rejetée
+  if (averageQuaggaError(result) > 0.15) return; // lecture peu fiable → ignorée silencieusement
 
   if (code === pendingCode){
     pendingCount++;
@@ -835,8 +905,7 @@ function onBarcodeDetected(result){
     pendingCount = 1;
   }
 
-  // Exige 2 lectures identiques et valides d'affilée avant de valider,
-  // pour éviter qu'une erreur ponctuelle de la caméra ne déclenche une recherche
+  // Exige 2 lectures identiques et valides d'affilée avant de valider
   if (pendingCount >= 2 && code !== lastDetectedCode){
     lastDetectedCode = code;
     stopScanner();
