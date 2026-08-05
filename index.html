@@ -613,7 +613,7 @@ async function callVisionAPI(type, base64Data, mediaType){
 
   if (!response.ok){
     if (data.error === 'quota_exceeded') throw new Error(data.message);
-    throw new Error("Erreur du serveur d'analyse (" + response.status + ")");
+    throw new Error("Erreur du serveur d'analyse (" + response.status + ") : " + (data.detail || data.error || "inconnue"));
   }
 
   updateQuotaDisplay(data.remaining);
