@@ -838,7 +838,7 @@ async function lookupProduct(code){
     // Appel direct et gratuit à Open Food Facts — pas besoin de passer
     // par le Worker, cette API publique n'a pas de quota et est illimitée.
     const resp = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,brands,allergens_tags,traces_tags,ingredients_text_fr,ingredients_text`);
-    if (!resp.ok) throw new Error("Impossible de contacter Open Food Facts.");
+    if (!resp.ok) throw new Error("http_" + resp.status);
     const data = await resp.json();
 
     if (data.status !== 1 || !data.product){
@@ -883,7 +883,8 @@ async function lookupProduct(code){
     resultsBarcode.classList.add('active');
 
   } catch(err){
-    showBarcodeError("Connexion à Open Food Facts impossible. Utilisez plutôt « Photo de l'étiquette ».");
+    const detail = (err && err.message) ? err.message : 'inconnue';
+    showBarcodeError(`Connexion à Open Food Facts impossible (${detail}). Utilisez plutôt « Photo de l'étiquette ».`);
   } finally {
     statusBarcode.classList.remove('active');
   }
