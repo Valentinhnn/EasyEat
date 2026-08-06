@@ -300,28 +300,39 @@
 
   /* ---------- Restaurants tab ---------- */
   .resto-filters{
-    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;
+    display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;
   }
+  .resto-filters input[type="text"]{ grid-column: 1 / -1; }
   .resto-filters select, .resto-filters input[type="text"]{
-    font-family: inherit; font-size:12.5px; padding:9px 10px;
-    border-radius:9px; border:1px solid var(--line); background: var(--surface); color: var(--ink);
+    font-family: inherit; font-size:12.5px; padding:10px 11px;
+    border-radius:10px; border:1px solid var(--line); background: var(--surface); color: var(--ink);
   }
-  .resto-filters input[type="text"]{ flex:1; min-width:140px; }
   .resto-reset{
     font-family: inherit; font-size:12.5px; font-weight:700;
     padding:9px 12px; border-radius:9px; border:1px solid var(--line);
     background: var(--surface); color: var(--ink-soft); cursor:pointer;
   }
+  .resto-legend{
+    display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--ink-soft);
+    margin: -4px 0 14px 2px;
+  }
+  .resto-legend span{ display:flex; align-items:center; gap:4px; }
+  .resto-legend .dot{ width:9px; height:9px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); }
   #restoMap{
-    width:100%; height:280px; border-radius:16px; border:1px solid var(--line);
+    width:100%; height:340px; border-radius:16px; border:1px solid var(--line);
     margin-bottom:16px; touch-action: manipulation;
   }
   .resto-card{
     background: var(--surface); border-radius:14px; border:1px solid var(--line);
+    border-left: 4px solid var(--line);
     padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px;
     cursor:pointer;
   }
-  .resto-card.highlight{ border-color: var(--brand); }
+  .resto-card.status-safe{ border-left-color: var(--safe); }
+  .resto-card.status-mixed{ border-left-color: var(--check); }
+  .resto-card.status-unsafe{ border-left-color: var(--danger); }
+  .resto-name-row{ display:flex; align-items:baseline; gap:6px; }
+  .resto-cuisine-icon{ font-size:14px; }
   .resto-name{ font-weight:700; font-size:14.5px; }
   .resto-meta{ font-size:12px; color: var(--ink-soft); margin-top:2px; }
   .resto-status-dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; border:1px solid rgba(0,0,0,0.15); }
@@ -549,6 +560,13 @@
       </select>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
       <button class="resto-reset" id="restoAdminBtn">🔒 Admin</button>
+    </div>
+
+    <div class="resto-legend">
+      <span><span class="dot" style="background:#fff;"></span> Inconnu</span>
+      <span><span class="dot" style="background:var(--safe);"></span> Safe</span>
+      <span><span class="dot" style="background:var(--check);"></span> Mixte</span>
+      <span><span class="dot" style="background:var(--danger);"></span> Non adapté</span>
     </div>
 
     <div class="resto-count" id="restoCount"></div>
@@ -1072,6 +1090,28 @@ const RESTO_DATA = [
   { id: 10, nom: "Chez Georges", lat: 45.7655, lon: 4.8335, cuisine: "Bouchon lyonnais", quartier: "Presqu'île" },
   { id: 11, nom: "Les Adrets", lat: 45.7620, lon: 4.8320, cuisine: "Bouchon lyonnais", quartier: "Presqu'île" },
   { id: 12, nom: "Le Musée", lat: 45.7648, lon: 4.8352, cuisine: "Bouchon lyonnais", quartier: "Presqu'île" },
+
+  // Guillotière / 7e — quartier très cosmopolite
+  { id: 13, nom: "AWANI Restaurant Africain", lat: 45.7480, lon: 4.8430, cuisine: "Africaine", quartier: "Guillotière (7e)" },
+  { id: 14, nom: "Addis Abeba", lat: 45.7495, lon: 4.8405, cuisine: "Éthiopienne", quartier: "Guillotière (7e)" },
+  { id: 15, nom: "Agra Tandoori", lat: 45.7460, lon: 4.8460, cuisine: "Indien", quartier: "7e" },
+  { id: 16, nom: "Gonzague Burger Lyon", lat: 45.7500, lon: 4.8390, cuisine: "Burger", quartier: "7e" },
+
+  // Croix-Rousse — pentes et plateau
+  { id: 17, nom: "Bacano", lat: 45.7735, lon: 4.8310, cuisine: "Latino", quartier: "Croix-Rousse" },
+  { id: 18, nom: "Le Comptoir Phénix", lat: 45.7715, lon: 4.8285, cuisine: "Français", quartier: "Croix-Rousse" },
+  { id: 19, nom: "Ksar", lat: 45.7725, lon: 4.8300, cuisine: "Cuisine du monde", quartier: "Croix-Rousse" },
+  { id: 20, nom: "Le Plato", lat: 45.7710, lon: 4.8270, cuisine: "Français", quartier: "Croix-Rousse" },
+  { id: 21, nom: "Boema", lat: 45.7780, lon: 4.8250, cuisine: "Tapas / gaufres", quartier: "Croix-Rousse (plateau)" },
+  { id: 22, nom: "Le Canut & les Gones", lat: 45.7775, lon: 4.8265, cuisine: "Bistrot lyonnais", quartier: "Croix-Rousse (plateau)" },
+  { id: 23, nom: "Les Boulistes", lat: 45.7760, lon: 4.8240, cuisine: "Bistrot", quartier: "Croix-Rousse (plateau)" },
+
+  // Confluence — quartier récent, en bord de Saône
+  { id: 24, nom: "Le Comptoir de la Confluence", lat: 45.7395, lon: 4.8175, cuisine: "Espagnol / Bistrot", quartier: "Confluence" },
+  { id: 25, nom: "Amélie Crêperie", lat: 45.7410, lon: 4.8195, cuisine: "Crêperie", quartier: "Confluence" },
+  { id: 26, nom: "Litani Mezza Bar", lat: 45.7405, lon: 4.8160, cuisine: "Libanais", quartier: "Confluence" },
+  { id: 27, nom: "Kishmish Zardak", lat: 45.7385, lon: 4.8200, cuisine: "Végétarien / Moyen-Orient", quartier: "Confluence" },
+  { id: 28, nom: "Gourmet Bar Lyon Confluence", lat: 45.7415, lon: 4.8170, cuisine: "Tapas / Français", quartier: "Confluence" },
 ];
 
 const STATUS_LABELS = { unknown: "Inconnu", safe: "Safe", mixed: "Mixte", unsafe: "Non adapté" };
@@ -1140,10 +1180,11 @@ let restoMarkers = {};
 
 async function initRestoMapIfNeeded(){
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
-  restoMap = L.map('restoMap', { tap: true }).setView([45.7640, 4.8357], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  restoMap = L.map('restoMap', { tap: true }).setView([45.7620, 4.8320], 12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
+    subdomains: 'abcd',
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
   }).addTo(restoMap);
 
   RESTO_DATA.forEach(r => {
@@ -1258,6 +1299,25 @@ async function loadReviewsPanel(restaurantId, panel){
   }
 }
 
+function cuisineIcon(cuisine){
+  const c = cuisine.toLowerCase();
+  if (c.includes('bouchon') || c.includes('français') || c.includes('bistrot')) return '🍷';
+  if (c.includes('japon') || c.includes('ramen') || c.includes('sushi')) return '🍜';
+  if (c.includes('indien') || c.includes('pakistanais')) return '🍛';
+  if (c.includes('libanais') || c.includes('moyen-orient')) return '🥙';
+  if (c.includes('cambodgien') || c.includes('asie')) return '🍚';
+  if (c.includes('turc')) return '🥙';
+  if (c.includes('africain') || c.includes('éthiopien')) return '🍲';
+  if (c.includes('burger')) return '🍔';
+  if (c.includes('latino')) return '🌮';
+  if (c.includes('tapas')) return '🍢';
+  if (c.includes('gaufre')) return '🧇';
+  if (c.includes('crêperie')) return '🥞';
+  if (c.includes('espagnol')) return '🥘';
+  if (c.includes('brasserie')) return '🍺';
+  return '🍽️';
+}
+
 function markerStyle(status){
   const colors = { unknown: '#FFFFFF', safe: '#1C8F73', mixed: '#C97F1E', unsafe: '#C24632' };
   return { radius: 8, fillColor: colors[status], color: '#12211A', weight: 1.5, fillOpacity: 0.95 };
@@ -1305,12 +1365,15 @@ function renderRestoList(){
     wrapper.id = 'resto-card-' + r.id;
 
     const card = document.createElement('div');
-    card.className = 'resto-card';
+    card.className = 'resto-card' + (status !== 'unknown' ? ' status-' + status : '');
     card.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px;">
         <div class="resto-status-dot ${status}"></div>
         <div>
-          <div class="resto-name">${escapeHtml(r.nom)}</div>
+          <div class="resto-name-row">
+            <span class="resto-cuisine-icon">${cuisineIcon(r.cuisine)}</span>
+            <span class="resto-name">${escapeHtml(r.nom)}</span>
+          </div>
           <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}</div>
         </div>
       </div>
