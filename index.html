@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat — Manger sans y penser</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -873,8 +873,19 @@ function startQuaggaScanner(){
     inputStream: {
       type: "LiveStream",
       target: scannerViewport,
-      constraints: { facingMode: "environment" }
+      constraints: {
+        facingMode: "environment",
+        width: { min: 1280, ideal: 1920 },
+        height: { min: 720, ideal: 1080 }
+      },
+      area: { top: "20%", right: "10%", left: "10%", bottom: "20%" } // zone centrale = moins de bruit à traiter
     },
+    locator: {
+      patchSize: "medium",
+      halfSample: false // traite l'image en pleine résolution, plus lent mais plus précis
+    },
+    numOfWorkers: 2,
+    frequency: 10,
     decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader"] },
     locate: true
   }, (err) => {
