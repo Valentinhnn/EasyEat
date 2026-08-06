@@ -914,7 +914,7 @@ let pendingCount = 0;
 function onBarcodeDetected(result){
   const code = result.codeResult.code;
   if (!code || !isValidEanChecksum(code)) return; // chiffre de contrôle invalide → lecture rejetée
-  if (averageQuaggaError(result) > 0.15) return; // lecture peu fiable → ignorée silencieusement
+  if (averageQuaggaError(result) > 0.09) return; // lecture peu fiable → ignorée silencieusement
 
   if (code === pendingCode){
     pendingCount++;
@@ -923,8 +923,8 @@ function onBarcodeDetected(result){
     pendingCount = 1;
   }
 
-  // Exige 2 lectures identiques et valides d'affilée avant de valider
-  if (pendingCount >= 2 && code !== lastDetectedCode){
+  // Exige 3 lectures identiques et valides d'affilée avant de valider
+  if (pendingCount >= 3 && code !== lastDetectedCode){
     lastDetectedCode = code;
     stopScanner();
     lookupProduct(code);
