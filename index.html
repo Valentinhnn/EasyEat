@@ -1001,7 +1001,21 @@ async function lookupProduct(code){
 
     let risque, raison;
     const glutenKeywords = ['blé','froment','orge','seigle','avoine','malt','épeautre','kamut','wheat','barley','rye','oats'];
-    const hasGlutenIngredient = glutenKeywords.some(k => ingredients.includes(k));
+    function hasWholeWord(text, word){
+      const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`(?:^|[^a-zàâäéèêëïîôöùûüç])${escaped}(?:$|[^a-zàâäéèêëïîôöùûüç])`, 'i');
+      return re.test(' ' + text + ' ');
+    }
+    // Dérivés qui contiennent "malt" mais sont fabriqués par un procédé qui retire
+    // le gluten (considérés sans gluten par la réglementation) — on les retire du
+    // texte avant de chercher "malt" comme mot entier, pour éviter le faux positif.
+    const textWithoutSafeDerivatives = ingredients
+      .replace(/maltodextrine?/gi, '')
+      .replace(/maltitol/gi, '');
+    const hasGlutenIngredient = glutenKeywords.some(k => {
+      const textToCheck = (k === 'malt') ? textWithoutSafeDerivatives : ingredients;
+      return hasWholeWord(textToCheck, k);
+    });
 
     if (allergens.includes('en:gluten')){
       risque = 'à éviter'; raison = "Le gluten est déclaré dans les allergènes de ce produit.";
@@ -1607,10 +1621,57 @@ const RESTO_DATA = [
   { id: 498, nom: "Midi vingt", lat: 45.74848, lon: 4.84403, cuisine: "Restaurant", quartier: "La Guillotière" },
   { id: 499, nom: "Yummy", lat: 45.71742, lon: 4.81124, cuisine: "Restaurant", quartier: "La Saulaie" },
   { id: 500, nom: "La belle colombe", lat: 45.76941, lon: 4.86321, cuisine: "Restaurant", quartier: "Charmettes" },
+
+  // Adresses identifiées via des guides cœliaques publics (FindMeGlutenFree,
+  // Glutons, Gluten Free Kitchen) comme fiables vis-à-vis du gluten, absentes
+  // de la base Geoapify. Statuts pré-remplis en DEFAULT_STATUSES ci-dessous —
+  // modifiables à tout moment via le mode admin.
+  { id: 501, nom: "Five", lat: 45.7638, lon: 4.8365, cuisine: "Restaurant / Épicerie", quartier: "Presqu'île" },
+  { id: 502, nom: "Chez Grégoire", lat: 45.7640, lon: 4.8350, cuisine: "Pâtisserie", quartier: "Presqu'île" },
+  { id: 503, nom: "Sans Gluten Pizza Epicerie", lat: 45.7600, lon: 4.8400, cuisine: "Pizzeria", quartier: "Lyon" },
+  { id: 504, nom: "Les Gasteliers", lat: 45.7695, lon: 4.8530, cuisine: "Boulangerie / Pâtisserie", quartier: "6e arrondissement" },
+  { id: 505, nom: "Copains", lat: 45.7640, lon: 4.8330, cuisine: "Boulangerie", quartier: "Lyon" },
+  { id: 506, nom: "Tigermilk", lat: 45.7600, lon: 4.8340, cuisine: "Latino", quartier: "Presqu'île" },
+  { id: 507, nom: "L'Ilet Gourmand", lat: 45.7600, lon: 4.8330, cuisine: "Restaurant", quartier: "Lyon" },
+  { id: 508, nom: "Arepado", lat: 45.7580, lon: 4.8320, cuisine: "Vénézuélien", quartier: "Lyon" },
+  { id: 509, nom: "Dolce Follia", lat: 45.7600, lon: 4.8360, cuisine: "Pizzeria", quartier: "Presqu'île" },
+  { id: 510, nom: "Zappo", lat: 45.7620, lon: 4.8380, cuisine: "Pizzeria", quartier: "Lyon" },
+  { id: 511, nom: "Les Fines Gueules", lat: 45.7622, lon: 4.8270, cuisine: "Français", quartier: "Vieux Lyon" },
+  { id: 512, nom: "La Crêperie de DéDé", lat: 45.7605, lon: 4.8332, cuisine: "Crêperie", quartier: "Presqu'île" },
+  { id: 513, nom: "Le Comptoir de l'Atelier", lat: 45.7590, lon: 4.8340, cuisine: "Restaurant", quartier: "Presqu'île" },
+  { id: 514, nom: "Brasserie Gabriel", lat: 45.7610, lon: 4.8350, cuisine: "Brasserie", quartier: "Presqu'île" },
+  { id: 515, nom: "BREIZH Café | La Crêpe Autrement", lat: 45.7630, lon: 4.8340, cuisine: "Crêperie", quartier: "Presqu'île" },
+  { id: 516, nom: "Natalys Café", lat: 45.7600, lon: 4.8330, cuisine: "Café / Crêperie", quartier: "Presqu'île" },
+  { id: 517, nom: "LA GÂCHE", lat: 45.7610, lon: 4.8360, cuisine: "Boulangerie", quartier: "Lyon" },
 ];
 
 const STATUS_LABELS = { unknown: "Inconnu", safe: "Safe", mixed: "Mixte", unsafe: "Non adapté" };
 const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire prend le dessus
+
+// Statuts pré-remplis à partir de guides cœliaques publics (FindMeGlutenFree,
+// Glutons, Gluten Free Kitchen) pour les adresses ajoutées manuellement
+// ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
+// n'existe encore — l'admin ou la communauté peuvent toujours les corriger.
+const DEFAULT_STATUSES = {
+  501: 'safe',   // Five — épicerie/restaurant 100% sans gluten
+  502: 'safe',   // Chez Grégoire — pâtisserie 100% sans gluten
+  503: 'safe',   // Sans Gluten Pizza Epicerie — 100% sans gluten
+  504: 'safe',   // Les Gasteliers — boulangerie 100% sans gluten
+  505: 'safe',   // Copains — boulangerie 100% sans gluten
+  506: 'mixed',  // Tigermilk — options sans gluten, personnel informé, pas dédié
+  507: 'mixed',  // L'Ilet Gourmand — options sans gluten mentionnées
+  508: 'mixed',  // Arepado — options sans gluten, pas 100% dédié
+  509: 'mixed',  // Dolce Follia — pizza sans gluten disponible
+  510: 'mixed',  // Zappo — pizza sans gluten disponible
+  511: 'mixed',  // Les Fines Gueules — desserts sans gluten mentionnés
+  512: 'mixed',  // La Crêperie de DéDé — galettes sans gluten, crêpes classiques non
+  513: 'mixed',  // Le Comptoir de l'Atelier — mentionné par la communauté cœliaque
+  514: 'mixed',  // Brasserie Gabriel — mentionné par la communauté cœliaque
+  515: 'mixed',  // BREIZH Café — galettes sans gluten
+  516: 'mixed',  // Natalys Café — mentionné pour crêpes sans gluten
+  517: 'mixed',  // LA GÂCHE — mentionné par la communauté cœliaque
+  173: 'mixed',  // Crêperie Marie Morgane — déjà dans la base Geoapify, galettes sans gluten
+};
 
 let curatedStatuses = {};      // statut renseigné par l'admin (toi), via /api/resto-status
 let reviewCache = {};          // { [restaurantId]: reviews[] }, rempli au chargement
@@ -1627,7 +1688,13 @@ function majorityGlutenVote(reviews){
 function getRestoStatus(id){
   const reviews = reviewCache[id] || [];
   if (reviews.length >= COMMUNITY_THRESHOLD) return majorityGlutenVote(reviews);
-  return curatedStatuses[id] || 'unknown';
+  if (curatedStatuses[id]) return curatedStatuses[id];
+  return DEFAULT_STATUSES[id] || 'unknown';
+}
+
+function isPreselected(id){
+  const reviews = reviewCache[id] || [];
+  return !curatedStatuses[id] && reviews.length < COMMUNITY_THRESHOLD && !!DEFAULT_STATUSES[id];
 }
 
 async function fetchCuratedStatuses(){
@@ -1856,6 +1923,7 @@ function renderRestoList(){
   filtered.forEach(r => {
     const status = getRestoStatus(r.id);
     const communityDriven = (reviewCache[r.id] || []).length >= COMMUNITY_THRESHOLD;
+    const preselected = isPreselected(r.id);
     const wrapper = document.createElement('div');
     wrapper.id = 'resto-card-' + r.id;
 
@@ -1869,7 +1937,7 @@ function renderRestoList(){
             <span class="resto-cuisine-icon">${cuisineIcon(r.cuisine)}</span>
             <span class="resto-name">${escapeHtml(r.nom)}</span>
           </div>
-          <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}</div>
+          <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}${preselected ? ' · présélectionné' : ''}</div>
         </div>
       </div>
       ${adminKey ? `<select class="resto-edit" data-id="${r.id}">
