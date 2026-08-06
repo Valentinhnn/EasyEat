@@ -228,6 +228,15 @@
   }
   @keyframes scanpulse{ 0%,100%{ opacity:0.3; } 50%{ opacity:1; } }
 
+  .scan-hint{
+    display:none;
+    position:absolute; left:0; right:0; bottom:10px;
+    text-align:center; font-size:12.5px; font-weight:600;
+    color:#fff; background: rgba(0,0,0,0.55); padding:6px 10px; margin:0 8%;
+    border-radius:8px;
+  }
+  .scan-hint.active{ display:block; }
+
   .manual-entry{
     display:flex; gap:8px; margin-top: 14px;
   }
@@ -477,6 +486,7 @@
       <div class="scanner-live" id="scannerLive">
         <div id="scannerViewport" style="width:100%; height:100%;"></div>
         <div class="scan-line-guide"></div>
+        <div class="scan-hint" id="scanHint">Ça résiste ? Essayez la saisie manuelle ci-dessous ↓</div>
       </div>
 
       <div class="manual-entry">
@@ -797,12 +807,18 @@ let nativeDetector = null;
 let nativeVideoEl = null;
 let nativeLoopId = null;
 
+let scanHintTimer = null;
+
 function startScanner(){
   errorBarcode.classList.remove('active');
   resultsBarcode.classList.remove('active');
   startScannerZone.style.display = 'none';
   scannerLive.classList.add('active');
   scannerViewport.innerHTML = '';
+  document.getElementById('scanHint').classList.remove('active');
+  scanHintTimer = setTimeout(() => {
+    document.getElementById('scanHint').classList.add('active');
+  }, 12000);
 
   if ('BarcodeDetector' in window){
     startNativeScanner(); // rapide + fiable (décodeur natif du téléphone)
@@ -875,6 +891,8 @@ function startQuaggaScanner(){
 }
 
 function stopScanner(){
+  if (scanHintTimer){ clearTimeout(scanHintTimer); scanHintTimer = null; }
+  document.getElementById('scanHint').classList.remove('active');
   if (scannerRunning){
     if (usingQuagga){
       try { Quagga.stop(); } catch(e){}
@@ -914,7 +932,7 @@ let pendingCount = 0;
 function onBarcodeDetected(result){
   const code = result.codeResult.code;
   if (!code || !isValidEanChecksum(code)) return; // chiffre de contrôle invalide → lecture rejetée
-  if (averageQuaggaError(result) > 0.09) return; // lecture peu fiable → ignorée silencieusement
+  if (averageQuaggaError(result) > 0.13) return; // lecture peu fiable → ignorée silencieusement
 
   if (code === pendingCode){
     pendingCount++;
@@ -923,8 +941,8 @@ function onBarcodeDetected(result){
     pendingCount = 1;
   }
 
-  // Exige 3 lectures identiques et valides d'affilée avant de valider
-  if (pendingCount >= 3 && code !== lastDetectedCode){
+  // Exige 2 lectures identiques et valides d'affilée avant de valider
+  if (pendingCount >= 2 && code !== lastDetectedCode){
     lastDetectedCode = code;
     stopScanner();
     lookupProduct(code);
