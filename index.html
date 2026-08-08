@@ -1739,6 +1739,7 @@ function promptAdminLogin(){
 
 let restoMap = null;
 let restoMarkers = {};
+let pinnedRestoId = null; // si défini, la liste sous la carte n'affiche que ce resto
 
 async function initRestoMapIfNeeded(){
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
@@ -1753,7 +1754,7 @@ async function initRestoMapIfNeeded(){
     const marker = L.circleMarker([r.lat, r.lon], markerStyle('unknown'))
       .addTo(restoMap)
       .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:#55655D;font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${r.site ? `<br><a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}`);
-    marker.on('click', () => scrollToRestoCard(r.id));
+    marker.on('click', () => selectRestoFromMap(r.id));
     restoMarkers[r.id] = marker;
   });
 
@@ -1950,16 +1951,26 @@ function renderRestoList(){
   const countEl = document.getElementById('restoCount');
   list.innerHTML = '';
 
-  const filtered = RESTO_DATA.filter(r => {
-    const status = getRestoStatus(r.id);
-    if (f.search && !r.nom.toLowerCase().includes(f.search)) return false;
-    if (f.status && status !== f.status) return false;
-    if (f.cuisine && r.cuisine !== f.cuisine) return false;
-    if (f.quartier && r.quartier !== f.quartier) return false;
-    return true;
-  });
+  let filtered;
+  if (pinnedRestoId){
+    filtered = RESTO_DATA.filter(r => r.id === pinnedRestoId);
+  } else {
+    filtered = RESTO_DATA.filter(r => {
+      const status = getRestoStatus(r.id);
+      if (f.search && !r.nom.toLowerCase().includes(f.search)) return false;
+      if (f.status && status !== f.status) return false;
+      if (f.cuisine && r.cuisine !== f.cuisine) return false;
+      if (f.quartier && r.quartier !== f.quartier) return false;
+      return true;
+    });
+  }
 
-  countEl.textContent = filtered.length + ' restaurant' + (filtered.length !== 1 ? 's' : '');
+  if (pinnedRestoId){
+    countEl.innerHTML = `Restaurant sélectionné sur la carte · <button id="restoUnpinBtn" style="border:none;background:none;color:var(--brand-dark);text-decoration:underline;cursor:pointer;font-size:inherit;padding:0;">← Voir tous les restaurants</button>`;
+    document.getElementById('restoUnpinBtn').addEventListener('click', clearPinnedResto);
+  } else {
+    countEl.textContent = filtered.length + ' restaurant' + (filtered.length !== 1 ? 's' : '');
+  }
 
   filtered.forEach(r => {
     const status = getRestoStatus(r.id);
@@ -2043,12 +2054,25 @@ function scrollToRestoCard(id){
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-document.getElementById('restoSearch').addEventListener('input', renderRestoList);
+function selectRestoFromMap(id){
+  pinnedRestoId = id;
+  renderRestoList();
+  const countEl = document.getElementById('restoCount');
+  if (countEl) countEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearPinnedResto(){
+  pinnedRestoId = null;
+  renderRestoList();
+}
+
+document.getElementById('restoSearch').addEventListener('input', () => { pinnedRestoId = null; renderRestoList(); });
 ['restoFilterStatus','restoFilterCuisine','restoFilterQuartier'].forEach(id =>
-  document.getElementById(id).addEventListener('change', renderRestoList)
+  document.getElementById(id).addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); })
 );
 document.getElementById('restoAdminBtn').addEventListener('click', promptAdminLogin);
 document.getElementById('restoReset').addEventListener('click', () => {
+  pinnedRestoId = null;
   document.getElementById('restoSearch').value = '';
   document.getElementById('restoFilterStatus').value = '';
   document.getElementById('restoFilterCuisine').value = '';
