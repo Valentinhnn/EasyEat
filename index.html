@@ -664,6 +664,11 @@ function updateQuotaDisplay(remaining){
   el.style.display = 'block';
 }
 
+function hideQuotaDisplay(){
+  const el = document.getElementById('quotaDisplay');
+  if (el) el.style.display = 'none';
+}
+
 /* ============================================================
    Tabs
    ============================================================ */
@@ -975,6 +980,7 @@ async function lookupProduct(code){
   errorBarcode.classList.remove('active');
   resultsBarcode.classList.remove('active');
   statusBarcode.classList.add('active');
+  hideQuotaDisplay(); // le scan code-barres n'utilise pas le quota Gemini, pas de message à afficher
 
   try{
     // Appel direct et gratuit à Open Food Facts — pas besoin de passer
