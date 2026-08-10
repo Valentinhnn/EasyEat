@@ -569,8 +569,9 @@
         <option value="">Quartier : tous</option>
       </select>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
-      <button class="resto-reset" id="restoAdminBtn">🔒 Admin</button>
     </div>
+
+    <div id="restoAdminZone" style="margin: 6px 0 4px 0;"></div>
 
     <div class="resto-legend">
       <span><span class="dot" style="background:#fff;"></span> Inconnu</span>
@@ -614,7 +615,16 @@ const WORKER_URL = "https://easyeat.hannavalentin269.workers.dev";
 // Client ID OAuth Google (voir DEPLOIEMENT.md, étape "Google Sign-In")
 const GOOGLE_CLIENT_ID = "1003568221579-k8us149dfill52d3m0ut655ieog7vbh2.apps.googleusercontent.com";
 
-let googleUser = null; // { idToken, name } une fois connecté
+// Email autorisé à avoir les droits admin (édition du statut gluten des restos).
+// Vérifié aussi côté serveur (Worker) via le token Google — ce n'est pas un secret,
+// juste l'identifiant qui active l'UI d'édition côté client.
+const ADMIN_EMAIL = "hannavalentin269@gmail.com";
+
+let googleUser = null; // { idToken, name, email } une fois connecté
+
+function isAdmin(){
+  return !!(googleUser && googleUser.email && googleUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+}
 
 function initGoogleSignIn(){
   if (!window.google || GOOGLE_CLIENT_ID.startsWith("REMPLACE")) return;
@@ -622,10 +632,11 @@ function initGoogleSignIn(){
     client_id: GOOGLE_CLIENT_ID,
     callback: (response) => {
       const payload = JSON.parse(atob(response.credential.split('.')[1]));
-      googleUser = { idToken: response.credential, name: payload.name };
+      googleUser = { idToken: response.credential, name: payload.name, email: payload.email };
       document.querySelectorAll('.reviews-panel.active').forEach(p => {
         loadReviewsPanel(p.id.replace('reviews-panel-', ''), p);
       });
+      renderRestoList(); // révèle l'UI admin immédiatement si le compte connecté est le tien
     }
   });
 }
@@ -1681,7 +1692,6 @@ const DEFAULT_STATUSES = {
 
 let curatedStatuses = {};      // statut renseigné par l'admin (toi), via /api/resto-status
 let reviewCache = {};          // { [restaurantId]: reviews[] }, rempli au chargement
-let adminKey = sessionStorage.getItem('easyeat_admin_key') || null;
 
 function majorityGlutenVote(reviews){
   const counts = { safe: 0, mixed: 0, unsafe: 0 };
@@ -1724,23 +1734,14 @@ async function fetchAllReviews(){
 async function setCuratedStatus(id, status){
   const resp = await fetch(`${WORKER_URL}/api/resto-status`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey || '' },
-    body: JSON.stringify({ restaurantId: id, status })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ restaurantId: id, status, idToken: googleUser ? googleUser.idToken : null })
   });
   if (!resp.ok){
     const data = await resp.json().catch(()=>({}));
-    throw new Error(data.error === 'unauthorized' ? 'Mot de passe admin incorrect.' : 'Erreur serveur.');
+    throw new Error(data.error === 'unauthorized' ? 'Compte non autorisé.' : 'Erreur serveur.');
   }
   curatedStatuses[id] = status;
-}
-
-function promptAdminLogin(){
-  const entered = window.prompt('Mot de passe admin EasyEat :');
-  if (entered){
-    adminKey = entered;
-    sessionStorage.setItem('easyeat_admin_key', entered);
-    renderRestoList();
-  }
 }
 
 let restoMap = null;
@@ -1951,7 +1952,25 @@ function getActiveFilters(){
   };
 }
 
+function renderRestoAdminZone(){
+  const zone = document.getElementById('restoAdminZone');
+  if (!zone) return;
+  if (isAdmin()){
+    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})</div>`;
+    return;
+  }
+  if (googleUser){
+    zone.innerHTML = ''; // connecté mais pas le compte admin : rien à afficher
+    return;
+  }
+  zone.innerHTML = `<div id="gsi-slot-global" class="gsi-slot"></div>`;
+  if (window.google && !GOOGLE_CLIENT_ID.startsWith("REMPLACE")){
+    google.accounts.id.renderButton(document.getElementById('gsi-slot-global'), { theme: 'outline', size: 'medium', text: 'signin' });
+  }
+}
+
 function renderRestoList(){
+  renderRestoAdminZone();
   const f = getActiveFilters();
   const list = document.getElementById('restoList');
   const countEl = document.getElementById('restoCount');
@@ -2000,7 +2019,7 @@ function renderRestoList(){
           ${r.site ? `<a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">🔗 Voir la carte du restaurant</a>` : ''}
         </div>
       </div>
-      ${adminKey ? `<select class="resto-edit" data-id="${r.id}">
+      ${isAdmin() ? `<select class="resto-edit" data-id="${r.id}">
         <option value="unknown" ${status==='unknown'?'selected':''}>Inconnu</option>
         <option value="safe" ${status==='safe'?'selected':''}>Safe</option>
         <option value="mixed" ${status==='mixed'?'selected':''}>Mixte</option>
@@ -2076,7 +2095,6 @@ document.getElementById('restoSearch').addEventListener('input', () => { pinnedR
 ['restoFilterStatus','restoFilterCuisine','restoFilterQuartier'].forEach(id =>
   document.getElementById(id).addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); })
 );
-document.getElementById('restoAdminBtn').addEventListener('click', promptAdminLogin);
 document.getElementById('restoReset').addEventListener('click', () => {
   pinnedRestoId = null;
   document.getElementById('restoSearch').value = '';
