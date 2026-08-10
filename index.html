@@ -220,13 +220,20 @@
   .scanner-live video, .scanner-live canvas{
     width:100%; height:100%; object-fit:cover;
   }
-  .scan-line-guide{
-    position:absolute; left:8%; right:8%; top:44%;
-    height:2px; background: var(--brand);
-    box-shadow: 0 0 8px var(--brand);
-    animation: scanpulse 1.6s ease-in-out infinite;
+  .scan-box-guide{
+    position:absolute; top:15%; bottom:15%; left:6%; right:6%;
+    border: 3px solid var(--brand); border-radius:12px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.4); /* assombrit tout ce qui est hors zone scannée */
+    pointer-events:none;
   }
-  @keyframes scanpulse{ 0%,100%{ opacity:0.3; } 50%{ opacity:1; } }
+  .torch-btn{
+    display:none; position:absolute; top:10px; right:10px; z-index:5;
+    width:38px; height:38px; border-radius:50%; border:none;
+    background: rgba(0,0,0,0.55); color:#fff; font-size:18px;
+    align-items:center; justify-content:center; cursor:pointer;
+  }
+  .torch-btn.active{ display:flex; }
+  .torch-btn.torch-on{ background: var(--brand); }
 
   .scan-hint{
     display:none;
@@ -485,7 +492,8 @@
 
       <div class="scanner-live" id="scannerLive">
         <div id="scannerViewport" style="width:100%; height:100%;"></div>
-        <div class="scan-line-guide"></div>
+        <div class="scan-box-guide"></div>
+        <button class="torch-btn" id="torchToggleBtn" type="button" aria-label="Activer/désactiver le flash">💡</button>
         <div class="scan-hint" id="scanHint">Ça résiste ? Essayez la saisie manuelle ci-dessous ↓</div>
       </div>
 
@@ -856,6 +864,7 @@ async function startNativeScanner(){
     scannerViewport.appendChild(nativeVideoEl);
     await nativeVideoEl.play();
     scannerRunning = true;
+    setupTorchToggle();
     nativeLoop();
   } catch(e){
     showBarcodeError("Impossible d'accéder à la caméra. Utilisez la saisie manuelle ci-dessous.");
@@ -894,13 +903,13 @@ function startQuaggaScanner(){
         width: { min: 1280, ideal: 1920 },
         height: { min: 720, ideal: 1080 }
       },
-      area: { top: "20%", right: "10%", left: "10%", bottom: "20%" } // zone centrale = moins de bruit à traiter
+      area: { top: "15%", right: "6%", left: "6%", bottom: "15%" } // doit correspondre exactement au cadre visuel .scan-box-guide
     },
     locator: {
       patchSize: "medium",
       halfSample: false // traite l'image en pleine résolution, plus lent mais plus précis
     },
-    numOfWorkers: 2,
+    numOfWorkers: 4,
     frequency: 10,
     decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader"] },
     locate: true
@@ -912,6 +921,7 @@ function startQuaggaScanner(){
     }
     Quagga.start();
     scannerRunning = true;
+    setupTorchToggle();
   });
 
   Quagga.onDetected(onBarcodeDetected);
@@ -930,11 +940,47 @@ function stopScanner(){
     scannerRunning = false;
   }
   usingQuagga = false;
+  torchOn = false;
+  document.getElementById('torchToggleBtn').classList.remove('active', 'torch-on');
   scannerLive.classList.remove('active');
   startScannerZone.style.display = 'block';
 }
 
 let lastDetectedCode = null;
+let torchOn = false;
+
+function getActiveVideoTrack(){
+  if (usingQuagga){
+    try { return Quagga.CameraAccess.getActiveTrack(); } catch(e){ return null; }
+  }
+  return nativeStream ? nativeStream.getVideoTracks()[0] : null;
+}
+
+function setupTorchToggle(){
+  const btn = document.getElementById('torchToggleBtn');
+  // Petit délai : le track n'est pas toujours prêt immédiatement après le démarrage
+  setTimeout(() => {
+    const track = getActiveVideoTrack();
+    if (!track || !track.getCapabilities){ btn.classList.remove('active'); return; }
+    try{
+      const caps = track.getCapabilities();
+      if (caps.torch){ btn.classList.add('active'); } else { btn.classList.remove('active'); }
+    } catch(e){ btn.classList.remove('active'); }
+  }, 400);
+}
+
+async function toggleTorch(){
+  const track = getActiveVideoTrack();
+  if (!track) return;
+  const next = !torchOn;
+  try{
+    await track.applyConstraints({ advanced: [{ torch: next }] });
+    torchOn = next;
+    document.getElementById('torchToggleBtn').classList.toggle('torch-on', torchOn);
+  } catch(e){ /* torche indisponible sur ce device malgré getCapabilities */ }
+}
+document.getElementById('torchToggleBtn').addEventListener('click', toggleTorch);
+
 function isValidEanChecksum(code){
   if (!/^\d{8}$|^\d{13}$/.test(code)) return false;
   const digits = code.split('').map(Number);
@@ -959,7 +1005,7 @@ let pendingCount = 0;
 function onBarcodeDetected(result){
   const code = result.codeResult.code;
   if (!code || !isValidEanChecksum(code)) return; // chiffre de contrôle invalide → lecture rejetée
-  if (averageQuaggaError(result) > 0.13) return; // lecture peu fiable → ignorée silencieusement
+  if (averageQuaggaError(result) > 0.18) return; // lecture peu fiable → ignorée silencieusement
 
   if (code === pendingCode){
     pendingCount++;
