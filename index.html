@@ -422,6 +422,7 @@
       <button class="tab-btn active" id="tabMenuBtn">Menu restaurant</button>
       <button class="tab-btn" id="tabProductBtn">Produit</button>
       <button class="tab-btn" id="tabRestoBtn">Restaurants</button>
+      <button class="tab-btn" id="tabRecipeBtn">🍳 Recette</button>
     </div>
   </div>
 </header>
@@ -596,6 +597,34 @@
     </div>
   </div>
 
+  <!-- ===================== PANEL: RECETTE ===================== -->
+  <div class="panel" id="panelRecipe">
+    <p style="font-size:13px; color: var(--ink-soft); margin-top:0;">
+      Dis-moi ce que tu veux manger et pour combien de personnes — je te donne les ingrédients et les quantités, avec les substituts sans gluten déjà appliqués si la recette classique en contient.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+      <input type="text" id="recipeDishInput" placeholder="Qu'est-ce que tu veux manger ? (ex : lasagnes, tarte aux pommes…)" maxlength="120">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <label for="recipePeopleInput" style="font-size:13.5px; color: var(--ink-soft); white-space:nowrap;">Pour combien de personnes ?</label>
+        <input type="number" id="recipePeopleInput" min="1" max="50" value="4" style="width:70px; padding:8px; border-radius:8px; border:1px solid var(--line); font-family:inherit;">
+      </div>
+      <button class="act btn-primary" id="recipeGenerateBtn">Générer la liste d'ingrédients</button>
+    </div>
+
+    <div class="status" id="statusRecipe"><div class="spinner"></div><span>Génération en cours…</span></div>
+    <div class="error-box" id="errorRecipe"></div>
+
+    <div class="results" id="resultsRecipe">
+      <div class="results-header"><span class="results-title">Résultat</span></div>
+      <div id="recipeCard"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Important :</strong> cette liste est générée par une IA et peut se tromper, notamment sur les quantités ou la pertinence d'un substitut. Vérifiez toujours les étiquettes des produits achetés avant de cuisiner.
+    </div>
+  </div>
+
 </main>
 
 <div class="quota-display" id="quotaDisplay"></div>
@@ -698,10 +727,13 @@ const panelProduct = document.getElementById('panelProduct');
 const menuDisclaimer = document.getElementById('menuDisclaimer');
 const tabRestoBtn = document.getElementById('tabRestoBtn');
 const panelResto = document.getElementById('panelResto');
+const tabRecipeBtn = document.getElementById('tabRecipeBtn');
+const panelRecipe = document.getElementById('panelRecipe');
 const allTabs = [
   { btn: tabMenuBtn, panel: panelMenu },
   { btn: tabProductBtn, panel: panelProduct },
-  { btn: tabRestoBtn, panel: panelResto }
+  { btn: tabRestoBtn, panel: panelResto },
+  { btn: tabRecipeBtn, panel: panelRecipe }
 ];
 function activateTab(target){
   allTabs.forEach(t => {
@@ -712,10 +744,12 @@ function activateTab(target){
   menuDisclaimer.style.display = (target === tabMenuBtn) ? 'block' : 'none';
   if (target !== tabProductBtn) stopScanner();
   if (target === tabRestoBtn) initRestoMapIfNeeded();
+  if (target !== tabRecipeBtn) hideQuotaDisplay(); // évite un message de quota résiduel d'un autre onglet
 }
 tabMenuBtn.addEventListener('click', () => activateTab(tabMenuBtn));
 tabProductBtn.addEventListener('click', () => activateTab(tabProductBtn));
 tabRestoBtn.addEventListener('click', () => activateTab(tabRestoBtn));
+tabRecipeBtn.addEventListener('click', () => activateTab(tabRecipeBtn));
 
 /* ============================================================
    MENU panel logic
@@ -2244,6 +2278,99 @@ window.addEventListener('load', () => {
     }
   }, 250);
 });
+
+/* ============================================================
+   RECETTE — formulaire "plat + nb de personnes" → ingrédients (Gemini,
+   même quota que Menu/Étiquette puisque ça consomme aussi l'IA)
+   ============================================================ */
+const recipeDishInput = document.getElementById('recipeDishInput');
+const recipePeopleInput = document.getElementById('recipePeopleInput');
+const statusRecipe = document.getElementById('statusRecipe');
+const errorRecipe = document.getElementById('errorRecipe');
+const resultsRecipe = document.getElementById('resultsRecipe');
+const recipeCard = document.getElementById('recipeCard');
+const recipeGenerateBtn = document.getElementById('recipeGenerateBtn');
+
+async function generateRecipe(){
+  const dish = recipeDishInput.value.trim();
+  const people = parseInt(recipePeopleInput.value, 10);
+
+  errorRecipe.classList.remove('active');
+  resultsRecipe.classList.remove('active');
+
+  if (!dish){
+    errorRecipe.textContent = "Dis-moi d'abord ce que tu veux manger.";
+    errorRecipe.classList.add('active');
+    return;
+  }
+  if (!Number.isInteger(people) || people < 1 || people > 50){
+    errorRecipe.textContent = "Nombre de personnes invalide (entre 1 et 50).";
+    errorRecipe.classList.add('active');
+    return;
+  }
+
+  recipeGenerateBtn.disabled = true;
+  statusRecipe.classList.add('active');
+
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'recipe', dish, people })
+    });
+    const data = await resp.json();
+
+    if (!resp.ok){
+      throw new Error(data.error === 'quota_exceeded' ? data.message : "Erreur du serveur, réessayez.");
+    }
+
+    updateQuotaDisplay(data.remaining);
+    const result = JSON.parse(data.text);
+    renderRecipeResult(result);
+
+  } catch(err){
+    errorRecipe.textContent = err.message || "Erreur inattendue, réessayez.";
+    errorRecipe.classList.add('active');
+  } finally {
+    statusRecipe.classList.remove('active');
+    recipeGenerateBtn.disabled = false;
+  }
+}
+
+function renderRecipeResult(result){
+  const ingredients = result.ingredients || [];
+
+  if (!ingredients.length){
+    recipeCard.innerHTML = `<div class="dish-card">
+        <div class="dish-name">${escapeHtml(result.plat || 'Recette')}</div>
+        <div class="dish-reason">${escapeHtml(result.notes || "Je n'ai pas pu générer de liste pour ce plat, essaie de préciser le nom.")}</div>
+      </div>`;
+    resultsRecipe.classList.add('active');
+    return;
+  }
+
+  const ingredientsHtml = ingredients.map(ing =>
+    `<li style="margin-bottom:3px;">${escapeHtml(ing.nom || '')} — <strong>${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}</strong></li>`
+  ).join('');
+
+  const subsHtml = (result.substitutions && result.substitutions.length)
+    ? `<div class="dish-reason" style="margin-top:10px;"><strong>🔄 Substitutions sans gluten appliquées :</strong><br>${result.substitutions.map(s => escapeHtml(s)).join('<br>')}</div>`
+    : '';
+
+  recipeCard.innerHTML = `<div class="dish-card">
+      <div class="dish-top">
+        <div class="dish-name">${escapeHtml(result.plat || 'Recette')}${result.portions ? ` <span style="color:var(--ink-soft); font-weight:400; font-size:13px;">(${result.portions} pers.)</span>` : ''}</div>
+      </div>
+      <ul style="margin:8px 0 0 18px; padding:0; font-size:13.5px;">${ingredientsHtml}</ul>
+      ${subsHtml}
+      ${result.notes ? `<div class="dish-reason" style="margin-top:8px;">${escapeHtml(result.notes)}</div>` : ''}
+    </div>`;
+  resultsRecipe.classList.add('active');
+}
+
+recipeGenerateBtn.addEventListener('click', generateRecipe);
+recipeDishInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') generateRecipe(); });
+
 </script>
 
 </body>
