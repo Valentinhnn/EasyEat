@@ -1039,70 +1039,90 @@ async function lookupProduct(code){
   statusBarcode.classList.add('active');
   hideQuotaDisplay(); // le scan code-barres n'utilise pas le quota Gemini, pas de message à afficher
 
+  // Vérification des rappels officiels (RappelConso, DGCCRF/data.gouv.fr) en
+  // parallèle de la recherche OFF — indépendante du résultat gluten, un
+  // produit peut être rappelé même si Open Food Facts ne le connaît pas.
+  const recallPromise = checkRappelConso(code);
+
   try{
     // Appel direct et gratuit à Open Food Facts — pas besoin de passer
     // par le Worker, cette API publique n'a pas de quota et est illimitée.
     const resp = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,brands,allergens_tags,traces_tags,ingredients_text_fr,ingredients_text`);
-    if (resp.status === 404){
-      showBarcodeError("Produit introuvable dans la base Open Food Facts (code " + code + "). Essayez la photo de l'étiquette à la place.");
-      return;
+
+    let productHtml = '';
+    let productFound = false;
+
+    if (resp.ok){
+      const data = await resp.json();
+      if (data.status === 1 && data.product){
+        productFound = true;
+        const p = data.product;
+        const name = p.product_name || 'Produit sans nom';
+        const brand = p.brands || '';
+        const allergens = (p.allergens_tags || []).join(' ').toLowerCase();
+        const traces = (p.traces_tags || []).join(' ').toLowerCase();
+        const ingredients = (p.ingredients_text_fr || p.ingredients_text || '').toLowerCase();
+
+        let risque, raison;
+        const glutenKeywords = ['blé','froment','orge','seigle','avoine','malt','épeautre','kamut','wheat','barley','rye','oats'];
+        function hasWholeWord(text, word){
+          const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const re = new RegExp(`(?:^|[^a-zàâäéèêëïîôöùûüç])${escaped}(?:$|[^a-zàâäéèêëïîôöùûüç])`, 'i');
+          return re.test(' ' + text + ' ');
+        }
+        // Dérivés qui contiennent "malt" mais sont fabriqués par un procédé qui retire
+        // le gluten (considérés sans gluten par la réglementation) — on les retire du
+        // texte avant de chercher "malt" comme mot entier, pour éviter le faux positif.
+        const textWithoutSafeDerivatives = ingredients
+          .replace(/maltodextrine?/gi, '')
+          .replace(/maltitol/gi, '');
+        const hasGlutenIngredient = glutenKeywords.some(k => {
+          const textToCheck = (k === 'malt') ? textWithoutSafeDerivatives : ingredients;
+          return hasWholeWord(textToCheck, k);
+        });
+
+        if (allergens.includes('en:gluten')){
+          risque = 'à éviter'; raison = "Le gluten est déclaré dans les allergènes de ce produit.";
+        } else if (hasGlutenIngredient){
+          risque = 'à éviter'; raison = "La liste d'ingrédients mentionne une céréale contenant du gluten.";
+        } else if (traces.includes('gluten')){
+          risque = 'à vérifier'; raison = "Traces possibles de gluten signalées (contamination croisée).";
+        } else if (!ingredients && allergens === ''){
+          risque = 'à vérifier'; raison = "Données insuffisantes dans la base pour conclure avec certitude.";
+        } else {
+          risque = 'sûr'; raison = "Aucun gluten ni trace détectée dans les données disponibles.";
+        }
+
+        const cls = riskClass(risque);
+        productHtml = `<div class="dish-card">
+            <div class="dish-top">
+              <div>
+                <div class="dish-name">${escapeHtml(name)}</div>
+                ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
+              </div>
+              <div class="badge ${cls}">${escapeHtml(risque)}</div>
+            </div>
+            <div class="dish-reason">${escapeHtml(raison)}</div>
+          </div>`;
+      }
     }
-    if (!resp.ok) throw new Error("http_" + resp.status);
-    const data = await resp.json();
 
-    if (data.status !== 1 || !data.product){
-      showBarcodeError("Produit introuvable dans la base Open Food Facts (code " + code + "). Essayez la photo de l'étiquette à la place.");
-      return;
-    }
-
-    const p = data.product;
-    const name = p.product_name || 'Produit sans nom';
-    const brand = p.brands || '';
-    const allergens = (p.allergens_tags || []).join(' ').toLowerCase();
-    const traces = (p.traces_tags || []).join(' ').toLowerCase();
-    const ingredients = (p.ingredients_text_fr || p.ingredients_text || '').toLowerCase();
-
-    let risque, raison;
-    const glutenKeywords = ['blé','froment','orge','seigle','avoine','malt','épeautre','kamut','wheat','barley','rye','oats'];
-    function hasWholeWord(text, word){
-      const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const re = new RegExp(`(?:^|[^a-zàâäéèêëïîôöùûüç])${escaped}(?:$|[^a-zàâäéèêëïîôöùûüç])`, 'i');
-      return re.test(' ' + text + ' ');
-    }
-    // Dérivés qui contiennent "malt" mais sont fabriqués par un procédé qui retire
-    // le gluten (considérés sans gluten par la réglementation) — on les retire du
-    // texte avant de chercher "malt" comme mot entier, pour éviter le faux positif.
-    const textWithoutSafeDerivatives = ingredients
-      .replace(/maltodextrine?/gi, '')
-      .replace(/maltitol/gi, '');
-    const hasGlutenIngredient = glutenKeywords.some(k => {
-      const textToCheck = (k === 'malt') ? textWithoutSafeDerivatives : ingredients;
-      return hasWholeWord(textToCheck, k);
-    });
-
-    if (allergens.includes('en:gluten')){
-      risque = 'à éviter'; raison = "Le gluten est déclaré dans les allergènes de ce produit.";
-    } else if (hasGlutenIngredient){
-      risque = 'à éviter'; raison = "La liste d'ingrédients mentionne une céréale contenant du gluten.";
-    } else if (traces.includes('gluten')){
-      risque = 'à vérifier'; raison = "Traces possibles de gluten signalées (contamination croisée).";
-    } else if (!ingredients && allergens === ''){
-      risque = 'à vérifier'; raison = "Données insuffisantes dans la base pour conclure avec certitude.";
-    } else {
-      risque = 'sûr'; raison = "Aucun gluten ni trace détectée dans les données disponibles.";
-    }
-
-    const cls = riskClass(risque);
-    productCard.innerHTML = `<div class="dish-card">
-        <div class="dish-top">
-          <div>
-            <div class="dish-name">${escapeHtml(name)}</div>
-            ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
-          </div>
-          <div class="badge ${cls}">${escapeHtml(risque)}</div>
+    const recall = await recallPromise;
+    const recallHtml = recall ? `<div class="dish-card" style="border:2px solid #C24632; background:#FAE6E1; margin-bottom:10px;">
+        <div class="dish-top"><div class="dish-name" style="color:#8a2e1f;">⚠️ Rappel officiel en cours (RappelConso)</div></div>
+        <div class="dish-reason">
+          <strong>${escapeHtml(recall.libelle)}</strong><br>
+          ${escapeHtml(recall.motif || 'Motif non précisé.')}${recall.risques ? ' — ' + escapeHtml(recall.risques) : ''}
         </div>
-        <div class="dish-reason">${escapeHtml(raison)}</div>
-      </div>`;
+        ${recall.lien ? `<a href="${escapeHtml(recall.lien)}" target="_blank" rel="noopener" style="font-size:12px; font-weight:700;">Voir la fiche officielle →</a>` : ''}
+      </div>` : '';
+
+    if (!productFound && !recall){
+      showBarcodeError("Produit introuvable dans la base Open Food Facts (code " + code + "). Essayez la photo de l'étiquette à la place.");
+      return;
+    }
+
+    productCard.innerHTML = recallHtml + productHtml;
     resultsBarcode.classList.add('active');
 
   } catch(err){
@@ -1110,6 +1130,39 @@ async function lookupProduct(code){
     showBarcodeError(`Connexion à Open Food Facts impossible (${detail}). Utilisez plutôt « Photo de l'étiquette ».`);
   } finally {
     statusBarcode.classList.remove('active');
+  }
+}
+
+// --- Vérification des rappels officiels de produits (RappelConso / DGCCRF),
+//     données publiques ouvertes (Licence Ouverte 2.0), gratuites, sans clé
+//     API requise pour un usage en lecture. Utilise l'Explore API v2.1
+//     (l'ancienne API v1.0 "records/1.0/search" est dépréciée). ---
+async function checkRappelConso(code){
+  try{
+    const url = `https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?q=${encodeURIComponent(code)}&limit=5`;
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!data.results || !data.results.length) return null;
+
+    // Le nom exact du champ GTIN peut varier selon les évolutions du jeu de
+    // données ; plutôt que de le deviner, on vérifie que le code apparaît
+    // comme token exact dans au moins un champ du résultat (plus robuste).
+    // (v2.1 renvoie des objets plats, contrairement à v1 qui les imbriquait
+    // dans "fields".)
+    const match = data.results.find(r =>
+      Object.values(r).some(v => typeof v === 'string' && v.split(/\s+/).includes(code))
+    );
+    if (!match) return null;
+
+    return {
+      libelle: match.libelle || match.noms_des_modeles_ou_references || match.nom_de_la_marque_du_produit || 'Produit rappelé',
+      motif: match.motif_du_rappel || '',
+      risques: match.risques_encourus || '',
+      lien: match.lien_vers_la_fiche_rappel || match.liens_vers_la_fiche_rappel || null,
+    };
+  } catch(e){
+    return null; // en cas de souci réseau côté RappelConso, on n'affiche rien plutôt que de bloquer le scan
   }
 }
 
