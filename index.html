@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EasyEat — Manger sans y penser</title>
+<title>EasyEat, manger sans y penser</title>
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -415,14 +415,14 @@
     <div class="brand-mark">EE</div>
     <h1>EasyEat</h1>
   </div>
-  <p class="tagline">Scannez un menu ou un produit, obtenez une réponse claire sur le gluten — pensé pour les pièges de la cuisine française.</p>
+  <p class="tagline">Scannez un menu ou un produit, obtenez une réponse claire sur le gluten, pensé pour les pièges de la cuisine française.</p>
 
   <div class="tabs">
     <div class="tab-switch">
       <button class="tab-btn active" id="tabMenuBtn">Menu restaurant</button>
       <button class="tab-btn" id="tabProductBtn">Produit</button>
       <button class="tab-btn" id="tabRestoBtn">Restaurants</button>
-      <button class="tab-btn" id="tabRecipeBtn">🍳 Recette</button>
+      <button class="tab-btn" id="tabRecipeBtn">Recette</button>
     </div>
   </div>
 </header>
@@ -549,7 +549,7 @@
     </div>
 
     <div class="disclaimer">
-      <strong>Important :</strong> les infos produit viennent d'Open Food Facts, une base collaborative — elle peut être incomplète ou périmée. En cas de doute, vérifiez toujours la liste d'ingrédients imprimée sur l'emballage.
+      <strong>Important :</strong> les infos produit viennent d'Open Food Facts, une base collaborative qui peut être incomplète ou périmée. En cas de doute, vérifiez toujours la liste d'ingrédients imprimée sur l'emballage.
     </div>
   </div>
 
@@ -600,7 +600,7 @@
   <!-- ===================== PANEL: RECETTE ===================== -->
   <div class="panel" id="panelRecipe">
     <p style="font-size:13px; color: var(--ink-soft); margin-top:0;">
-      Dis-moi ce que tu veux manger et pour combien de personnes — je te donne les ingrédients et les quantités, avec les substituts sans gluten déjà appliqués si la recette classique en contient.
+      Qu'est-ce que tu veux cuisiner ? Tu peux me donner le nom d'un plat, ou juste les ingrédients que tu as sous la main, et je te propose une liste avec les quantités pour le nombre de personnes voulu, en remplaçant automatiquement tout ce qui contient du gluten.
     </p>
 
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
@@ -629,7 +629,7 @@
 
 <div class="quota-display" id="quotaDisplay"></div>
 
-<footer>EasyEat — Prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a></footer>
+<footer>EasyEat, prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a></footer>
 
 <script>
 /* ============================================================
@@ -653,7 +653,7 @@ const WORKER_URL = "https://easyeat.hannavalentin269.workers.dev";
 const GOOGLE_CLIENT_ID = "1003568221579-k8us149dfill52d3m0ut655ieog7vbh2.apps.googleusercontent.com";
 
 // Email autorisé à avoir les droits admin (édition du statut gluten des restos).
-// Vérifié aussi côté serveur (Worker) via le token Google — ce n'est pas un secret,
+// Vérifié aussi côté serveur (Worker) via le token Google, ce n'est pas un secret,
 // juste l'identifiant qui active l'UI d'édition côté client.
 const ADMIN_EMAIL = "hannavalentin269@gmail.com";
 
@@ -1074,12 +1074,12 @@ async function lookupProduct(code){
   hideQuotaDisplay(); // le scan code-barres n'utilise pas le quota Gemini, pas de message à afficher
 
   // Vérification des rappels officiels (RappelConso, DGCCRF/data.gouv.fr) en
-  // parallèle de la recherche OFF — indépendante du résultat gluten, un
+  // parallèle de la recherche OFF, indépendante du résultat gluten, un
   // produit peut être rappelé même si Open Food Facts ne le connaît pas.
   const recallPromise = checkRappelConso(code);
 
   try{
-    // Appel direct et gratuit à Open Food Facts — pas besoin de passer
+    // Appel direct et gratuit à Open Food Facts, pas besoin de passer
     // par le Worker, cette API publique n'a pas de quota et est illimitée.
     const resp = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,brands,allergens_tags,traces_tags,ingredients_text_fr,ingredients_text`);
 
@@ -1105,7 +1105,7 @@ async function lookupProduct(code){
           return re.test(' ' + text + ' ');
         }
         // Dérivés qui contiennent "malt" mais sont fabriqués par un procédé qui retire
-        // le gluten (considérés sans gluten par la réglementation) — on les retire du
+        // le gluten (considérés sans gluten par la réglementation), on les retire du
         // texte avant de chercher "malt" comme mot entier, pour éviter le faux positif.
         const textWithoutSafeDerivatives = ingredients
           .replace(/maltodextrine?/gi, '')
@@ -1146,7 +1146,7 @@ async function lookupProduct(code){
         <div class="dish-top"><div class="dish-name" style="color:#8a2e1f;">⚠️ Rappel officiel en cours (RappelConso)</div></div>
         <div class="dish-reason">
           <strong>${escapeHtml(recall.libelle)}</strong><br>
-          ${escapeHtml(recall.motif || 'Motif non précisé.')}${recall.risques ? ' — ' + escapeHtml(recall.risques) : ''}
+          ${escapeHtml(recall.motif || 'Motif non précisé.')}${recall.risques ? ', ' + escapeHtml(recall.risques) : ''}
         </div>
         ${recall.lien ? `<a href="${escapeHtml(recall.lien)}" target="_blank" rel="noopener" style="font-size:12px; font-weight:700;">Voir la fiche officielle →</a>` : ''}
       </div>` : '';
@@ -1266,10 +1266,10 @@ analyzeBtnLabel.addEventListener('click', async () => {
    RESTAURANTS panel
    ============================================================ */
 // Liste de départ (source : recherche web sur les restaurants lyonnais
-// reconnus par quartier — coordonnées approximatives au niveau du
+// reconnus par quartier, coordonnées approximatives au niveau du
 // quartier, à corriger avec l'adresse exacte si besoin). Statuts gluten
 // à "unknown" par défaut : à toi de les renseigner en cliquant sur
-// le menu déroulant de chaque fiche — c'est sauvegardé dans ce navigateur.
+// le menu déroulant de chaque fiche, c'est sauvegardé dans ce navigateur.
 const RESTO_DATA = [
   { id: 1, nom: "Tandoori House", lat: 45.70028, lon: 4.88262, cuisine: "Indien", quartier: "Les Minguettes", adresse: "Avenue Jean Jaurès, 69200 Vénissieux" },
   { id: 2, nom: "Le Relais Fleuri", lat: 45.72285, lon: 4.88489, cuisine: "Pizzeria", quartier: "La Plaine - Santy", adresse: "Avenue Paul Santy, 69008 Lyon" },
@@ -1774,7 +1774,7 @@ const RESTO_DATA = [
 
   // Adresses identifiées via des guides cœliaques publics (FindMeGlutenFree,
   // Glutons, Gluten Free Kitchen) comme fiables vis-à-vis du gluten, absentes
-  // de la base Geoapify. Statuts pré-remplis en DEFAULT_STATUSES ci-dessous —
+  // de la base Geoapify. Statuts pré-remplis en DEFAULT_STATUSES ci-dessous,
   // modifiables à tout moment via le mode admin.
   { id: 501, nom: "Five", lat: 45.7638, lon: 4.8365, cuisine: "Restaurant / Épicerie", quartier: "Presqu'île" },
   { id: 502, nom: "Chez Grégoire", lat: 45.7640, lon: 4.8350, cuisine: "Pâtisserie", quartier: "Presqu'île" },
@@ -1801,26 +1801,26 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // Statuts pré-remplis à partir de guides cœliaques publics (FindMeGlutenFree,
 // Glutons, Gluten Free Kitchen) pour les adresses ajoutées manuellement
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
-// n'existe encore — l'admin ou la communauté peuvent toujours les corriger.
+// n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
-  501: 'safe',   // Five — épicerie/restaurant 100% sans gluten
-  502: 'safe',   // Chez Grégoire — pâtisserie 100% sans gluten
-  503: 'safe',   // Sans Gluten Pizza Epicerie — 100% sans gluten
-  504: 'safe',   // Les Gasteliers — boulangerie 100% sans gluten
-  505: 'safe',   // Copains — boulangerie 100% sans gluten
-  506: 'mixed',  // Tigermilk — options sans gluten, personnel informé, pas dédié
-  507: 'mixed',  // L'Ilet Gourmand — options sans gluten mentionnées
-  508: 'mixed',  // Arepado — options sans gluten, pas 100% dédié
-  509: 'mixed',  // Dolce Follia — pizza sans gluten disponible
-  510: 'mixed',  // Zappo — pizza sans gluten disponible
-  511: 'mixed',  // Les Fines Gueules — desserts sans gluten mentionnés
-  512: 'mixed',  // La Crêperie de DéDé — galettes sans gluten, crêpes classiques non
-  513: 'mixed',  // Le Comptoir de l'Atelier — mentionné par la communauté cœliaque
-  514: 'mixed',  // Brasserie Gabriel — mentionné par la communauté cœliaque
-  515: 'mixed',  // BREIZH Café — galettes sans gluten
-  516: 'mixed',  // Natalys Café — mentionné pour crêpes sans gluten
-  517: 'mixed',  // LA GÂCHE — mentionné par la communauté cœliaque
-  173: 'mixed',  // Crêperie Marie Morgane — déjà dans la base Geoapify, galettes sans gluten
+  501: 'safe',   // Five, épicerie/restaurant 100% sans gluten
+  502: 'safe',   // Chez Grégoire, pâtisserie 100% sans gluten
+  503: 'safe',   // Sans Gluten Pizza Epicerie, 100% sans gluten
+  504: 'safe',   // Les Gasteliers, boulangerie 100% sans gluten
+  505: 'safe',   // Copains, boulangerie 100% sans gluten
+  506: 'mixed',  // Tigermilk, options sans gluten, personnel informé, pas dédié
+  507: 'mixed',  // L'Ilet Gourmand, options sans gluten mentionnées
+  508: 'mixed',  // Arepado, options sans gluten, pas 100% dédié
+  509: 'mixed',  // Dolce Follia, pizza sans gluten disponible
+  510: 'mixed',  // Zappo, pizza sans gluten disponible
+  511: 'mixed',  // Les Fines Gueules, desserts sans gluten mentionnés
+  512: 'mixed',  // La Crêperie de DéDé, galettes sans gluten, crêpes classiques non
+  513: 'mixed',  // Le Comptoir de l'Atelier, mentionné par la communauté cœliaque
+  514: 'mixed',  // Brasserie Gabriel, mentionné par la communauté cœliaque
+  515: 'mixed',  // BREIZH Café, galettes sans gluten
+  516: 'mixed',  // Natalys Café, mentionné pour crêpes sans gluten
+  517: 'mixed',  // LA GÂCHE, mentionné par la communauté cœliaque
+  173: 'mixed',  // Crêperie Marie Morgane, déjà dans la base Geoapify, galettes sans gluten
 };
 
 let curatedStatuses = {};      // statut renseigné par l'admin (toi), via /api/resto-status
@@ -1939,9 +1939,9 @@ async function loadReviewsPanel(restaurantId, panel){
         </select>
         <label>Adapté au gluten ?</label>
         <select class="rf-gluten">
-          <option value="safe">Safe — j'ai mangé sans souci</option>
-          <option value="mixed">Mixte — options limitées / prudence</option>
-          <option value="unsafe">Non adapté — évitez</option>
+          <option value="safe">Safe, j'ai mangé sans souci</option>
+          <option value="mixed">Mixte, options limitées / prudence</option>
+          <option value="unsafe">Non adapté, évitez</option>
         </select>
         <label>Commentaire (optionnel)</label>
         <textarea class="rf-comment" rows="2" maxlength="300" placeholder="Votre expérience…"></textarea>
@@ -1960,7 +1960,7 @@ async function loadReviewsPanel(restaurantId, panel){
         <button class="review-report-btn" data-review-id="${escapeHtml(r.id || '')}" style="margin-top:4px; background:none; border:none; padding:0; font-size:11px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;">Signaler cet avis</button>
         ${isAdmin() ? `<button class="review-delete-btn" data-review-id="${escapeHtml(r.id || '')}" style="margin-top:4px; margin-left:10px; background:none; border:none; padding:0; font-size:11px; color:#C24632; text-decoration:underline; cursor:pointer;">🗑️ Supprimer (admin)</button>` : ''}
       </div>`).join('')
-    : `<div style="font-size:12.5px; color:var(--ink-soft); padding-top:6px;">Aucun avis pour l'instant — soyez le premier.</div>`;
+    : `<div style="font-size:12.5px; color:var(--ink-soft); padding-top:6px;">Aucun avis pour l'instant, soyez le premier.</div>`;
 
   panel.innerHTML = html;
 
@@ -2280,7 +2280,7 @@ window.addEventListener('load', () => {
 });
 
 /* ============================================================
-   RECETTE — formulaire "plat + nb de personnes" → ingrédients (Gemini,
+   RECETTE, formulaire "plat + nb de personnes" → ingrédients (Gemini,
    même quota que Menu/Étiquette puisque ça consomme aussi l'IA)
    ============================================================ */
 const recipeDishInput = document.getElementById('recipeDishInput');
@@ -2350,7 +2350,7 @@ function renderRecipeResult(result){
   }
 
   const ingredientsHtml = ingredients.map(ing =>
-    `<li style="margin-bottom:3px;">${escapeHtml(ing.nom || '')} — <strong>${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}</strong></li>`
+    `<li style="margin-bottom:3px;">${escapeHtml(ing.nom || '')} : <strong>${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}</strong></li>`
   ).join('');
 
   const subsHtml = (result.substitutions && result.substitutions.length)
