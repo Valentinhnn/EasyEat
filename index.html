@@ -8,6 +8,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg: #F4F7F3;
@@ -26,6 +30,13 @@
     --danger-bg: #FAE6E1;
     --mono: 'SF Mono', 'Courier New', monospace;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --serif-display: 'Fraunces', Georgia, serif;
+
+    /* Ticket de cuisine (onglet Recette) */
+    --ticket-paper: #FBF6EA;
+    --ticket-shadow: #D9CDA9;
+    --ticket-divider: #C9BC9C;
+    --ticket-stamp: var(--brand);
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -305,6 +316,122 @@
   .badge.check{ background: var(--check-bg); color: var(--check); }
   .badge.danger{ background: var(--danger-bg); color: var(--danger); }
   .dish-reason{ font-size:13px; color: var(--ink-soft); line-height:1.5; margin-top:6px; }
+
+  /* ==========================================================
+     ONGLET RECETTE — design "ticket de cuisine"
+     Le résultat prend la forme d'un ticket de commande comme
+     ceux qu'on épingle sur un rail en cuisine de restaurant :
+     papier clair, bords perforés façon rouleau, police machine
+     pour les lignes d'ingrédients/étapes, un tampon rond pour
+     le nombre de personnes, une pince qui l'accroche en haut.
+     ========================================================== */
+  .recipe-intro-pad{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 16px 14px 16px;
+    margin-bottom: 14px;
+  }
+  .recipe-intro-pad input[type="text"]{
+    width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line);
+    font-family: inherit; font-size:14px; margin-bottom:10px;
+  }
+
+  .recipe-ticket-wrap{
+    position: relative;
+    margin: 26px auto 10px auto;
+    max-width: 480px;
+  }
+  .recipe-clip{
+    position:absolute; top:-11px; left:50%; transform: translateX(-50%) rotate(-2deg);
+    width:46px; height:20px; background: linear-gradient(180deg,#8b93a1,#5f6774);
+    border-radius: 4px; z-index:2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  }
+  .recipe-clip::after{
+    content:''; position:absolute; left:50%; top:3px; transform: translateX(-50%);
+    width:30px; height:4px; background: var(--bg); border-radius:2px;
+  }
+  .recipe-ticket{
+    position: relative;
+    background: var(--ticket-paper);
+    padding: 30px 22px 22px 22px;
+    box-shadow: 0 10px 24px rgba(18,33,26,0.10), 0 2px 6px rgba(18,33,26,0.06);
+    -webkit-mask-image:
+      radial-gradient(circle at 10px 0, transparent 7px, black 7.5px),
+      radial-gradient(circle at 10px 100%, transparent 7px, black 7.5px);
+    -webkit-mask-repeat: repeat-x, repeat-x;
+    -webkit-mask-size: 20px 12px, 20px 12px;
+    -webkit-mask-position: top left, bottom left;
+    mask-image:
+      radial-gradient(circle at 10px 0, transparent 7px, black 7.5px),
+      radial-gradient(circle at 10px 100%, transparent 7px, black 7.5px);
+    mask-repeat: repeat-x, repeat-x;
+    mask-size: 20px 12px, 20px 12px;
+    mask-position: top left, bottom left;
+  }
+  .recipe-ticket-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+    border-bottom: 1px dashed var(--ticket-divider);
+    padding-bottom: 12px; margin-bottom: 14px;
+  }
+  .recipe-dish-name{
+    font-family: var(--serif-display); font-style: italic; font-weight:600;
+    font-size: 23px; line-height:1.2; color: var(--ink);
+  }
+  .recipe-stamp{
+    flex-shrink:0; width:56px; height:56px; border-radius:50%;
+    border: 2px solid var(--ticket-stamp); color: var(--ticket-stamp);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transform: rotate(-8deg); font-family: var(--mono); text-align:center;
+    opacity: 0.85;
+  }
+  .recipe-stamp .n{ font-size:17px; font-weight:700; line-height:1; }
+  .recipe-stamp .l{ font-size:7px; letter-spacing:0.05em; text-transform:uppercase; margin-top:2px; }
+
+  .recipe-section-label{
+    font-family: var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color: var(--ink-soft); margin: 16px 0 8px 0;
+  }
+  .recipe-section-label:first-of-type{ margin-top:0; }
+
+  .recipe-ing-line{
+    display:flex; align-items:baseline; gap:6px; font-family: var(--mono);
+    font-size:13px; color: var(--ink); padding: 3px 0;
+  }
+  .recipe-ing-line .name{ white-space:nowrap; overflow:hidden; }
+  .recipe-ing-line .leader{
+    flex:1; border-bottom: 1px dotted var(--ticket-divider); margin-bottom:4px; min-width:10px;
+  }
+  .recipe-ing-line .qty{ white-space:nowrap; font-weight:700; }
+
+  .recipe-step{
+    display:flex; gap:10px; padding: 8px 0;
+    border-bottom: 1px dashed var(--ticket-divider);
+  }
+  .recipe-step:last-child{ border-bottom:none; }
+  .recipe-step .num{
+    font-family: var(--mono); font-weight:700; color: var(--ticket-stamp);
+    font-size:13px; flex-shrink:0; width:22px;
+  }
+  .recipe-step .txt{ font-size:13.5px; line-height:1.5; color: var(--ink); }
+
+  .recipe-subs{
+    margin-top:14px; padding: 10px 12px; border: 1px dashed var(--ticket-divider); border-radius:8px;
+  }
+  .recipe-subs .lbl{
+    font-family: var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color: var(--ink-soft); margin-bottom:6px;
+  }
+  .recipe-sub-chip{
+    display:inline-block; font-size:12px; background: var(--brand-tint); color: var(--brand-dark);
+    padding: 4px 9px; border-radius: 12px; margin: 0 5px 5px 0;
+  }
+
+  .recipe-note{
+    margin-top:14px; font-size:12px; font-style: italic; color: var(--ink-soft);
+    transform: rotate(-0.6deg);
+  }
 
   .product-brand{ font-size:12.5px; color: var(--ink-soft); margin-top:2px; }
 
@@ -603,14 +730,14 @@
       Qu'est-ce que tu veux cuisiner ? Tu peux me donner le nom d'un plat, ou juste les ingrédients que tu as sous la main, et je te propose une liste avec les quantités pour le nombre de personnes voulu, en remplaçant automatiquement tout ce qui contient du gluten.
     </p>
 
-    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+    <div class="recipe-intro-pad">
       <input type="text" id="recipeDishInput" placeholder="Qu'est-ce que tu veux manger ? (ex : lasagnes, tarte aux pommes…)" maxlength="120">
       <div style="display:flex; align-items:center; gap:10px;">
         <label for="recipePeopleInput" style="font-size:13.5px; color: var(--ink-soft); white-space:nowrap;">Pour combien de personnes ?</label>
         <input type="number" id="recipePeopleInput" min="1" max="50" value="4" style="width:70px; padding:8px; border-radius:8px; border:1px solid var(--line); font-family:inherit;">
       </div>
-      <button class="act btn-primary" id="recipeGenerateBtn">Générer la recette</button>
     </div>
+    <button class="act btn-primary" id="recipeGenerateBtn" style="width:100%;">Générer la recette</button>
 
     <div class="status" id="statusRecipe"><div class="spinner"></div><span>Génération en cours…</span></div>
     <div class="error-box" id="errorRecipe"></div>
@@ -651,6 +778,12 @@ const WORKER_URL = "https://easyeat.hannavalentin269.workers.dev";
 
 // Client ID OAuth Google (voir DEPLOIEMENT.md, étape "Google Sign-In")
 const GOOGLE_CLIENT_ID = "1003568221579-k8us149dfill52d3m0ut655ieog7vbh2.apps.googleusercontent.com";
+
+// Clé de site Cloudflare Turnstile (anti-spam sur le formulaire d'avis).
+// À créer sur dash.cloudflare.com > Turnstile > Add widget (gratuit),
+// domaine = ton URL GitHub Pages. Remplace la valeur ci-dessous par ta
+// "Site Key" (la clé secrète correspondante va côté Worker, jamais ici).
+const TURNSTILE_SITE_KEY = "REMPLACE_PAR_TA_SITE_KEY";
 
 // Email autorisé à avoir les droits admin (édition du statut gluten des restos).
 // Vérifié aussi côté serveur (Worker) via le token Google, ce n'est pas un secret,
@@ -1890,10 +2023,12 @@ async function initRestoMapIfNeeded(){
     attribution: '&copy; OpenStreetMap &copy; CARTO'
   }).addTo(restoMap);
 
+  applyOsmCacheToRestoData(); // horaires/téléphone déjà en cache local, avant le tout premier rendu
+
   RESTO_DATA.forEach(r => {
     const marker = L.circleMarker([r.lat, r.lon], markerStyle('unknown'))
       .addTo(restoMap)
-      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:#55655D;font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${r.site ? `<br><a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}`);
+      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:#55655D;font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${r.site ? `<br><a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Google Maps</a>`);
     marker.on('click', () => selectRestoFromMap(r.id));
     restoMarkers[r.id] = marker;
   });
@@ -1904,6 +2039,112 @@ async function initRestoMapIfNeeded(){
   await fetchCuratedStatuses(); // avec 500 restaurants, on ne précharge plus tous les avis d'un coup
   RESTO_DATA.forEach(r => restoMarkers[r.id].setStyle(markerStyle(getRestoStatus(r.id))));
   renderRestoList(); // second rendu avec les vrais statuts
+
+  enrichRestosFromOsm(); // en tâche de fond, ne bloque rien, échoue silencieusement si besoin
+}
+
+/* ============================================================
+   Enrichissement horaires / téléphone / site via OpenStreetMap
+   (API Overpass, gratuite, sans clé). Résultat mis en cache 30
+   jours dans localStorage pour ne pas re-solliciter le serveur
+   Overpass à chaque visite. Purement additif : si rien n'est
+   trouvé, la fiche reste telle quelle.
+   ============================================================ */
+const OSM_CACHE_KEY = 'easyeat_osm_cache_v1';
+const OSM_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 jours
+const OSM_BATCH_SIZE = 20;
+const OSM_BATCH_DELAY_MS = 1200; // pour rester correct avec le serveur public Overpass
+const OSM_MATCH_RADIUS_M = 60;
+
+function loadOsmCache(){
+  try{ return JSON.parse(localStorage.getItem(OSM_CACHE_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveOsmCache(cache){
+  try{ localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(cache)); } catch(e){ /* quota localStorage plein, tant pis */ }
+}
+
+function applyOsmCacheToRestoData(){
+  const cache = loadOsmCache();
+  RESTO_DATA.forEach(r => {
+    const entry = cache[r.id];
+    if (!entry) return;
+    if (entry.horaires) r.horaires = entry.horaires;
+    if (entry.telephone) r.telephone = entry.telephone;
+    if (entry.site && !r.site) r.site = entry.site;
+  });
+}
+
+function haversineMeters(lat1, lon1, lat2, lon2){
+  const R = 6371000;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function formatOsmOpeningHours(raw){
+  if (!raw) return null;
+  // Format brut OSM (ex. "Mo-Fr 11:30-14:30,19:00-22:30; Sa 19:00-23:00") -> lisible
+  return raw.replace(/;/g, ' · ').trim();
+}
+
+async function enrichRestosFromOsm(){
+  const cache = loadOsmCache();
+  const now = Date.now();
+  const todo = RESTO_DATA.filter(r => {
+    const entry = cache[r.id];
+    return !entry || (now - entry.ts) > OSM_CACHE_MAX_AGE_MS;
+  });
+  if (!todo.length) return;
+
+  for (let i = 0; i < todo.length; i += OSM_BATCH_SIZE){
+    const batch = todo.slice(i, i + OSM_BATCH_SIZE);
+    try{
+      const query = `[out:json][timeout:25];(${batch.map(r =>
+        `nwr(around:${OSM_MATCH_RADIUS_M},${r.lat},${r.lon})["amenity"~"restaurant|cafe|fast_food|pub|bar"];`
+      ).join('')});out tags center;`;
+
+      const resp = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: 'data=' + encodeURIComponent(query)
+      });
+      if (!resp.ok) throw new Error('overpass http ' + resp.status);
+      const data = await resp.json();
+      const elements = data.elements || [];
+
+      batch.forEach(r => {
+        let best = null, bestDist = Infinity;
+        elements.forEach(el => {
+          const lat = el.lat ?? el.center?.lat;
+          const lon = el.lon ?? el.center?.lon;
+          if (lat == null || lon == null) return;
+          const dist = haversineMeters(r.lat, r.lon, lat, lon);
+          if (dist < OSM_MATCH_RADIUS_M && dist < bestDist){
+            best = el; bestDist = dist;
+          }
+        });
+        const entry = { ts: now };
+        if (best && best.tags){
+          const t = best.tags;
+          if (t.opening_hours) entry.horaires = formatOsmOpeningHours(t.opening_hours);
+          if (t.phone || t['contact:phone']) entry.telephone = t.phone || t['contact:phone'];
+          if ((t.website || t['contact:website']) && !r.site) entry.site = t.website || t['contact:website'];
+        }
+        cache[r.id] = entry;
+        if (entry.horaires) r.horaires = entry.horaires;
+        if (entry.telephone) r.telephone = entry.telephone;
+        if (entry.site && !r.site) r.site = entry.site;
+      });
+
+      saveOsmCache(cache);
+      renderRestoList(); // reflète progressivement les nouvelles infos sans bloquer l'utilisateur
+    } catch(e){
+      // Overpass public peut throttler/timeout : on passe au lot suivant sans casser l'app
+    }
+    await new Promise(res => setTimeout(res, OSM_BATCH_DELAY_MS));
+  }
 }
 
 async function loadReviewsPanel(restaurantId, panel){
@@ -1945,6 +2186,7 @@ async function loadReviewsPanel(restaurantId, panel){
         </select>
         <label>Commentaire (optionnel)</label>
         <textarea class="rf-comment" rows="2" maxlength="300" placeholder="Votre expérience…"></textarea>
+        <div class="cf-turnstile" data-sitekey="${TURNSTILE_SITE_KEY}" style="margin-top:8px;"></div>
         <button class="rf-submit">Publier l'avis</button>
         <div class="review-msg" style="display:none;"></div>
       </div>`;
@@ -2037,7 +2279,26 @@ async function loadReviewsPanel(restaurantId, panel){
   if (googleUser){
     const form = panel.querySelector('.review-form');
     const msg = panel.querySelector('.review-msg');
+
+    let turnstileWidgetId = null;
+    const tsContainer = form.querySelector('.cf-turnstile');
+    if (tsContainer && !TURNSTILE_SITE_KEY.startsWith("REMPLACE")){
+      const renderTurnstile = () => {
+        if (window.turnstile) turnstileWidgetId = window.turnstile.render(tsContainer, { sitekey: TURNSTILE_SITE_KEY });
+      };
+      if (window.turnstile) renderTurnstile();
+      else { const t = setInterval(() => { if (window.turnstile){ clearInterval(t); renderTurnstile(); } }, 200); }
+    }
+
     form.querySelector('.rf-submit').addEventListener('click', async () => {
+      const turnstileToken = (turnstileWidgetId !== null && window.turnstile)
+        ? window.turnstile.getResponse(turnstileWidgetId)
+        : null;
+      if (tsContainer && !TURNSTILE_SITE_KEY.startsWith("REMPLACE") && !turnstileToken){
+        msg.style.display = 'block'; msg.className = 'review-msg err';
+        msg.textContent = "Merci de valider la vérification anti-robot avant d'envoyer.";
+        return;
+      }
       msg.style.display = 'block'; msg.className = 'review-msg'; msg.textContent = 'Envoi…';
       try{
         const resp = await fetch(`${WORKER_URL}/api/reviews`, {
@@ -2048,7 +2309,8 @@ async function loadReviewsPanel(restaurantId, panel){
             rating: parseInt(form.querySelector('.rf-rating').value, 10),
             glutenRating: form.querySelector('.rf-gluten').value,
             comment: form.querySelector('.rf-comment').value,
-            idToken: googleUser.idToken
+            idToken: googleUser.idToken,
+            turnstileToken
           })
         });
         const data = await resp.json();
@@ -2056,7 +2318,10 @@ async function loadReviewsPanel(restaurantId, panel){
           msg.className = 'review-msg err';
           msg.textContent = data.error === 'already_reviewed_today'
             ? "Vous avez déjà laissé un avis pour ce restaurant aujourd'hui."
-            : "Erreur lors de l'envoi de l'avis.";
+            : data.error === 'turnstile_failed'
+              ? "Vérification anti-robot invalide, réessayez."
+              : "Erreur lors de l'envoi de l'avis.";
+          if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
           return;
         }
         msg.className = 'review-msg ok'; msg.textContent = 'Avis publié, merci !';
@@ -2091,6 +2356,11 @@ function cuisineIcon(cuisine){
   if (c.includes('espagnol')) return '🥘';
   if (c.includes('brasserie')) return '🍺';
   return '🍽️';
+}
+
+function googleMapsUrl(r){
+  const query = r.adresse ? `${r.nom}, ${r.adresse}` : `${r.nom}, Lyon`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 function markerStyle(status){
@@ -2180,7 +2450,12 @@ function renderRestoList(){
           </div>
           <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}${preselected ? ' · présélectionné' : ''}</div>
           ${r.adresse ? `<div class="resto-meta" style="margin-top:1px;">📍 ${escapeHtml(r.adresse)}</div>` : ''}
-          ${r.site ? `<a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">🔗 Voir la carte du restaurant</a>` : ''}
+          ${r.horaires ? `<div class="resto-meta" style="margin-top:1px;">🕒 ${escapeHtml(r.horaires)}</div>` : ''}
+          ${r.telephone ? `<div class="resto-meta" style="margin-top:1px;">📞 ${escapeHtml(r.telephone)}</div>` : ''}
+          <div style="display:flex; gap:12px; margin-top:2px;">
+            ${r.site ? `<a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">🔗 Voir la carte du restaurant</a>` : ''}
+            <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">📍 Voir sur Google Maps</a>
+          </div>
         </div>
       </div>
       ${isAdmin() ? `<select class="resto-edit" data-id="${r.id}">
@@ -2341,40 +2616,48 @@ function renderRecipeResult(result){
   const ingredients = result.ingredients || [];
 
   if (!ingredients.length){
-    recipeCard.innerHTML = `<div class="dish-card">
-        <div class="dish-name">${escapeHtml(result.plat || 'Recette')}</div>
-        <div class="dish-reason">${escapeHtml(result.notes || "Je n'ai pas pu générer de liste pour ce plat, essaie de préciser le nom.")}</div>
+    recipeCard.innerHTML = `<div class="recipe-ticket-wrap">
+        <div class="recipe-clip"></div>
+        <div class="recipe-ticket">
+          <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
+          <div class="dish-reason" style="margin-top:10px;">${escapeHtml(result.notes || "Je n'ai pas pu générer de liste pour ce plat, essaie de préciser le nom.")}</div>
+        </div>
       </div>`;
     resultsRecipe.classList.add('active');
     return;
   }
 
-  const ingredientsHtml = ingredients.map(ing =>
-    `<li style="margin-bottom:3px;">${escapeHtml(ing.nom || '')} : <strong>${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}</strong></li>`
-  ).join('');
+  const ingredientsHtml = ingredients.map(ing => {
+    const qty = `${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}`;
+    return `<div class="recipe-ing-line"><span class="name">${escapeHtml(ing.nom || '')}</span><span class="leader"></span><span class="qty">${qty}</span></div>`;
+  }).join('');
 
   const etapes = result.etapes || [];
   const etapesHtml = etapes.length
-    ? `<div style="margin-top:14px;">
-        <div style="font-weight:700; font-size:13.5px; margin-bottom:6px;">Préparation</div>
-        <ol style="margin:0 0 0 18px; padding:0; font-size:13.5px;">
-          ${etapes.map(e => `<li style="margin-bottom:6px;">${escapeHtml(e)}</li>`).join('')}
-        </ol>
-      </div>`
+    ? `<div class="recipe-section-label">Préparation</div>
+       ${etapes.map((e, i) => `<div class="recipe-step"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="txt">${escapeHtml(e)}</span></div>`).join('')}`
     : '';
 
   const subsHtml = (result.substitutions && result.substitutions.length)
-    ? `<div class="dish-reason" style="margin-top:10px;"><strong>🔄 Substitutions sans gluten appliquées :</strong><br>${result.substitutions.map(s => escapeHtml(s)).join('<br>')}</div>`
+    ? `<div class="recipe-subs">
+        <div class="lbl">🔄 Substitutions sans gluten</div>
+        ${result.substitutions.map(s => `<span class="recipe-sub-chip">${escapeHtml(s)}</span>`).join('')}
+      </div>`
     : '';
 
-  recipeCard.innerHTML = `<div class="dish-card">
-      <div class="dish-top">
-        <div class="dish-name">${escapeHtml(result.plat || 'Recette')}${result.portions ? ` <span style="color:var(--ink-soft); font-weight:400; font-size:13px;">(${result.portions} pers.)</span>` : ''}</div>
+  recipeCard.innerHTML = `<div class="recipe-ticket-wrap">
+      <div class="recipe-clip"></div>
+      <div class="recipe-ticket">
+        <div class="recipe-ticket-head">
+          <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
+          ${result.portions ? `<div class="recipe-stamp"><span class="n">${escapeHtml(String(result.portions))}</span><span class="l">pers.</span></div>` : ''}
+        </div>
+        <div class="recipe-section-label">Ingrédients</div>
+        ${ingredientsHtml}
+        ${etapesHtml}
+        ${subsHtml}
+        ${result.notes ? `<div class="recipe-note">${escapeHtml(result.notes)}</div>` : ''}
       </div>
-      <ul style="margin:8px 0 0 18px; padding:0; font-size:13.5px;">${ingredientsHtml}</ul>
-      ${etapesHtml}
-      ${subsHtml}
-      ${result.notes ? `<div class="dish-reason" style="margin-top:8px;">${escapeHtml(result.notes)}</div>` : ''}
     </div>`;
   resultsRecipe.classList.add('active');
 }
