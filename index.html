@@ -357,19 +357,17 @@
     background: var(--ticket-paper);
     padding: 30px 22px 22px 22px;
     box-shadow: 0 10px 24px rgba(18,33,26,0.10), 0 2px 6px rgba(18,33,26,0.06);
-    -webkit-mask-image:
-      radial-gradient(circle at 10px 0, transparent 7px, black 7.5px),
-      radial-gradient(circle at 10px 100%, transparent 7px, black 7.5px);
-    -webkit-mask-repeat: repeat-x, repeat-x;
-    -webkit-mask-size: 20px 12px, 20px 12px;
-    -webkit-mask-position: top left, bottom left;
-    mask-image:
-      radial-gradient(circle at 10px 0, transparent 7px, black 7.5px),
-      radial-gradient(circle at 10px 100%, transparent 7px, black 7.5px);
-    mask-repeat: repeat-x, repeat-x;
-    mask-size: 20px 12px, 20px 12px;
-    mask-position: top left, bottom left;
   }
+  .recipe-ticket::before,
+  .recipe-ticket::after{
+    content:''; position:absolute; left:0; right:0; height:13px;
+    background-image: radial-gradient(circle at 10px 6px, var(--bg) 6px, transparent 6.5px);
+    background-size: 20px 13px;
+    background-repeat: repeat-x;
+    pointer-events: none;
+  }
+  .recipe-ticket::before{ top:0; }
+  .recipe-ticket::after{ bottom:0; }
   .recipe-ticket-head{
     display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
     border-bottom: 1px dashed var(--ticket-divider);
