@@ -2600,7 +2600,12 @@ async function generateRecipe(){
     }
 
     updateQuotaDisplay(data.remaining);
-    const result = JSON.parse(data.text);
+    let result;
+    try{
+      result = JSON.parse(data.text);
+    } catch(parseErr){
+      throw new Error("La recette générée était incomplète, réessaie (ça arrive surtout sur des plats avec beaucoup d'étapes).");
+    }
     renderRecipeResult(result);
 
   } catch(err){
