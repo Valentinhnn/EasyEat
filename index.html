@@ -31,12 +31,6 @@
     --mono: 'SF Mono', 'Courier New', monospace;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --serif-display: 'Fraunces', Georgia, serif;
-
-    /* Ticket de cuisine (onglet Recette) */
-    --ticket-paper: #FBF6EA;
-    --ticket-shadow: #D9CDA9;
-    --ticket-divider: #C9BC9C;
-    --ticket-stamp: var(--brand);
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -318,12 +312,9 @@
   .dish-reason{ font-size:13px; color: var(--ink-soft); line-height:1.5; margin-top:6px; }
 
   /* ==========================================================
-     ONGLET RECETTE — design "ticket de cuisine"
-     Le résultat prend la forme d'un ticket de commande comme
-     ceux qu'on épingle sur un rail en cuisine de restaurant :
-     papier clair, bords perforés façon rouleau, police machine
-     pour les lignes d'ingrédients/étapes, un tampon rond pour
-     le nombre de personnes, une pince qui l'accroche en haut.
+     ONGLET RECETTE — sections nettement délimitées par bordure,
+     titre en police display distinctive, reste en présentation
+     simple et robuste (pas de mask/positionnement fragile).
      ========================================================== */
   .recipe-intro-pad{
     background: var(--surface);
@@ -337,98 +328,65 @@
     font-family: inherit; font-size:14px; margin-bottom:10px;
   }
 
-  .recipe-ticket-wrap{
-    position: relative;
-    margin: 26px auto 10px auto;
-    max-width: 480px;
+  .recipe-result{
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    overflow: hidden;
   }
-  .recipe-clip{
-    position:absolute; top:-11px; left:50%; transform: translateX(-50%) rotate(-2deg);
-    width:46px; height:20px; background: linear-gradient(180deg,#8b93a1,#5f6774);
-    border-radius: 4px; z-index:2;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-  }
-  .recipe-clip::after{
-    content:''; position:absolute; left:50%; top:3px; transform: translateX(-50%);
-    width:30px; height:4px; background: var(--bg); border-radius:2px;
-  }
-  .recipe-ticket{
-    position: relative;
-    background: var(--ticket-paper);
-    padding: 30px 22px 22px 22px;
-    box-shadow: 0 10px 24px rgba(18,33,26,0.10), 0 2px 6px rgba(18,33,26,0.06);
-  }
-  .recipe-ticket::before,
-  .recipe-ticket::after{
-    content:''; position:absolute; left:0; right:0; height:13px;
-    background-image: radial-gradient(circle at 10px 6px, var(--bg) 6px, transparent 6.5px);
-    background-size: 20px 13px;
-    background-repeat: repeat-x;
-    pointer-events: none;
-  }
-  .recipe-ticket::before{ top:0; }
-  .recipe-ticket::after{ bottom:0; }
-  .recipe-ticket-head{
-    display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
-    border-bottom: 1px dashed var(--ticket-divider);
-    padding-bottom: 12px; margin-bottom: 14px;
+  .recipe-result-head{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background: var(--ink); color:#fff;
+    padding: 16px 18px;
   }
   .recipe-dish-name{
     font-family: var(--serif-display); font-style: italic; font-weight:600;
-    font-size: 23px; line-height:1.2; color: var(--ink);
+    font-size: 21px; line-height:1.25;
   }
-  .recipe-stamp{
-    flex-shrink:0; width:56px; height:56px; border-radius:50%;
-    border: 2px solid var(--ticket-stamp); color: var(--ticket-stamp);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    transform: rotate(-8deg); font-family: var(--mono); text-align:center;
-    opacity: 0.85;
+  .recipe-portions{
+    flex-shrink:0; font-family: var(--mono); font-size:12px;
+    border: 1px solid rgba(255,255,255,0.4); border-radius: 20px;
+    padding: 5px 12px; white-space:nowrap;
   }
-  .recipe-stamp .n{ font-size:17px; font-weight:700; line-height:1; }
-  .recipe-stamp .l{ font-size:7px; letter-spacing:0.05em; text-transform:uppercase; margin-top:2px; }
 
+  .recipe-section{
+    border-top: 1px solid var(--line);
+    padding: 16px 18px;
+  }
   .recipe-section-label{
     font-family: var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
-    color: var(--ink-soft); margin: 16px 0 8px 0;
+    color: var(--brand-dark); margin-bottom: 10px;
   }
-  .recipe-section-label:first-of-type{ margin-top:0; }
 
   .recipe-ing-line{
-    display:flex; align-items:baseline; gap:6px; font-family: var(--mono);
-    font-size:13px; color: var(--ink); padding: 3px 0;
+    display:flex; align-items:baseline; gap:6px;
+    font-size:13.5px; color: var(--ink); padding: 4px 0;
   }
-  .recipe-ing-line .name{ white-space:nowrap; overflow:hidden; }
+  .recipe-ing-line .name{ overflow:hidden; }
   .recipe-ing-line .leader{
-    flex:1; border-bottom: 1px dotted var(--ticket-divider); margin-bottom:4px; min-width:10px;
+    flex:1; border-bottom: 1px dotted var(--line); margin-bottom:4px; min-width:10px;
   }
-  .recipe-ing-line .qty{ white-space:nowrap; font-weight:700; }
+  .recipe-ing-line .qty{ white-space:nowrap; font-weight:700; font-family: var(--mono); font-size:12.5px; }
 
   .recipe-step{
-    display:flex; gap:10px; padding: 8px 0;
-    border-bottom: 1px dashed var(--ticket-divider);
+    display:flex; gap:12px; padding: 9px 0;
   }
-  .recipe-step:last-child{ border-bottom:none; }
+  .recipe-step:not(:last-child){ border-bottom: 1px solid var(--line); }
   .recipe-step .num{
-    font-family: var(--mono); font-weight:700; color: var(--ticket-stamp);
-    font-size:13px; flex-shrink:0; width:22px;
+    flex-shrink:0; width:24px; height:24px; border-radius:50%;
+    background: var(--brand-tint); color: var(--brand-dark);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-weight:700; font-size:12px;
   }
-  .recipe-step .txt{ font-size:13.5px; line-height:1.5; color: var(--ink); }
+  .recipe-step .txt{ font-size:13.5px; line-height:1.55; color: var(--ink); padding-top:2px; }
 
-  .recipe-subs{
-    margin-top:14px; padding: 10px 12px; border: 1px dashed var(--ticket-divider); border-radius:8px;
-  }
-  .recipe-subs .lbl{
-    font-family: var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-    color: var(--ink-soft); margin-bottom:6px;
-  }
   .recipe-sub-chip{
     display:inline-block; font-size:12px; background: var(--brand-tint); color: var(--brand-dark);
-    padding: 4px 9px; border-radius: 12px; margin: 0 5px 5px 0;
+    padding: 4px 9px; border-radius: 12px; margin: 0 6px 6px 0;
   }
 
   .recipe-note{
-    margin-top:14px; font-size:12px; font-style: italic; color: var(--ink-soft);
-    transform: rotate(-0.6deg);
+    font-size:12.5px; font-style: italic; color: var(--ink-soft);
   }
 
   .product-brand{ font-size:12.5px; color: var(--ink-soft); margin-top:2px; }
@@ -2619,11 +2577,12 @@ function renderRecipeResult(result){
   const ingredients = result.ingredients || [];
 
   if (!ingredients.length){
-    recipeCard.innerHTML = `<div class="recipe-ticket-wrap">
-        <div class="recipe-clip"></div>
-        <div class="recipe-ticket">
+    recipeCard.innerHTML = `<div class="recipe-result">
+        <div class="recipe-result-head">
           <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
-          <div class="dish-reason" style="margin-top:10px;">${escapeHtml(result.notes || "Je n'ai pas pu générer de liste pour ce plat, essaie de préciser le nom.")}</div>
+        </div>
+        <div class="recipe-section">
+          <div class="dish-reason">${escapeHtml(result.notes || "Je n'ai pas pu générer de liste pour ce plat, essaie de préciser le nom.")}</div>
         </div>
       </div>`;
     resultsRecipe.classList.add('active');
@@ -2637,30 +2596,31 @@ function renderRecipeResult(result){
 
   const etapes = result.etapes || [];
   const etapesHtml = etapes.length
-    ? `<div class="recipe-section-label">Préparation</div>
-       ${etapes.map((e, i) => `<div class="recipe-step"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="txt">${escapeHtml(e)}</span></div>`).join('')}`
+    ? `<div class="recipe-section">
+        <div class="recipe-section-label">Préparation</div>
+        ${etapes.map((e, i) => `<div class="recipe-step"><span class="num">${i + 1}</span><span class="txt">${escapeHtml(e)}</span></div>`).join('')}
+      </div>`
     : '';
 
   const subsHtml = (result.substitutions && result.substitutions.length)
-    ? `<div class="recipe-subs">
-        <div class="lbl">🔄 Substitutions sans gluten</div>
+    ? `<div class="recipe-section">
+        <div class="recipe-section-label">🔄 Substitutions sans gluten</div>
         ${result.substitutions.map(s => `<span class="recipe-sub-chip">${escapeHtml(s)}</span>`).join('')}
       </div>`
     : '';
 
-  recipeCard.innerHTML = `<div class="recipe-ticket-wrap">
-      <div class="recipe-clip"></div>
-      <div class="recipe-ticket">
-        <div class="recipe-ticket-head">
-          <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
-          ${result.portions ? `<div class="recipe-stamp"><span class="n">${escapeHtml(String(result.portions))}</span><span class="l">pers.</span></div>` : ''}
-        </div>
+  recipeCard.innerHTML = `<div class="recipe-result">
+      <div class="recipe-result-head">
+        <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
+        ${result.portions ? `<div class="recipe-portions">${escapeHtml(String(result.portions))} pers.</div>` : ''}
+      </div>
+      <div class="recipe-section">
         <div class="recipe-section-label">Ingrédients</div>
         ${ingredientsHtml}
-        ${etapesHtml}
-        ${subsHtml}
-        ${result.notes ? `<div class="recipe-note">${escapeHtml(result.notes)}</div>` : ''}
       </div>
+      ${etapesHtml}
+      ${subsHtml}
+      ${result.notes ? `<div class="recipe-section"><div class="recipe-note">${escapeHtml(result.notes)}</div></div>` : ''}
     </div>`;
   resultsRecipe.classList.add('active');
 }
