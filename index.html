@@ -2341,7 +2341,9 @@ async function loadReviewsPanel(restaurantId, panel){
             ? "Vous avez déjà laissé un avis pour ce restaurant aujourd'hui."
             : data.error === 'turnstile_failed'
               ? "Vérification anti-robot invalide, réessayez."
-              : "Erreur lors de l'envoi de l'avis.";
+              : data.error === 'email_not_verified'
+                ? "Ton adresse email Google doit être vérifiée pour publier un avis."
+                : "Erreur lors de l'envoi de l'avis.";
           if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
           return;
         }
