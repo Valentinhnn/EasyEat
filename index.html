@@ -977,7 +977,14 @@ function startScanner(){
 async function startNativeScanner(){
   try{
     nativeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
-    nativeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    nativeStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment',
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        advanced: [{ focusMode: 'continuous' }] // ignoré silencieusement si non supporté
+      }
+    });
     nativeVideoEl = document.createElement('video');
     nativeVideoEl.setAttribute('playsinline', '');
     nativeVideoEl.style.width = '100%';
@@ -995,23 +1002,29 @@ async function startNativeScanner(){
   }
 }
 
+let nativeDetectInFlight = false;
 async function nativeLoop(){
   if (!scannerRunning) return;
-  try{
-    const barcodes = await nativeDetector.detect(nativeVideoEl);
-    if (barcodes.length){
-      const code = barcodes[0].rawValue;
-      // Le décodeur natif est déjà fiable : on garde tout de même la
-      // vérification du chiffre de contrôle par sécurité, mais pas besoin
-      // d'attendre plusieurs lectures identiques (contrairement à Quagga).
-      if (code && isValidEanChecksum(code) && code !== lastDetectedCode){
-        lastDetectedCode = code;
-        stopScanner();
-        lookupProduct(code);
-        return;
+  if (!nativeDetectInFlight){
+    nativeDetectInFlight = true;
+    try{
+      const barcodes = await nativeDetector.detect(nativeVideoEl);
+      if (barcodes.length){
+        const code = normalizeBarcode(barcodes[0].rawValue || '');
+        // Le décodeur natif est déjà fiable : on garde tout de même la
+        // vérification du chiffre de contrôle par sécurité, mais pas besoin
+        // d'attendre plusieurs lectures identiques (contrairement à Quagga).
+        if (code && isValidEanChecksum(code) && code !== lastDetectedCode){
+          lastDetectedCode = code;
+          if (navigator.vibrate) navigator.vibrate(70); // retour tactile de confirmation
+          stopScanner();
+          lookupProduct(code);
+          return;
+        }
       }
-    }
-  } catch(e){ /* erreur de détection ponctuelle, on continue la boucle */ }
+    } catch(e){ /* erreur de détection ponctuelle, on continue la boucle */ }
+    nativeDetectInFlight = false;
+  }
   nativeLoopId = requestAnimationFrame(nativeLoop);
 }
 
@@ -1024,7 +1037,8 @@ function startQuaggaScanner(){
       constraints: {
         facingMode: "environment",
         width: { min: 1280, ideal: 1920 },
-        height: { min: 720, ideal: 1080 }
+        height: { min: 720, ideal: 1080 },
+        advanced: [{ focusMode: "continuous" }] // ignoré silencieusement si non supporté
       },
       area: { top: "15%", right: "6%", left: "6%", bottom: "15%" } // doit correspondre exactement au cadre visuel .scan-box-guide
     },
@@ -1034,7 +1048,7 @@ function startQuaggaScanner(){
     },
     numOfWorkers: 4,
     frequency: 10,
-    decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader"] },
+    decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"] },
     locate: true
   }, (err) => {
     if (err){
@@ -1104,13 +1118,28 @@ async function toggleTorch(){
 }
 document.getElementById('torchToggleBtn').addEventListener('click', toggleTorch);
 
+// Convertit un code UPC-A (12 chiffres, format nord-américain) en EAN-13
+// en préfixant un zéro : c'est la même famille de codes, Open Food Facts
+// indexe presque tout en EAN-13. Sans ça, un produit importé scanné en
+// UPC-A pouvait sembler "introuvable" alors qu'il existe sous sa forme
+// EAN-13. Le chiffre de contrôle EAN-13 d'un code préfixé par 0 est
+// mathématiquement identique au chiffre de contrôle UPC-A d'origine.
+function normalizeBarcode(code){
+  if (/^\d{12}$/.test(code)) return '0' + code;
+  return code;
+}
+
 function isValidEanChecksum(code){
   if (!/^\d{8}$|^\d{13}$/.test(code)) return false;
   const digits = code.split('').map(Number);
   const checkDigit = digits.pop();
   let sum = 0;
-  const weights = code.length === 13 ? [1,3] : [3,1]; // EAN-13 vs EAN-8
-  digits.reverse().forEach((d, i) => { sum += d * weights[i % 2]; });
+  // Règle GS1 universelle (EAN-8, EAN-13, UPC-A...) : en partant du chiffre
+  // juste à gauche du chiffre de contrôle et en remontant vers la gauche,
+  // le poids alterne toujours 3,1,3,1... — ce n'est PAS différent selon la
+  // longueur du code, contrairement à ce qu'on avait avant (bug qui rejetait
+  // la quasi-totalité des vrais codes-barres EAN-13).
+  digits.reverse().forEach((d, i) => { sum += d * (i % 2 === 0 ? 3 : 1); });
   const calculated = (10 - (sum % 10)) % 10;
   return calculated === checkDigit;
 }
@@ -1126,9 +1155,13 @@ let pendingCode = null;
 let pendingCount = 0;
 
 function onBarcodeDetected(result){
-  const code = result.codeResult.code;
+  const code = normalizeBarcode(result.codeResult.code || '');
   if (!code || !isValidEanChecksum(code)) return; // chiffre de contrôle invalide → lecture rejetée
-  if (averageQuaggaError(result) > 0.18) return; // lecture peu fiable → ignorée silencieusement
+  // Le chiffre de contrôle GS1 étant maintenant correctement vérifié (il
+  // détecte déjà ~90% des erreurs de lecture à lui seul), on peut se
+  // permettre d'être un peu moins strict ici sans risquer de faux positifs :
+  // ça évite de rejeter des lectures valides juste à cause d'un léger flou.
+  if (averageQuaggaError(result) > 0.24) return; // lecture peu fiable → ignorée silencieusement
 
   if (code === pendingCode){
     pendingCount++;
@@ -1140,19 +1173,24 @@ function onBarcodeDetected(result){
   // Exige 2 lectures identiques et valides d'affilée avant de valider
   if (pendingCount >= 2 && code !== lastDetectedCode){
     lastDetectedCode = code;
+    if (navigator.vibrate) navigator.vibrate(70); // retour tactile de confirmation
     stopScanner();
     lookupProduct(code);
   }
 }
 
 manualBarcodeBtn.addEventListener('click', () => {
-  const code = manualBarcodeInput.value.trim();
+  const code = normalizeBarcode(manualBarcodeInput.value.trim());
   if (!code) return;
   lookupProduct(code);
 });
 
 function showBarcodeError(msg){
   errorBarcode.textContent = msg;
+  errorBarcode.classList.add('active');
+}
+function showBarcodeErrorHtml(html){
+  errorBarcode.innerHTML = html;
   errorBarcode.classList.add('active');
 }
 
@@ -1241,7 +1279,13 @@ async function lookupProduct(code){
       </div>` : '';
 
     if (!productFound && !recall){
-      showBarcodeError("Produit introuvable dans la base Open Food Facts (code " + code + "). Essayez la photo de l'étiquette à la place.");
+      showBarcodeErrorHtml(`
+        Ce produit (code ${escapeHtml(code)}) n'est pas dans la base Open Food Facts, c'est une base communautaire qui ne connaît pas encore tous les produits, notamment certaines marques distributeur ou régionales.<br><br>
+        <button type="button" id="fallbackToLabelBtn" class="act btn-primary" style="width:auto; padding:8px 14px; font-size:13px;">📷 Essayer avec une photo de l'étiquette</button>
+        <a href="https://world.openfoodfacts.org/cgi/product.pl?type=add&code=${encodeURIComponent(code)}" target="_blank" rel="noopener" style="display:inline-block; margin-left:10px; font-size:12.5px;">➕ Ajouter ce produit à Open Food Facts</a>
+      `);
+      const fallbackBtn = document.getElementById('fallbackToLabelBtn');
+      if (fallbackBtn) fallbackBtn.addEventListener('click', () => subLabelBtn.click());
       return;
     }
 
