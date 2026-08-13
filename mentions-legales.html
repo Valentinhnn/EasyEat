@@ -40,7 +40,7 @@
 </div>
 
 <h1>Mentions légales, confidentialité et conditions d'utilisation</h1>
-<p class="updated">Dernière mise à jour : 12/08/2026</p>
+<p class="updated">Dernière mise à jour : 13/08/2026</p>
 
 <h2>1. Informations éditeur</h2>
 
@@ -95,6 +95,7 @@
   <tr><td>Compte utilisateur</td><td>Créer et gérer votre compte</td><td>Exécution du contrat (CGU)</td></tr>
   <tr><td>Commentaires</td><td>Publier et modérer les avis sur les restaurants et produits</td><td>Exécution du contrat (CGU)</td></tr>
   <tr><td>Scans de produits</td><td>Identifier la teneur en gluten d'un produit</td><td>Exécution du contrat (CGU)</td></tr>
+  <tr><td>Adresse IP</td><td>Limiter le nombre de scans gratuits par jour (anti-abus) ; vérification anti-robot sur le formulaire d'avis</td><td>Intérêt légitime (sécurité du service)</td></tr>
 </table>
 
 <h3>Sous-traitants et destinataires des données</h3>
@@ -104,6 +105,9 @@
   <tr><td>Google Identity Services</td><td>Informations standards de connexion Google (nom, email, photo de profil), utilisées pour authentifier les avis et les droits admin.</td></tr>
   <tr><td>Open Food Facts</td><td>Code-barres scanné uniquement, aucune donnée personnelle transmise.</td></tr>
   <tr><td>Cloudflare</td><td>Héberge le serveur qui traite l'ensemble des requêtes ci-dessus (adresse IP incluse, pour la limite de scans gratuits).</td></tr>
+  <tr><td>Cloudflare Turnstile</td><td>Vérification anti-robot sur le formulaire d'avis restaurants (adresse IP et éléments techniques du navigateur, pas de cookie publicitaire).</td></tr>
+  <tr><td>OpenStreetMap (API Overpass)</td><td>Coordonnées GPS des restaurants affichés, pour récupérer horaires/téléphone/site quand disponibles. Aucune donnée personnelle transmise.</td></tr>
+  <tr><td>RappelConso (data.gouv.fr, DGCCRF)</td><td>Code-barres scanné, pour vérifier l'existence d'un rappel officiel en cours sur ce produit. Aucune donnée personnelle transmise.</td></tr>
 </table>
 
 <h3>Durée de conservation</h3>
@@ -123,7 +127,7 @@
 
 <h2>5. Cookies</h2>
 <p>EasyEat n'utilise pas de cookies de suivi publicitaire.</p>
-<p>Le site peut utiliser des cookies ou traceurs techniques, notamment via Cloudflare, nécessaires au bon fonctionnement et à la sécurité du site. Ces cookies strictement nécessaires ne requièrent pas votre consentement. Tout cookie non essentiel, notamment à des fins de mesure d'audience, ne sera déposé qu'après votre consentement, que vous pouvez retirer à tout moment.</p>
+<p>Le site peut utiliser des cookies ou traceurs techniques strictement nécessaires au bon fonctionnement et à la sécurité du site, notamment via Cloudflare (dont Cloudflare Turnstile, anti-robot sur le formulaire d'avis) et Google Identity Services (maintien de la connexion lorsque vous choisissez de vous connecter). Ces cookies ne requièrent pas votre consentement. Tout cookie non essentiel, notamment à des fins de mesure d'audience, ne sera déposé qu'après votre consentement, que vous pouvez retirer à tout moment.</p>
 
 <h2>6. Conditions générales d'utilisation</h2>
 
