@@ -898,6 +898,14 @@ uploadZoneMenu.addEventListener('click', () => fileInputMenu.click());
 fileInputMenu.addEventListener('change', e => { if (e.target.files[0]) handleMenuFile(e.target.files[0]); });
 
 function handleMenuFile(file){
+  if (!file.type || !file.type.startsWith('image/')){
+    showMenuError("Ce fichier n'est pas une image. Choisis une photo (JPEG, PNG, HEIC...).");
+    return;
+  }
+  if (file.size > 12 * 1024 * 1024){
+    showMenuError("Photo trop lourde (max 12 Mo). Réessaie avec une photo moins haute résolution.");
+    return;
+  }
   menuMediaType = file.type || 'image/jpeg';
   const reader = new FileReader();
   reader.onload = () => {
@@ -909,6 +917,10 @@ function handleMenuFile(file){
     errorMenu.classList.remove('active');
   };
   reader.readAsDataURL(file);
+}
+function showMenuError(msg){
+  errorMenu.textContent = msg;
+  errorMenu.classList.add('active');
 }
 
 resetBtnMenu.addEventListener('click', () => {
@@ -1392,6 +1404,16 @@ uploadZoneLabel.addEventListener('click', () => fileInputLabel.click());
 fileInputLabel.addEventListener('change', e => { if (e.target.files[0]) handleLabelFile(e.target.files[0]); });
 
 function handleLabelFile(file){
+  if (!file.type || !file.type.startsWith('image/')){
+    errorLabel.textContent = "Ce fichier n'est pas une image. Choisis une photo (JPEG, PNG, HEIC...).";
+    errorLabel.classList.add('active');
+    return;
+  }
+  if (file.size > 12 * 1024 * 1024){
+    errorLabel.textContent = "Photo trop lourde (max 12 Mo). Réessaie avec une photo moins haute résolution.";
+    errorLabel.classList.add('active');
+    return;
+  }
   labelMediaType = file.type || 'image/jpeg';
   const reader = new FileReader();
   reader.onload = () => {
@@ -2363,7 +2385,9 @@ async function loadReviewsPanel(restaurantId, panel){
               ? "Vérification anti-robot invalide, réessayez."
               : data.error === 'email_not_verified'
                 ? "Ton adresse email Google doit être vérifiée pour publier un avis."
-                : "Erreur lors de l'envoi de l'avis.";
+                : data.error === 'rate_limited'
+                  ? "Trop d'avis envoyés récemment, réessaie plus tard."
+                  : "Erreur lors de l'envoi de l'avis.";
           if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
           return;
         }
