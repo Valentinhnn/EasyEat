@@ -720,7 +720,7 @@
   <!-- ===================== PANEL: RECETTE ===================== -->
   <div class="panel" id="panelRecipe">
     <p style="font-size:13px; color: var(--ink-soft); margin-top:0;">
-      Qu'est-ce que tu veux cuisiner ? Tu peux me donner le nom d'un plat, ou juste les ingrédients que tu as sous la main, et je te propose une liste avec les quantités pour le nombre de personnes voulu, en remplaçant automatiquement tout ce qui contient du gluten.
+      Indique le nom d'un plat ou les ingrédients dont tu disposes. L'app génère une liste d'ingrédients et une préparation adaptées au nombre de personnes voulu, avec les substitutions sans gluten nécessaires.
     </p>
 
     <div class="recipe-intro-pad">
@@ -2219,7 +2219,7 @@ async function loadReviewsPanel(restaurantId, panel){
   } catch(e){ /* garde le cache existant */ }
   const reviews = reviewCache[restaurantId] || [];
 
-  const avgRating = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—';
+  const avgRating = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : 'N/A';
   const glutenCounts = { safe:0, mixed:0, unsafe:0 };
   reviews.forEach(r => { if (glutenCounts[r.glutenRating] !== undefined) glutenCounts[r.glutenRating]++; });
 
