@@ -4,10 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité à Lyon : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés, et recettes sans gluten. Gratuit.">
+<link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EasyEat">
+<meta property="og:title" content="EasyEat, manger sans y penser">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés et recettes sans gluten à Lyon. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
+<meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
+<meta property="og:locale" content="fr_FR">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EasyEat, manger sans y penser">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés et recettes sans gluten à Lyon. Gratuit.">
+<meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
+
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+  // Protection anti-clickjacking : si la page est chargée dans une iframe
+  // (au lieu d'être la page principale du navigateur), on force la
+  // navigation vers la vraie page. GitHub Pages ne permet pas d'en-tête
+  // HTTP X-Frame-Options / CSP frame-ancestors, donc c'est le filet de
+  // sécurité disponible ici (une iframe "sandbox" restrictive peut
+  // bloquer cette redirection, mais ça arrête les tentatives courantes).
+  try {
+    if (window.top !== window.self) { window.top.location = window.self.location; }
+  } catch (e) { document.documentElement.style.display = 'none'; }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -464,6 +491,17 @@
   }
   .resto-count{ font-size:12.5px; color: var(--ink-soft); margin-bottom:10px; }
 
+  /* --- Sur mobile : la carte, les filtres et la liste de restaurants
+       gardent tous la même marge resserrée (8px au lieu de 20px comme le
+       reste du contenu), pour se rapprocher du bord de l'écran comme le
+       bandeau EasyEat en haut, sans faire flotter les coins arrondis
+       directement contre le bord de l'écran. --- */
+  @media (max-width: 640px){
+    #restoMap, #restoList, .resto-filters{
+      margin-left:-12px; margin-right:-12px; width:calc(100% + 24px);
+    }
+  }
+
   .reviews-toggle{
     font-family: inherit; font-size:12px; font-weight:700; color: var(--brand-dark);
     background:none; border:none; cursor:pointer; padding: 4px 0 10px 0;
@@ -506,7 +544,7 @@
 
   footer{
     max-width:560px; margin:36px auto 0 auto; padding:0 20px;
-    font-size:11.5px; color: #9AA79F; text-align:center;
+    font-size:11.5px; color: var(--ink-soft); text-align:center;
   }
 </style>
 </head>
@@ -549,7 +587,7 @@
   <!-- ===================== PANEL: MENU ===================== -->
   <div class="panel active" id="panelMenu">
 
-    <div class="viewfinder" id="uploadZoneMenu">
+    <div class="viewfinder" id="uploadZoneMenu" role="button" tabindex="0" aria-label="Photographier ou importer une image du menu">
       <div class="vf-frame">
         <div class="vf-corner tl"></div><div class="vf-corner tr"></div>
         <div class="vf-corner bl"></div><div class="vf-corner br"></div>
@@ -616,7 +654,7 @@
       </div>
 
       <div class="manual-entry">
-        <input type="text" id="manualBarcode" placeholder="ou saisissez le code EAN manuellement" inputmode="numeric">
+        <input type="text" id="manualBarcode" placeholder="ou saisissez le code EAN manuellement" inputmode="numeric" aria-label="Code-barres EAN, saisie manuelle">
         <button class="act btn-secondary" id="manualBarcodeBtn">Vérifier</button>
       </div>
 
@@ -634,7 +672,7 @@
     <!-- Sub-panel: label photo -->
     <div class="sub-panel" id="subLabel">
 
-      <div class="viewfinder" id="uploadZoneLabel">
+      <div class="viewfinder" id="uploadZoneLabel" role="button" tabindex="0" aria-label="Photographier ou importer une image de l'étiquette">
         <div class="vf-frame">
           <div class="vf-corner tl"></div><div class="vf-corner tr"></div>
           <div class="vf-corner bl"></div><div class="vf-corner br"></div>
@@ -683,18 +721,18 @@
     <div id="restoMap"></div>
 
     <div class="resto-filters">
-      <input type="text" id="restoSearch" placeholder="Rechercher un nom…">
-      <select id="restoFilterStatus">
+      <input type="text" id="restoSearch" placeholder="Rechercher un nom…" aria-label="Rechercher un restaurant par nom">
+      <select id="restoFilterStatus" aria-label="Filtrer par statut">
         <option value="">Statut : tous</option>
         <option value="safe">Safe</option>
         <option value="mixed">Mixte</option>
         <option value="unsafe">Non adapté</option>
         <option value="unknown">Inconnu</option>
       </select>
-      <select id="restoFilterCuisine">
+      <select id="restoFilterCuisine" aria-label="Filtrer par type de cuisine">
         <option value="">Cuisine : toutes</option>
       </select>
-      <select id="restoFilterQuartier">
+      <select id="restoFilterQuartier" aria-label="Filtrer par quartier">
         <option value="">Quartier : tous</option>
       </select>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
@@ -724,7 +762,7 @@
     </p>
 
     <div class="recipe-intro-pad">
-      <input type="text" id="recipeDishInput" placeholder="Qu'est-ce que tu veux manger ? (ex : lasagnes, tarte aux pommes…)" maxlength="120">
+      <input type="text" id="recipeDishInput" placeholder="Qu'est-ce que tu veux manger ? (ex : lasagnes, tarte aux pommes…)" maxlength="120" aria-label="Plat ou ingrédients souhaités">
       <div style="display:flex; align-items:center; gap:10px;">
         <label for="recipePeopleInput" style="font-size:13.5px; color: var(--ink-soft); white-space:nowrap;">Pour combien de personnes ?</label>
         <input type="number" id="recipePeopleInput" min="1" max="50" value="4" style="width:70px; padding:8px; border-radius:8px; border:1px solid var(--line); font-family:inherit;">
@@ -749,7 +787,7 @@
 
 <div class="quota-display" id="quotaDisplay"></div>
 
-<footer>EasyEat, prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a></footer>
+<footer>EasyEat, prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a> · Restaurants : données <a href="https://www.geoapify.com/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Powered by Geoapify</a> &amp; © OpenStreetMap</footer>
 
 <script>
 /* ============================================================
@@ -814,7 +852,7 @@ async function callVisionAPI(type, base64Data, mediaType){
   const data = await response.json();
 
   if (!response.ok){
-    if (data.error === 'quota_exceeded') throw new Error(data.message);
+    if (data.error === 'quota_exceeded' || data.error === 'file_content_mismatch') throw new Error(data.message);
     throw new Error("Erreur du serveur d'analyse (" + response.status + ") : " + (data.detail || data.error || "inconnue"));
   }
 
@@ -895,6 +933,9 @@ const resultsCountMenu = document.getElementById('resultsCountMenu');
 let menuBase64 = null, menuMediaType = null;
 
 uploadZoneMenu.addEventListener('click', () => fileInputMenu.click());
+uploadZoneMenu.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInputMenu.click(); }
+});
 fileInputMenu.addEventListener('change', e => { if (e.target.files[0]) handleMenuFile(e.target.files[0]); });
 
 function handleMenuFile(file){
@@ -1401,6 +1442,9 @@ const labelCard = document.getElementById('labelCard');
 let labelBase64 = null, labelMediaType = null;
 
 uploadZoneLabel.addEventListener('click', () => fileInputLabel.click());
+uploadZoneLabel.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInputLabel.click(); }
+});
 fileInputLabel.addEventListener('change', e => { if (e.target.files[0]) handleLabelFile(e.target.files[0]); });
 
 function handleLabelFile(file){
@@ -2234,7 +2278,7 @@ async function loadReviewsPanel(restaurantId, panel){
     html += `<div class="review-form" data-restaurant="${restaurantId}">
         <div style="font-size:12.5px;">Connecté comme <strong>${escapeHtml(googleUser.name)}</strong></div>
         <label>Note générale</label>
-        <select class="rf-rating">
+        <select class="rf-rating" aria-label="Note générale">
           <option value="5">5 - Excellent</option>
           <option value="4">4 - Bien</option>
           <option value="3">3 - Correct</option>
@@ -2242,13 +2286,13 @@ async function loadReviewsPanel(restaurantId, panel){
           <option value="1">1 - Mauvais</option>
         </select>
         <label>Adapté au gluten ?</label>
-        <select class="rf-gluten">
+        <select class="rf-gluten" aria-label="Adapté au gluten ?">
           <option value="safe">Safe, j'ai mangé sans souci</option>
           <option value="mixed">Mixte, options limitées / prudence</option>
           <option value="unsafe">Non adapté, évitez</option>
         </select>
         <label>Commentaire (optionnel)</label>
-        <textarea class="rf-comment" rows="2" maxlength="300" placeholder="Votre expérience…"></textarea>
+        <textarea class="rf-comment" rows="2" maxlength="300" placeholder="Votre expérience…" aria-label="Commentaire (optionnel)"></textarea>
         <div class="cf-turnstile" data-sitekey="${TURNSTILE_SITE_KEY}" style="margin-top:8px;"></div>
         <button class="rf-submit">Publier l'avis</button>
         <div class="review-msg" style="display:none;"></div>
