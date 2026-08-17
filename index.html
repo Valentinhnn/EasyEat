@@ -88,6 +88,7 @@
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
     padding-bottom: 50px;
+    overflow-x: hidden;
   }
 
   /* ---------- Header ---------- */
@@ -451,11 +452,13 @@
   .resto-filters select, .resto-filters input[type="text"]{
     font-family: inherit; font-size:12.5px; padding:10px 11px;
     border-radius:10px; border:1px solid var(--line); background: var(--surface); color: var(--ink);
+    min-width:0; width:100%; box-sizing:border-box;
   }
   .resto-reset{
     font-family: inherit; font-size:12.5px; font-weight:700;
     padding:9px 12px; border-radius:9px; border:1px solid var(--line);
     background: var(--surface); color: var(--ink-soft); cursor:pointer;
+    min-width:0; width:100%; box-sizing:border-box;
   }
   .resto-legend{
     display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--ink-soft);
