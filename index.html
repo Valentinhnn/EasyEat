@@ -855,7 +855,7 @@ async function callVisionAPI(type, base64Data, mediaType){
   const data = await response.json();
 
   if (!response.ok){
-    if (data.error === 'quota_exceeded' || data.error === 'file_content_mismatch') throw new Error(data.message);
+    if (data.error === 'quota_exceeded' || data.error === 'file_content_mismatch' || data.error === 'global_quota_exceeded') throw new Error(data.message);
     throw new Error("Erreur du serveur d'analyse (" + response.status + ") : " + (data.detail || data.error || "inconnue"));
   }
 
