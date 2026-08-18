@@ -2772,6 +2772,9 @@ function renderRecipeResult(result){
         <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
         ${result.portions ? `<div class="recipe-portions">${escapeHtml(String(result.portions))} pers.</div>` : ''}
       </div>
+      <div class="disclaimer" style="margin-top:0; margin-bottom:14px;">
+        <strong>⚠️ Point de vigilance gluten :</strong> utilisez un plan de travail et des ustensiles bien propres, qui n'ont pas été en contact avec du gluten, pour éviter toute contamination croisée.
+      </div>
       <div class="recipe-section">
         <div class="recipe-section-label">Ingrédients</div>
         ${ingredientsHtml}
