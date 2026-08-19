@@ -106,6 +106,7 @@
   <tr><td>Open Food Facts</td><td>Code-barres scanné uniquement, aucune donnée personnelle transmise.</td></tr>
   <tr><td>Cloudflare</td><td>Héberge le serveur qui traite l'ensemble des requêtes ci-dessus (adresse IP incluse, pour la limite de scans gratuits).</td></tr>
   <tr><td>Cloudflare Turnstile</td><td>Vérification anti-robot sur le formulaire d'avis restaurants (adresse IP et éléments techniques du navigateur, pas de cookie publicitaire).</td></tr>
+  <tr><td>Cloudflare Web Analytics</td><td>Mesure anonyme de fréquentation (nombre de visites, pages consultées). Ne dépose aucun cookie, ne suit aucun visiteur individuellement d'une page à l'autre. L'adresse IP transite techniquement par la requête mais n'est pas utilisée pour identifier un visiteur précis.</td></tr>
   <tr><td>OpenStreetMap (API Overpass)</td><td>Coordonnées GPS des restaurants affichés, pour récupérer horaires/téléphone/site quand disponibles. Aucune donnée personnelle transmise.</td></tr>
   <tr><td>RappelConso (data.gouv.fr, DGCCRF)</td><td>Code-barres scanné, pour vérifier l'existence d'un rappel officiel en cours sur ce produit. Aucune donnée personnelle transmise.</td></tr>
 </table>
@@ -156,5 +157,8 @@
 <p>Les présentes mentions légales, la politique de confidentialité et les conditions générales d'utilisation sont soumises au droit français.</p>
 <p>En cas de litige relatif à l'utilisation du site, et sous réserve des dispositions légales impératives applicables, les juridictions françaises seront compétentes.</p>
 
+<!-- Cloudflare Web Analytics : mesure anonyme de fréquentation, sans cookie,
+     sans suivi individuel. Aucun impact RGPD, ne nécessite pas de consentement. -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fb874cfc473142b4a7ba3885e110ce98"}'></script>
 </body>
 </html>
