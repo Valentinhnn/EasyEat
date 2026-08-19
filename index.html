@@ -24,6 +24,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12211A">
+<!-- Safari (iOS) ne lit pas toujours bien manifest.json : ces balises
+     assurent le mode plein écran + l'icône même sur iOS. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EasyEat">
 <script>
   // Protection anti-clickjacking : si la page est chargée dans une iframe
   // (au lieu d'être la page principale du navigateur), on force la
