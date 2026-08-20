@@ -851,6 +851,7 @@ function initGoogleSignIn(){
       document.querySelectorAll('.reviews-panel.active').forEach(p => {
         loadReviewsPanel(p.id.replace('reviews-panel-', ''), p);
       });
+      if (isAdmin()) fetchPendingReviews();
       renderRestoList(); // révèle l'UI admin immédiatement si le compte connecté est le tien
     }
   });
@@ -2571,11 +2572,66 @@ function getActiveFilters(){
   };
 }
 
+let pendingReviewsCache = [];
+let pendingPanelOpen = false;
+
+async function fetchPendingReviews(){
+  if (!isAdmin()) return;
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/reviews/pending?idToken=${encodeURIComponent(googleUser.idToken)}`);
+    const data = await resp.json();
+    pendingReviewsCache = resp.ok ? (data.pending || []) : [];
+  } catch(e){
+    pendingReviewsCache = [];
+  }
+  renderRestoAdminZone();
+}
+
+async function actOnPendingReview(restaurantId, reviewId, action){
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/reviews/pending-action`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ restaurantId, reviewId, action, idToken: googleUser.idToken })
+    });
+    if (!resp.ok){ alert("Erreur, réessaie."); return; }
+    pendingReviewsCache = pendingReviewsCache.filter(p => !(p.restaurantId === restaurantId && p.review.id === reviewId));
+    renderRestoAdminZone();
+    reviewCache[restaurantId] = null; // force un rechargement si l'utilisateur rouvre cet onglet avis
+  } catch(e){
+    alert("Erreur réseau, réessaie.");
+  }
+}
+
+function renderPendingReviewsPanel(){
+  if (pendingReviewsCache.length === 0) return '';
+  const items = pendingReviewsCache.map(p => {
+    const resto = RESTO_DATA.find(r => String(r.id) === String(p.restaurantId));
+    const restoName = resto ? resto.nom : `Restaurant #${p.restaurantId}`;
+    const r = p.review;
+    return `<div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:8px;">
+        <div style="font-size:12.5px; font-weight:700;">${escapeHtml(restoName)}</div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(r.name || '')} · ${escapeHtml(String(r.rating || ''))}/5 · ${escapeHtml(r.glutenRating || '')} · ${r.reportCount || '?'} signalement(s)</div>
+        ${r.comment ? `<div style="font-size:12.5px; margin-top:4px;">${escapeHtml(r.comment)}</div>` : ''}
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="act btn-secondary" style="flex:1; padding:7px; font-size:12px;" onclick="actOnPendingReview('${p.restaurantId}','${r.id}','restore')">✅ Restaurer</button>
+          <button class="act" style="flex:1; padding:7px; font-size:12px; background:#FAE6E1; color:#8a2e1f; border:1px solid #C24632;" onclick="actOnPendingReview('${p.restaurantId}','${r.id}','delete')">🗑️ Supprimer</button>
+        </div>
+      </div>`;
+  }).join('');
+  return `<div style="margin-top:10px;">${items}</div>`;
+}
+
 function renderRestoAdminZone(){
   const zone = document.getElementById('restoAdminZone');
   if (!zone) return;
   if (isAdmin()){
-    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})</div>`;
+    const count = pendingReviewsCache.length;
+    const badge = count > 0
+      ? ` · <span style="cursor:pointer; text-decoration:underline;" onclick="pendingPanelOpen = !pendingPanelOpen; renderRestoAdminZone();">⚠️ ${count} avis à modérer ${pendingPanelOpen ? '▲' : '▼'}</span>`
+      : '';
+    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}</div>
+      ${pendingPanelOpen ? renderPendingReviewsPanel() : ''}`;
     return;
   }
   if (googleUser){
