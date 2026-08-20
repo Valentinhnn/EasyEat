@@ -2539,14 +2539,26 @@ function markerStyle(status){
 
 function populateRestoFilterOptions(){
   const cuisines = [...new Set(RESTO_DATA.map(r => r.cuisine))].sort();
-  const quartiers = [...new Set(RESTO_DATA.map(r => r.quartier))].sort();
   const villes = [...new Set(RESTO_DATA.map(r => r.ville))].sort();
   const cSel = document.getElementById('restoFilterCuisine');
-  const qSel = document.getElementById('restoFilterQuartier');
   const vSel = document.getElementById('restoFilterVille');
   cuisines.forEach(c => cSel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`));
-  quartiers.forEach(q => qSel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`));
   villes.forEach(v => vSel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`));
+  populateQuartierOptions('');
+}
+
+// Repeuple le filtre Quartier avec uniquement les quartiers de la ville
+// sélectionnée (ou tous si aucune ville n'est choisie). Si le quartier
+// actuellement sélectionné n'existe plus dans la nouvelle liste, on le
+// réinitialise plutôt que de garder un filtre invisible/invalide.
+function populateQuartierOptions(ville){
+  const qSel = document.getElementById('restoFilterQuartier');
+  const currentValue = qSel.value;
+  const scoped = ville ? RESTO_DATA.filter(r => r.ville === ville) : RESTO_DATA;
+  const quartiers = [...new Set(scoped.map(r => r.quartier))].sort();
+  qSel.innerHTML = '<option value="">Quartier : tous</option>';
+  quartiers.forEach(q => qSel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`));
+  qSel.value = quartiers.includes(currentValue) ? currentValue : '';
 }
 
 function getActiveFilters(){
@@ -2705,19 +2717,22 @@ function clearPinnedResto(){
 }
 
 document.getElementById('restoSearch').addEventListener('input', () => { pinnedRestoId = null; renderRestoList(); });
-['restoFilterStatus','restoFilterCuisine','restoFilterQuartier','restoFilterVille'].forEach(id =>
+['restoFilterStatus','restoFilterCuisine','restoFilterQuartier'].forEach(id =>
   document.getElementById(id).addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); })
 );
 document.getElementById('restoFilterVille').addEventListener('change', (e) => {
+  pinnedRestoId = null;
+  populateQuartierOptions(e.target.value);
   recenterMapOnVille(e.target.value);
+  renderRestoList();
 });
 document.getElementById('restoReset').addEventListener('click', () => {
   pinnedRestoId = null;
   document.getElementById('restoSearch').value = '';
   document.getElementById('restoFilterStatus').value = '';
   document.getElementById('restoFilterCuisine').value = '';
-  document.getElementById('restoFilterQuartier').value = '';
   document.getElementById('restoFilterVille').value = '';
+  populateQuartierOptions('');
   recenterMapOnVille('');
   renderRestoList();
 });
