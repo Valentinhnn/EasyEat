@@ -2164,6 +2164,21 @@ let restoMap = null;
 let restoMarkers = {};
 let pinnedRestoId = null; // si défini, la liste sous la carte n'affiche que ce resto
 
+// Centres approximatifs pour recentrer la carte selon la ville sélectionnée
+// dans le filtre (Lyon et Annecy sont à ~100km l'une de l'autre, sans ça la
+// carte resterait bloquée sur Lyon même en filtrant sur Annecy).
+const CITY_CENTERS = {
+  '': { lat: 45.7620, lon: 4.8320, zoom: 12 },       // vue par défaut (Lyon)
+  'Lyon': { lat: 45.7620, lon: 4.8320, zoom: 12 },
+  'Annecy': { lat: 45.8990, lon: 6.1270, zoom: 12 }, // couvre aussi Sevrier/Talloires/Saint-Jorioz à proximité
+};
+
+function recenterMapOnVille(ville){
+  if (!restoMap) return;
+  const c = CITY_CENTERS[ville] || CITY_CENTERS[''];
+  restoMap.setView([c.lat, c.lon], c.zoom);
+}
+
 async function initRestoMapIfNeeded(){
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
   restoMap = L.map('restoMap', { tap: true }).setView([45.7620, 4.8320], 12);
@@ -2693,6 +2708,9 @@ document.getElementById('restoSearch').addEventListener('input', () => { pinnedR
 ['restoFilterStatus','restoFilterCuisine','restoFilterQuartier','restoFilterVille'].forEach(id =>
   document.getElementById(id).addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); })
 );
+document.getElementById('restoFilterVille').addEventListener('change', (e) => {
+  recenterMapOnVille(e.target.value);
+});
 document.getElementById('restoReset').addEventListener('click', () => {
   pinnedRestoId = null;
   document.getElementById('restoSearch').value = '';
@@ -2700,6 +2718,7 @@ document.getElementById('restoReset').addEventListener('click', () => {
   document.getElementById('restoFilterCuisine').value = '';
   document.getElementById('restoFilterQuartier').value = '';
   document.getElementById('restoFilterVille').value = '';
+  recenterMapOnVille('');
   renderRestoList();
 });
 
