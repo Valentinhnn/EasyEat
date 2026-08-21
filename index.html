@@ -756,7 +756,7 @@
         <option value="">Quartier : tous</option>
       </select>
       <label style="grid-column: 1 / -1; display:flex; align-items:center; gap:6px; font-size:12.5px; color: var(--ink-soft); cursor:pointer;">
-        <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ❤️ Mes favoris uniquement
+        <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
       </label>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
     </div>
@@ -2855,7 +2855,7 @@ function renderRestoList(){
             <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">📍 Voir sur Google Maps</a>
           </div>
         </div>
-        <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '❤️' : '🤍'}</button>
+        <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '⭐' : '☆'}</button>
       </div>
       ${isAdmin() ? `<select class="resto-edit" data-id="${r.id}">
         <option value="unknown" ${status==='unknown'?'selected':''}>Inconnu</option>
@@ -2869,7 +2869,7 @@ function renderRestoList(){
     favBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleFavorite(r.id);
-      favBtn.textContent = isFavorite(r.id) ? '❤️' : '🤍';
+      favBtn.textContent = isFavorite(r.id) ? '⭐' : '☆';
       favBtn.setAttribute('aria-label', isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris');
       if (getActiveFilters().favoritesOnly) renderRestoList();
     });
