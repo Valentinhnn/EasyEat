@@ -25,7 +25,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#12211A">
+<meta name="theme-color" content="#064E3B">
 <!-- Safari (iOS) ne lit pas toujours bien manifest.json : ces balises
      assurent le mode plein écran + l'icône même sur iOS. -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -66,16 +66,17 @@
 </style>
 <style>
   :root{
-    --bg: #F4F7F3;
+    --bg: #FAF3E6;
     --surface: #FFFFFF;
-    --ink: #12211A;
-    --ink-soft: #55655D;
-    --line: #DFE7E0;
-    --brand: #1C8F73;
-    --brand-dark: #146652;
-    --brand-tint: #E3F3ED;
-    --safe: #1C8F73;
-    --safe-bg: #E3F3ED;
+    --ink: #064E3B;
+    --ink-soft: #4F6B5E;
+    --line: #E5DBC5;
+    --brand: #064E3B;
+    --brand-dark: #043528;
+    --champagne: #F8E7C9;
+    --brand-tint: #E7F0EB;
+    --safe: #064E3B;
+    --safe-bg: #E7F0EB;
     --check: #C97F1E;
     --check-bg: #FBEEDB;
     --danger: #C24632;
@@ -130,7 +131,7 @@
   .tagline{
     max-width: 560px;
     margin: 12px auto 0 auto;
-    color: #A9B8AF;
+    color: #D9CBA8;
     font-size: 13.5px;
     line-height: 1.5;
   }
@@ -144,7 +145,7 @@
 
   .tab-switch{
     display:flex;
-    background: #1B2B22;
+    background: #043528;
     border-radius: 12px;
     padding: 4px;
     gap: 4px;
@@ -154,7 +155,7 @@
     flex:1;
     border:none;
     background: transparent;
-    color: #A9B8AF;
+    color: #D9CBA8;
     font-family: inherit;
     font-size: 13.5px;
     font-weight: 700;
@@ -2333,7 +2334,7 @@ async function initRestoMapIfNeeded(){
   RESTO_DATA.forEach(r => {
     const marker = L.circleMarker([r.lat, r.lon], markerStyle('unknown'))
       .addTo(restoMap)
-      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:#55655D;font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${r.site ? `<br><a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Google Maps</a>`);
+      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:var(--ink-soft);font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${r.site ? `<br><a href="${escapeHtml(r.site)}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Google Maps</a>`);
     marker.on('click', () => selectRestoFromMap(r.id));
     restoMarkers[r.id] = marker;
   });
@@ -2673,8 +2674,8 @@ function googleMapsUrl(r){
 }
 
 function markerStyle(status){
-  const colors = { unknown: '#FFFFFF', safe: '#1C8F73', mixed: '#C97F1E', unsafe: '#C24632' };
-  return { radius: 8, fillColor: colors[status], color: '#12211A', weight: 1.5, fillOpacity: 0.95 };
+  const colors = { unknown: '#FFFFFF', safe: '#064E3B', mixed: '#C97F1E', unsafe: '#C24632' };
+  return { radius: 8, fillColor: colors[status], color: '#064E3B', weight: 1.5, fillOpacity: 0.95 };
 }
 
 function populateRestoFilterOptions(){
