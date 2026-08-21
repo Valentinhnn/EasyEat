@@ -9,6 +9,22 @@
   "background_color": "#F4F7F3",
   "theme_color": "#12211A",
   "lang": "fr",
+  "shortcuts": [
+    {
+      "name": "Photographier un menu",
+      "short_name": "Menu",
+      "description": "Analyser un menu de restaurant pour le gluten",
+      "url": "./index.html?tab=menu",
+      "icons": [{ "src": "favicon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Scanner un code-barres",
+      "short_name": "Scanner",
+      "description": "Scanner le code-barres d'un produit",
+      "url": "./index.html?tab=produit&sub=barcode",
+      "icons": [{ "src": "favicon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "favicon-32.png",

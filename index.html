@@ -364,6 +364,12 @@
   .badge.check{ background: var(--check-bg); color: var(--check); }
   .badge.danger{ background: var(--danger-bg); color: var(--danger); }
   .dish-reason{ font-size:13px; color: var(--ink-soft); line-height:1.5; margin-top:6px; }
+  .share-btn{
+    margin-top:10px; font-family: inherit; font-size:12px; font-weight:700;
+    padding:7px 12px; border-radius:8px; border:1px solid var(--line);
+    background: var(--surface); color: var(--ink-soft); cursor:pointer;
+  }
+  .share-btn:hover{ background: var(--bg); }
 
   /* ==========================================================
      ONGLET RECETTE — sections nettement délimitées par bordure,
@@ -749,6 +755,9 @@
       <select id="restoFilterQuartier" aria-label="Filtrer par quartier">
         <option value="">Quartier : tous</option>
       </select>
+      <label style="grid-column: 1 / -1; display:flex; align-items:center; gap:6px; font-size:12.5px; color: var(--ink-soft); cursor:pointer;">
+        <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ❤️ Mes favoris uniquement
+      </label>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
     </div>
 
@@ -801,7 +810,7 @@
 
 <div class="quota-display" id="quotaDisplay"></div>
 
-<footer>EasyEat, prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a> · Restaurants : données <a href="https://www.geoapify.com/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Powered by Geoapify</a> &amp; © OpenStreetMap</footer>
+<footer>EasyEat, prototype · <a href="./mentions-legales.html" style="color:inherit; text-decoration:underline;">Mentions légales & confidentialité</a> · <a href="./ressources.html" style="color:inherit; text-decoration:underline;">Comprendre la maladie cœliaque</a> · Restaurants : données <a href="https://www.geoapify.com/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Powered by Geoapify</a> &amp; © OpenStreetMap</footer>
 
 <script>
 /* ============================================================
@@ -816,6 +825,23 @@ function riskClass(risque){
   if (risque === 'sûr') return 'safe';
   if (risque === 'à vérifier') return 'check';
   return 'danger';
+}
+
+// Partage un verdict via le partage natif du téléphone (WhatsApp, SMS...),
+// avec repli sur la copie dans le presse-papier si l'appareil ne supporte
+// pas l'API Web Share (ex. certains navigateurs desktop).
+async function shareText(text, title){
+  if (navigator.share){
+    try { await navigator.share({ title, text }); }
+    catch(e){ /* utilisateur a annulé le partage, rien à faire */ }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Verdict copié dans le presse-papier !");
+  } catch(e){
+    alert("Le partage n'est pas disponible sur cet appareil.");
+  }
 }
 // URL de ton Worker Cloudflare une fois déployé (voir DEPLOIEMENT.md)
 // Exemple : "https://easyeat-worker.tonpseudo.workers.dev"
@@ -930,6 +956,23 @@ tabProductBtn.addEventListener('click', () => activateTab(tabProductBtn));
 tabRestoBtn.addEventListener('click', () => activateTab(tabRestoBtn));
 tabRecipeBtn.addEventListener('click', () => activateTab(tabRecipeBtn));
 
+// Raccourcis PWA (appui long sur l'icône EasyEat une fois installée) : ouvre
+// directement sur le bon onglet, voire lance le scanner code-barres.
+// Appelée plus bas, une fois tous les éléments du DOM déclarés.
+function handleUrlShortcut(){
+  const params = new URLSearchParams(location.search);
+  const tab = params.get('tab');
+  if (tab === 'menu'){
+    activateTab(tabMenuBtn);
+  } else if (tab === 'produit'){
+    activateTab(tabProductBtn);
+    if (params.get('sub') === 'barcode'){
+      subBarcodeBtn.click();
+      setTimeout(startScanner, 150); // laisse le sous-onglet s'afficher avant de lancer la caméra
+    }
+  }
+}
+
 /* ============================================================
    MENU panel logic
    ============================================================ */
@@ -1008,7 +1051,14 @@ analyzeBtnMenu.addEventListener('click', async () => {
             <div class="dish-name">${escapeHtml(d.plat)}</div>
             <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
           </div>
-          <div class="dish-reason">${escapeHtml(d.raison)}</div>`;
+          <div class="dish-reason">${escapeHtml(d.raison)}</div>
+          <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
+        card.querySelector('.share-btn').addEventListener('click', () => {
+          shareText(
+            `EasyEat — verdict gluten\n"${d.plat}" : ${d.risque}\n${d.raison}\n\nVérifié avec EasyEat : ${location.href}`,
+            'Verdict gluten EasyEat'
+          );
+        });
         dishList.appendChild(card);
       });
       resultsCountMenu.textContent = dishes.length + ' plat' + (dishes.length>1?'s':'') + ' analysé' + (dishes.length>1?'s':'');
@@ -1512,7 +1562,14 @@ analyzeBtnLabel.addEventListener('click', async () => {
           <div class="badge ${cls}">${escapeHtml(result.risque)}</div>
         </div>
         <div class="dish-reason">${escapeHtml(result.raison)}</div>
+        <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>
       </div>`;
+    labelCard.querySelector('.share-btn').addEventListener('click', () => {
+      shareText(
+        `EasyEat — verdict gluten\n"${result.produit}" : ${result.risque}\n${result.raison}\n\nVérifié avec EasyEat : ${location.href}`,
+        'Verdict gluten EasyEat'
+      );
+    });
     resultsLabel.classList.add('active');
   } catch(err){
     errorLabel.textContent = err.message || "Erreur pendant l'analyse.";
@@ -2645,12 +2702,14 @@ function populateQuartierOptions(ville){
 }
 
 function getActiveFilters(){
+  const favEl = document.getElementById('restoFavoritesOnly');
   return {
     search: document.getElementById('restoSearch').value.trim().toLowerCase(),
     status: document.getElementById('restoFilterStatus').value,
     cuisine: document.getElementById('restoFilterCuisine').value,
     quartier: document.getElementById('restoFilterQuartier').value,
-    ville: document.getElementById('restoFilterVille').value
+    ville: document.getElementById('restoFilterVille').value,
+    favoritesOnly: favEl ? favEl.checked : false
   };
 }
 
@@ -2726,6 +2785,20 @@ function renderRestoAdminZone(){
   }
 }
 
+// Favoris personnels : stockés uniquement en local (localStorage), aucun
+// compte requis, jamais envoyés au serveur.
+const FAVORITES_KEY = 'easyeat_favorites';
+function getFavorites(){
+  try { return new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]')); }
+  catch(e){ return new Set(); }
+}
+function isFavorite(id){ return getFavorites().has(id); }
+function toggleFavorite(id){
+  const favs = getFavorites();
+  if (favs.has(id)) favs.delete(id); else favs.add(id);
+  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favs])); } catch(e){ /* quota plein, tant pis */ }
+}
+
 function renderRestoList(){
   renderRestoAdminZone();
   const f = getActiveFilters();
@@ -2744,6 +2817,7 @@ function renderRestoList(){
       if (f.cuisine && r.cuisine !== f.cuisine) return false;
       if (f.quartier && r.quartier !== f.quartier) return false;
       if (f.ville && r.ville !== f.ville) return false;
+      if (f.favoritesOnly && !isFavorite(r.id)) return false;
       return true;
     });
   }
@@ -2767,7 +2841,7 @@ function renderRestoList(){
     card.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px;">
         <div class="resto-status-dot ${status}"></div>
-        <div>
+        <div style="flex:1; min-width:0;">
           <div class="resto-name-row">
             <span class="resto-cuisine-icon">${cuisineIcon(r.cuisine)}</span>
             <span class="resto-name">${escapeHtml(r.nom)}</span>
@@ -2781,6 +2855,7 @@ function renderRestoList(){
             <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">📍 Voir sur Google Maps</a>
           </div>
         </div>
+        <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '❤️' : '🤍'}</button>
       </div>
       ${isAdmin() ? `<select class="resto-edit" data-id="${r.id}">
         <option value="unknown" ${status==='unknown'?'selected':''}>Inconnu</option>
@@ -2790,6 +2865,14 @@ function renderRestoList(){
       </select>` : ''}
     `;
     const editSelect = card.querySelector('.resto-edit');
+    const favBtn = card.querySelector('.fav-btn');
+    favBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite(r.id);
+      favBtn.textContent = isFavorite(r.id) ? '❤️' : '🤍';
+      favBtn.setAttribute('aria-label', isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris');
+      if (getActiveFilters().favoritesOnly) renderRestoList();
+    });
     if (editSelect){
       editSelect.addEventListener('click', e => e.stopPropagation());
       editSelect.addEventListener('change', async (e) => {
@@ -2869,12 +2952,14 @@ document.getElementById('restoFilterVille').addEventListener('change', (e) => {
   recenterMapOnVille(e.target.value);
   renderRestoList();
 });
+document.getElementById('restoFavoritesOnly').addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); });
 document.getElementById('restoReset').addEventListener('click', () => {
   pinnedRestoId = null;
   document.getElementById('restoSearch').value = '';
   document.getElementById('restoFilterStatus').value = '';
   document.getElementById('restoFilterCuisine').value = '';
   document.getElementById('restoFilterVille').value = '';
+  document.getElementById('restoFavoritesOnly').checked = false;
   populateQuartierOptions('');
   recenterMapOnVille('');
   renderRestoList();
@@ -2889,6 +2974,7 @@ window.addEventListener('load', () => {
       initGoogleSignIn();
     }
   }, 250);
+  handleUrlShortcut();
 });
 
 /* ============================================================
