@@ -414,6 +414,13 @@
     border-top: 1px solid var(--line);
     padding: 16px 18px;
   }
+  .recipe-vigilance{
+    padding: 12px 18px;
+    background: #FBF1DD;
+    border-left: 3px solid #C97F1E;
+    font-size: 12.5px; color: var(--ink-soft); line-height:1.5;
+  }
+  .recipe-vigilance strong{ color: var(--ink); }
   .recipe-section-label{
     font-family: var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
     color: var(--brand-dark); margin-bottom: 10px;
@@ -3085,7 +3092,7 @@ function renderRecipeResult(result){
         <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
         ${result.portions ? `<div class="recipe-portions">${escapeHtml(String(result.portions))} pers.</div>` : ''}
       </div>
-      <div class="disclaimer" style="margin-top:0; margin-bottom:14px;">
+      <div class="recipe-vigilance">
         <strong>⚠️ Point de vigilance gluten :</strong> utilisez un plan de travail et des ustensiles bien propres, qui n'ont pas été en contact avec du gluten, pour éviter toute contamination croisée.
       </div>
       <div class="recipe-section">
