@@ -93,25 +93,22 @@
   }
 
   html[data-theme="dark"]{
-    --header-bg: #081310;
-  }
-
-  html[data-theme="dark"]{
-    --bg: #0F1712;
-    --surface: #182620;
-    --ink: #EDF3EF;
-    --ink-soft: #9FB3A8;
-    --line: #2B3D34;
-    --brand: #3FBF95;
-    --brand-dark: #2E8F70;
+    --bg: #0B120D;
+    --surface: #1F332A;
+    --ink: #F5FAF7;
+    --ink-soft: #B4C7BB;
+    --line: #3D5347;
+    --brand: #4CD9A8;
+    --brand-dark: #34A57D;
     --champagne: #F8E7C9;
-    --brand-tint: #1D2E27;
-    --safe: #3FBF95;
+    --brand-tint: #223A2F;
+    --safe: #4CD9A8;
     --safe-bg: #16332A;
-    --check: #E0A85A;
-    --check-bg: #3A2E17;
-    --danger: #E0796A;
-    --danger-bg: #3A1E1A;
+    --check: #F0B36A;
+    --check-bg: #3F2F14;
+    --danger: #F08B7A;
+    --danger-bg: #3F1E19;
+    --header-bg: #04100A;
   }
   html, body{ transition: background-color .2s ease, color .2s ease; }
 
@@ -2989,15 +2986,9 @@ function renderRestoList(){
   });
 }
 
-function scrollToRestoCard(id){
-  const el = document.getElementById('resto-card-' + id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
 function selectRestoFromMap(id){
   pinnedRestoId = id;
   renderRestoList();
-  setTimeout(() => scrollToRestoCard(id), 60);
 }
 
 function clearPinnedResto(){
