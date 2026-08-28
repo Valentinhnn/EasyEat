@@ -110,12 +110,16 @@
   }
   html, body{ transition: background-color .2s ease, color .2s ease; }
 
+  html[data-theme="dark"] #restoMap .leaflet-tile-pane{
+    filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
+  }
+
   .theme-toggle{
-    position:absolute; top:14px; right:14px; background:none; border:1px solid rgba(255,255,255,.35);
-    color:inherit; border-radius:20px; padding:6px 12px; font-size:12.5px; cursor:pointer;
+    position:absolute; top:14px; right:14px; background:none; border:1px solid rgba(248,231,201,.4);
+    color: var(--champagne); border-radius:20px; padding:6px 12px; font-size:12.5px; cursor:pointer;
     display:flex; align-items:center; gap:6px;
   }
-  .theme-toggle:hover{ background: rgba(255,255,255,.12); }
+  .theme-toggle:hover{ background: rgba(248,231,201,.12); }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
 
@@ -131,8 +135,10 @@
   }
 
   /* ---------- Header ---------- */
+  /* Le bandeau de marque reste toujours dans le vert foncé de la charte,
+     indépendamment du thème clair/sombre (comme le logo). */
   header{
-    background: var(--ink);
+    background: #064E3B;
     padding: 30px 20px 0 20px;
     border-radius: 0 0 28px 28px;
     position: relative;
@@ -608,7 +614,7 @@
 <body>
 
 <header>
-  <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Changer de thème" style="color:var(--bg);">🌙 Sombre</button>
+  <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Changer de thème">🌙 Sombre</button>
   <div class="brand-row">
     <div class="brand-mark"><svg viewBox="150 130 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo EasyEat">
 <line x1="271" y1="409" x2="190" y2="490" stroke="#146652" stroke-width="30" stroke-linecap="round"/>
@@ -2374,10 +2380,10 @@ function recenterMapOnFilters(ville, quartier){
 async function initRestoMapIfNeeded(){
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
   restoMap = L.map('restoMap', { tap: true }).setView([45.7620, 4.8320], 12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    subdomains: 'abcd',
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
+    subdomains: 'abc',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(restoMap);
 
   applyOsmCacheToRestoData(); // horaires/téléphone déjà en cache local, avant le tout premier rendu
