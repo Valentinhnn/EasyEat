@@ -41,6 +41,11 @@
   try {
     if (window.top !== window.self) { window.top.location = window.self.location; }
   } catch (e) { document.documentElement.style.display = 'none'; }
+  try {
+    if (localStorage.getItem('easyeat-theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) { /* localStorage indisponible, on reste en thème clair */ }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.12.1/dist/quagga.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -86,6 +91,32 @@
     --serif-display: 'Fraunces', Georgia, serif;
   }
 
+  html[data-theme="dark"]{
+    --bg: #0F1712;
+    --surface: #182620;
+    --ink: #EDF3EF;
+    --ink-soft: #9FB3A8;
+    --line: #2B3D34;
+    --brand: #3FBF95;
+    --brand-dark: #2E8F70;
+    --champagne: #F8E7C9;
+    --brand-tint: #1D2E27;
+    --safe: #3FBF95;
+    --safe-bg: #16332A;
+    --check: #E0A85A;
+    --check-bg: #3A2E17;
+    --danger: #E0796A;
+    --danger-bg: #3A1E1A;
+  }
+  html, body{ transition: background-color .2s ease, color .2s ease; }
+
+  .theme-toggle{
+    position:absolute; top:14px; right:14px; background:none; border:1px solid rgba(255,255,255,.35);
+    color:inherit; border-radius:20px; padding:6px 12px; font-size:12.5px; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  .theme-toggle:hover{ background: rgba(255,255,255,.12); }
+
   *{ box-sizing:border-box; margin:0; padding:0; }
 
   html, body{ height:100%; }
@@ -104,6 +135,7 @@
     background: var(--ink);
     padding: 30px 20px 0 20px;
     border-radius: 0 0 28px 28px;
+    position: relative;
   }
 
   .brand-row{
@@ -576,6 +608,7 @@
 <body>
 
 <header>
+  <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Changer de thème" style="color:var(--bg);">🌙 Sombre</button>
   <div class="brand-row">
     <div class="brand-mark"><svg viewBox="150 130 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo EasyEat">
 <line x1="271" y1="409" x2="190" y2="490" stroke="#146652" stroke-width="30" stroke-linecap="round"/>
@@ -766,8 +799,10 @@
       <label style="grid-column: 1 / -1; display:flex; align-items:center; gap:6px; font-size:12.5px; color: var(--ink-soft); cursor:pointer;">
         <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
       </label>
+      <button class="resto-reset" id="restoNearMeBtn" type="button">📍 Près de moi</button>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
     </div>
+    <div id="restoNearMeStatus" style="display:none; font-size:12.5px; color: var(--ink-soft); margin: 2px 0 4px 0;"></div>
 
     <div id="restoAdminZone" style="margin: 6px 0 4px 0;"></div>
 
@@ -2286,6 +2321,15 @@ async function setCuratedStatus(id, status){
 let restoMap = null;
 let restoMarkers = {};
 let pinnedRestoId = null; // si défini, la liste sous la carte n'affiche que ce resto
+let userCoords = null; // { lat, lon } si l'utilisateur a activé "Près de moi"
+
+function distanceKm(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
 // Centres approximatifs pour recentrer la carte selon la ville sélectionnée
 // dans le filtre (Lyon et Annecy sont à ~100km l'une de l'autre, sans ça la
@@ -2830,6 +2874,12 @@ function renderRestoList(){
     });
   }
 
+  if (userCoords){
+    filtered = filtered.slice().sort((a, b) =>
+      distanceKm(userCoords.lat, userCoords.lon, a.lat, a.lon) - distanceKm(userCoords.lat, userCoords.lon, b.lat, b.lon)
+    );
+  }
+
   if (pinnedRestoId){
     countEl.innerHTML = `Restaurant sélectionné sur la carte · <button id="restoUnpinBtn" style="border:none;background:none;color:var(--brand-dark);text-decoration:underline;cursor:pointer;font-size:inherit;padding:0;">← Voir tous les restaurants</button>`;
     document.getElementById('restoUnpinBtn').addEventListener('click', clearPinnedResto);
@@ -2854,7 +2904,7 @@ function renderRestoList(){
             <span class="resto-cuisine-icon">${cuisineIcon(r.cuisine)}</span>
             <span class="resto-name">${escapeHtml(r.nom)}</span>
           </div>
-          <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}${preselected ? ' · présélectionné' : ''}</div>
+          <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}${preselected ? ' · présélectionné' : ''}${userCoords ? ' · 📍 ' + distanceKm(userCoords.lat, userCoords.lon, r.lat, r.lon).toFixed(1) + ' km' : ''}</div>
           ${r.adresse ? `<div class="resto-meta" style="margin-top:1px;">📍 ${escapeHtml(r.adresse)}</div>` : ''}
           ${r.horaires ? `<div class="resto-meta" style="margin-top:1px;">🕒 ${escapeHtml(r.horaires)}</div>` : ''}
           ${r.telephone ? `<div class="resto-meta" style="margin-top:1px;">📞 ${escapeHtml(r.telephone)}</div>` : ''}
@@ -2945,6 +2995,19 @@ function clearPinnedResto(){
   renderRestoList();
 }
 
+(function initThemeToggle(){
+  const btn = document.getElementById('themeToggleBtn');
+  const apply = (dark) => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    btn.textContent = dark ? '☀️ Clair' : '🌙 Sombre';
+    try { localStorage.setItem('easyeat-theme', dark ? 'dark' : 'light'); } catch(e){ /* localStorage indisponible */ }
+  };
+  apply(document.documentElement.getAttribute('data-theme') === 'dark');
+  btn.addEventListener('click', () => {
+    apply(document.documentElement.getAttribute('data-theme') !== 'dark');
+  });
+})();
+
 document.getElementById('restoSearch').addEventListener('input', () => { pinnedRestoId = null; renderRestoList(); });
 ['restoFilterStatus','restoFilterCuisine'].forEach(id =>
   document.getElementById(id).addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); })
@@ -2963,6 +3026,9 @@ document.getElementById('restoFilterVille').addEventListener('change', (e) => {
 document.getElementById('restoFavoritesOnly').addEventListener('change', () => { pinnedRestoId = null; renderRestoList(); });
 document.getElementById('restoReset').addEventListener('click', () => {
   pinnedRestoId = null;
+  userCoords = null;
+  document.getElementById('restoNearMeBtn').textContent = '📍 Près de moi';
+  document.getElementById('restoNearMeStatus').style.display = 'none';
   document.getElementById('restoSearch').value = '';
   document.getElementById('restoFilterStatus').value = '';
   document.getElementById('restoFilterCuisine').value = '';
@@ -2971,6 +3037,46 @@ document.getElementById('restoReset').addEventListener('click', () => {
   populateQuartierOptions('');
   recenterMapOnVille('');
   renderRestoList();
+});
+
+document.getElementById('restoNearMeBtn').addEventListener('click', () => {
+  const btn = document.getElementById('restoNearMeBtn');
+  const statusEl = document.getElementById('restoNearMeStatus');
+
+  if (userCoords){
+    userCoords = null;
+    btn.textContent = '📍 Près de moi';
+    statusEl.style.display = 'none';
+    renderRestoList();
+    return;
+  }
+
+  if (!navigator.geolocation){
+    statusEl.textContent = "La géolocalisation n'est pas disponible sur cet appareil.";
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = '📍 Localisation…';
+  statusEl.style.display = 'none';
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      btn.textContent = '📍 Près de moi ✓';
+      pinnedRestoId = null;
+      renderRestoList();
+      if (restoMap) restoMap.setView([userCoords.lat, userCoords.lon], 14);
+    },
+    (err) => {
+      btn.textContent = '📍 Près de moi';
+      statusEl.textContent = err.code === 1
+        ? "Localisation refusée. Autorisez l'accès à votre position dans les réglages du navigateur pour utiliser cette fonction."
+        : "Impossible de récupérer votre position pour le moment.";
+      statusEl.style.display = 'block';
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+  );
 });
 
 window.addEventListener('load', () => {
