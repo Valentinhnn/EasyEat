@@ -2213,11 +2213,25 @@ function populateRestoFilterOptions(){
 // sélectionnée (ou tous si aucune ville n'est choisie). Si le quartier
 // actuellement sélectionné n'existe plus dans la nouvelle liste, on le
 // réinitialise plutôt que de garder un filtre invisible/invalide.
+// Tri "naturel" : les quartiers numérotés (arrondissements : "1er
+// arrondissement", "8e arrondissement"...) sont classés par leur numéro
+// plutôt qu'alphabétiquement (qui donnerait 11e, 12e, 1er, 20e, 2e...).
+// Les quartiers non numérotés (noms propres) restent triés alphabétiquement
+// et passent après les arrondissements.
+function compareQuartiers(a, b){
+  const numA = parseInt(a, 10);
+  const numB = parseInt(b, 10);
+  if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+  if (!isNaN(numA)) return -1;
+  if (!isNaN(numB)) return 1;
+  return a.localeCompare(b);
+}
+
 function populateQuartierOptions(ville){
   const qSel = document.getElementById('restoFilterQuartier');
   const currentValue = qSel.value;
   const scoped = ville ? RESTO_DATA.filter(r => r.ville === ville) : RESTO_DATA;
-  const quartiers = [...new Set(scoped.map(r => r.quartier))].sort();
+  const quartiers = [...new Set(scoped.map(r => r.quartier))].sort(compareQuartiers);
   qSel.innerHTML = '<option value="">Quartier : tous</option>';
   quartiers.forEach(q => qSel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`));
   qSel.value = quartiers.includes(currentValue) ? currentValue : '';
