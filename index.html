@@ -82,8 +82,8 @@
     --brand-tint: #E7F0EB;
     --safe: #064E3B;
     --safe-bg: #E7F0EB;
-    --check: #C97F1E;
-    --check-bg: #FBEEDB;
+    --check: #B8952E;
+    --check-bg: #FBF3D9;
     --danger: #C24632;
     --danger-bg: #FAE6E1;
     --mono: 'SF Mono', 'Courier New', monospace;
@@ -104,8 +104,8 @@
     --brand-tint: #1D2B23;
     --safe: #4FAE85;
     --safe-bg: #17261F;
-    --check: #E3A85D;
-    --check-bg: #3A2C14;
+    --check: #E0C15A;
+    --check-bg: #3D3414;
     --danger: #E2836F;
     --danger-bg: #3A211A;
     --header-bg: #090F0C;
@@ -1688,6 +1688,39 @@ const DEFAULT_STATUSES = {
   523: 'mixed',  // La Boussole (Sevrier), options sans gluten mentionnées
   524: 'mixed',  // Abbaye de Talloires, gastronomique, options sans gluten sur demande
   525: 'mixed',  // Lac & Montagne (Saint-Jorioz), mentionné par la communauté cœliaque
+
+  // Paris (statuts déduits des avis Google collectés lors de l'ajout ;
+  // à vérifier/corriger comme le reste, notamment tout ce qui touche à la
+  // contamination croisée en cuisine, invisible depuis un avis client)
+  580: 'safe',   // Little Nonna, avis "the whole restaurant was gluten-free"
+  581: 'safe',   // Tasca, avis "the menu is completely gluten free and organic"
+  582: 'safe',   // La Sajerie, avis "100% gluten-free Lebanese food"
+  583: 'safe',   // Café Mareva, avis "Completely gluten free café"
+  585: 'safe',   // Su Misura, avis "EVERYTHING is gluten free"
+  586: 'safe',   // Judy Rousseau, avis "The whole menu is gluten-free"
+  587: 'safe',   // Judy (Fleurus), même enseigne, menu sans gluten
+  589: 'safe',   // Copains (Blancs Manteaux), boulangerie sans gluten (même enseigne que id 505 à Lyon)
+  593: 'safe',   // Judy - Comptoir Vosges, même enseigne
+  594: 'safe',   // La Manufacture du Sans Gluten, boulangerie 100% sans gluten
+  598: 'safe',   // Boulangerie Chambelland (Ternaux), avis "100% GLUTEN FREE"
+  599: 'safe',   // Maison Plume, pâtisserie sans gluten/sucre
+  600: 'safe',   // Copains (Tiquetonne), même enseigne
+  603: 'safe',   // Clémentine Oliver, boulangerie sans gluten (nom explicite)
+  605: 'safe',   // Noglu (Basfroi), avis "100% GLUTEN FREE"
+  611: 'safe',   // Noglu (Grenelle), même enseigne, avis "100% gluten free"
+  613: 'safe',   // Chambelland (Brochant), même enseigne que id 598
+  579: 'mixed',  // Loulou, avis "lots of gluten free options" mais pas dédié
+  584: 'mixed',  // La Crème de Paris Notre-Dame, crêperie classique, galette possible
+  592: 'mixed',  // Ground To Grow, végan avec options sans gluten mentionnées
+  604: 'mixed',  // Il Quadrifoglio, pizza/pâtes sans gluten sur demande (supplément), pas dédié
+  615: 'mixed',  // Tigermilk Batignolles, même enseigne que id 506 à Lyon
+  616: 'mixed',  // Caramel Sarrasin, galettes sarrasin, pas dédié
+  617: 'mixed',  // Crêperie Paris La Sarrasine, galette sarrasin possible
+  618: 'mixed',  // Le Sarrasin, galettes sarrasin explicitement mentionnées
+  619: 'mixed',  // La Crêperie de Josselin, crêperie bretonne classique
+  620: 'mixed',  // Krügen Gardette, galettes bretonnes classiques
+  621: 'mixed',  // Crêperie Le Goéland d'Aligre, galettes sarrasin
+  622: 'mixed',  // Disco Crêpes, crêperie classique
 };
 
 let curatedStatuses = {};      // statut renseigné par l'admin (toi), via /api/resto-status
@@ -1764,6 +1797,7 @@ const CITY_CENTERS = {
   '': { lat: 45.7620, lon: 4.8320, zoom: 12 },       // vue par défaut (Lyon)
   'Lyon': { lat: 45.7620, lon: 4.8320, zoom: 12 },
   'Annecy': { lat: 45.8990, lon: 6.1270, zoom: 11 }, // couvre aussi Sevrier/Talloires/Saint-Jorioz/Annecy-le-Vieux à proximité
+  'Paris': { lat: 48.8600, lon: 2.3470, zoom: 12 },
 };
 
 function recenterMapOnVille(ville){
@@ -2161,7 +2195,7 @@ function googleMapsUrl(r){
 }
 
 function markerStyle(status){
-  const colors = { unknown: '#FFFFFF', safe: '#064E3B', mixed: '#C97F1E', unsafe: '#C24632' };
+  const colors = { unknown: '#FFFFFF', safe: '#064E3B', mixed: '#D4B23A', unsafe: '#C24632' };
   return { radius: 8, fillColor: colors[status], color: '#064E3B', weight: 1.5, fillOpacity: 0.95 };
 }
 
