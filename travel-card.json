@@ -12,7 +12,7 @@
       "Ne pas utiliser de sauce soja, qui contient du blé",
       "Ne pas laisser le pain ou la chapelure toucher mon plat"
     ],
-    "closing": "Si ce n'est pas possible de l'éviter, je ne peux malheureusement pas manger ce plat — pour moi ce serait une vraie contamination, pas juste une gêne. Un ustensile propre ou une surface nettoyée avant de préparer mon plat suffisent largement."
+    "closing": "Si ce n'est pas possible de l'éviter, je ne peux malheureusement pas manger ce plat. Pour moi ce serait une vraie contamination, pas juste une gêne. Un ustensile propre ou une surface nettoyée avant de préparer mon plat suffisent largement."
   },
   "en": {
     "label": "English",
@@ -27,7 +27,7 @@
       "Not use soy sauce, which contains wheat",
       "Not let bread or breadcrumbs touch my plate"
     ],
-    "closing": "If this cannot be avoided, I unfortunately cannot eat this dish — for me this would be real contamination, not just an inconvenience. A clean utensil or a surface wiped down before preparing my dish is enough."
+    "closing": "If this cannot be avoided, I unfortunately cannot eat this dish. For me this would be real contamination, not just an inconvenience. A clean utensil or a surface wiped down before preparing my dish is enough."
   },
   "es": {
     "label": "Español",
@@ -72,7 +72,7 @@
       "Keine Sojasauce zu verwenden, da sie Weizen enthält",
       "Kein Brot oder Paniermehl meinen Teller berühren zu lassen"
     ],
-    "closing": "Wenn sich das nicht vermeiden lässt, kann ich dieses Gericht leider nicht essen — für mich wäre das eine echte Kontamination, keine bloße Unannehmlichkeit. Ein sauberes Utensil oder eine gereinigte Oberfläche vor der Zubereitung meines Gerichts reichen völlig aus."
+    "closing": "Wenn sich das nicht vermeiden lässt, kann ich dieses Gericht leider nicht essen. Für mich wäre das eine echte Kontamination, keine bloße Unannehmlichkeit. Ein sauberes Utensil oder eine gereinigte Oberfläche vor der Zubereitung meines Gerichts reichen völlig aus."
   },
   "pt": {
     "label": "Português",
@@ -87,7 +87,7 @@
       "Não usar molho de soja, que contém trigo",
       "Não deixar que pão ou farinha de rosca toquem meu prato"
     ],
-    "closing": "Se não for possível evitar isso, infelizmente não poderei comer este prato — para mim seria uma contaminação real, não apenas um incômodo. Um utensílio limpo ou uma superfície limpa antes de preparar meu prato já é suficiente."
+    "closing": "Se não for possível evitar isso, infelizmente não poderei comer este prato. Para mim seria uma contaminação real, não apenas um incômodo. Um utensílio limpo ou uma superfície limpa antes de preparar meu prato já é suficiente."
   },
   "nl": {
     "label": "Nederlands",
@@ -102,7 +102,7 @@
       "Geen sojasaus te gebruiken, want die bevat tarwe",
       "Geen brood of paneermeel mijn bord te laten raken"
     ],
-    "closing": "Als dit niet te vermijden is, kan ik dit gerecht helaas niet eten — voor mij zou dat echte besmetting zijn, geen klein ongemak. Een schoon keukengerei of een schoongemaakt oppervlak voordat mijn gerecht wordt bereid, is ruim voldoende."
+    "closing": "Als dit niet te vermijden is, kan ik dit gerecht helaas niet eten. Voor mij zou dat echte besmetting zijn, geen klein ongemak. Een schoon keukengerei of een schoongemaakt oppervlak voordat mijn gerecht wordt bereid, is ruim voldoende."
   },
   "el": {
     "label": "Ελληνικά",
@@ -117,7 +117,7 @@
       "Να μη χρησιμοποιηθεί σάλτσα σόγιας, καθώς περιέχει σιτάρι",
       "Να μην αφεθεί ψωμί ή τριμμένη φρυγανιά να αγγίξει το πιάτο μου"
     ],
-    "closing": "Αν αυτό δεν μπορεί να αποφευχθεί, δυστυχώς δεν θα μπορέσω να φάω αυτό το πιάτο — για μένα θα ήταν πραγματική επιμόλυνση, όχι απλή ενόχληση. Ένα καθαρό σκεύος ή μια καθαρισμένη επιφάνεια πριν την προετοιμασία του πιάτου μου αρκούν."
+    "closing": "Αν αυτό δεν μπορεί να αποφευχθεί, δυστυχώς δεν θα μπορέσω να φάω αυτό το πιάτο. Για μένα θα ήταν πραγματική επιμόλυνση, όχι απλή ενόχληση. Ένα καθαρό σκεύος ή μια καθαρισμένη επιφάνεια πριν την προετοιμασία του πιάτου μου αρκούν."
   },
   "tr": {
     "label": "Türkçe",
@@ -132,7 +132,7 @@
       "Buğday içerdiği için soya sosunun kullanılmaması",
       "Ekmek veya galeta ununun tabağıma değmemesi"
     ],
-    "closing": "Bundan kaçınmak mümkün değilse, maalesef bu yemeği yiyemem — bu benim için gerçek bir bulaşma olur, sadece bir rahatsızlık değil. Yemeğim hazırlanmadan önce temiz bir mutfak aleti veya temizlenmiş bir yüzey yeterlidir."
+    "closing": "Bundan kaçınmak mümkün değilse, maalesef bu yemeği yiyemem. Bu benim için gerçek bir bulaşma olur, sadece bir rahatsızlık değil. Yemeğim hazırlanmadan önce temiz bir mutfak aleti veya temizlenmiş bir yüzey yeterlidir."
   },
   "ja": {
     "label": "日本語",
@@ -162,7 +162,7 @@
       "不使用含有小麦的酱油",
       "不让面包或面包屑接触我的餐盘"
     ],
-    "closing": "如果无法避免这些情况,很遗憾我将无法食用这道菜——对我来说这将是真正的污染,而不仅仅是不便。只需在准备我的菜品前使用干净的餐具或清洁过的台面即可。"
+    "closing": "如果无法避免这些情况,很遗憾我将无法食用这道菜。对我来说这将是真正的污染,而不仅仅是不便。只需在准备我的菜品前使用干净的餐具或清洁过的台面即可。"
   },
   "th": {
     "label": "ไทย",
@@ -177,7 +177,7 @@
       "ไม่ใช้ซอสถั่วเหลืองที่มีส่วนผสมของข้าวสาลี",
       "ไม่ให้ขนมปังหรือเกล็ดขนมปังสัมผัสกับจานอาหารของฉัน"
     ],
-    "closing": "หากไม่สามารถหลีกเลี่ยงสิ่งเหล่านี้ได้ ฉันคงไม่สามารถกินจานนี้ได้ — สำหรับฉันแล้วนี่คือการปนเปื้อนจริง ไม่ใช่แค่ความไม่สะดวก การใช้ภาชนะสะอาดหรือพื้นผิวที่ทำความสะอาดก่อนเตรียมอาหารของฉันก็เพียงพอแล้ว"
+    "closing": "หากไม่สามารถหลีกเลี่ยงสิ่งเหล่านี้ได้ ฉันคงไม่สามารถกินจานนี้ได้ สำหรับฉันแล้วนี่คือการปนเปื้อนจริง ไม่ใช่แค่ความไม่สะดวก การใช้ภาชนะสะอาดหรือพื้นผิวที่ทำความสะอาดก่อนเตรียมอาหารของฉันก็เพียงพอแล้ว"
   },
   "vi": {
     "label": "Tiếng Việt",
@@ -192,7 +192,7 @@
       "Không dùng nước tương, vì nó chứa lúa mì",
       "Không để bánh mì hoặc vụn bánh mì chạm vào món ăn của tôi"
     ],
-    "closing": "Nếu không thể tránh được điều này, rất tiếc tôi sẽ không thể ăn món này — đối với tôi đây là nhiễm chéo thực sự, chứ không chỉ là bất tiện. Chỉ cần một dụng cụ sạch hoặc bề mặt đã được vệ sinh trước khi chuẩn bị món ăn của tôi là đủ."
+    "closing": "Nếu không thể tránh được điều này, rất tiếc tôi sẽ không thể ăn món này. Đối với tôi đây là nhiễm chéo thực sự, chứ không chỉ là bất tiện. Chỉ cần một dụng cụ sạch hoặc bề mặt đã được vệ sinh trước khi chuẩn bị món ăn của tôi là đủ."
   },
   "ko": {
     "label": "한국어",
@@ -222,7 +222,7 @@
       "عدم استخدام صلصة الصويا، لأنها تحتوي على القمح",
       "عدم ترك الخبز أو فتات الخبز يلامس طبقي"
     ],
-    "closing": "إذا لم يكن بالإمكان تجنب ذلك، فللأسف لن أتمكن من تناول هذا الطبق — بالنسبة لي سيكون هذا تلوثًا حقيقيًا، وليس مجرد إزعاج. يكفي استخدام أداة نظيفة أو سطح تم تنظيفه قبل تحضير طبقي."
+    "closing": "إذا لم يكن بالإمكان تجنب ذلك، فللأسف لن أتمكن من تناول هذا الطبق. بالنسبة لي سيكون هذا تلوثًا حقيقيًا، وليس مجرد إزعاج. يكفي استخدام أداة نظيفة أو سطح تم تنظيفه قبل تحضير طبقي."
   },
   "pl": {
     "label": "Polski",
@@ -237,6 +237,6 @@
       "Nie używać sosu sojowego, ponieważ zawiera pszenicę",
       "Nie dopuszczać, aby chleb lub bułka tarta dotykały mojego dania"
     ],
-    "closing": "Jeśli nie da się tego uniknąć, niestety nie będę mógł/mogła zjeść tego dania — dla mnie byłoby to prawdziwe zanieczyszczenie, a nie tylko niedogodność. Wystarczy czyste naczynie lub oczyszczona powierzchnia przed przygotowaniem mojego dania."
+    "closing": "Jeśli nie da się tego uniknąć, niestety nie będę mógł/mogła zjeść tego dania. Dla mnie byłoby to prawdziwe zanieczyszczenie, a nie tylko niedogodność. Wystarczy czyste naczynie lub oczyszczona powierzchnia przed przygotowaniem mojego dania."
   }
 }
