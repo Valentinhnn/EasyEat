@@ -116,12 +116,55 @@
     filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
   }
 
-  .theme-toggle{
-    position:absolute; top:14px; right:14px; background:none; border:1px solid rgba(248,231,201,.4);
+  .header-actions{
+    position:absolute; top:14px; right:14px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+  }
+  .theme-toggle, .travel-card-btn{
+    background:none; border:1px solid rgba(248,231,201,.4);
     color: var(--champagne); border-radius:20px; padding:6px 12px; font-size:12.5px; cursor:pointer;
     display:flex; align-items:center; gap:6px;
   }
-  .theme-toggle:hover{ background: rgba(248,231,201,.12); }
+  .theme-toggle:hover, .travel-card-btn:hover{ background: rgba(248,231,201,.12); }
+
+  /* ---------- Fiche de secours voyage ---------- */
+  .travel-card-overlay{
+    display:none; position:fixed; inset:0; z-index:1000; background: var(--bg);
+    flex-direction:column; overflow-y:auto;
+  }
+  .travel-card-overlay.active{ display:flex; }
+  .travel-card-topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:16px 20px; position:sticky; top:0; background: var(--bg); border-bottom:1px solid var(--line);
+  }
+  .travel-card-topbar select{
+    flex:1; max-width:280px; padding:10px 12px; border-radius:10px; border:1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-size:15px;
+  }
+  .travel-card-topbar button{
+    width:40px; height:40px; border-radius:50%; border:1px solid var(--line); background: var(--surface);
+    color: var(--ink); font-size:16px; cursor:pointer; flex-shrink:0;
+  }
+  .travel-card-topbar button:hover{ background: var(--brand-tint); }
+  .travel-card-content{
+    padding:24px 20px 60px 20px; max-width:640px; margin:0 auto; width:100%;
+  }
+  .travel-card-content h2{
+    font-family: var(--serif-display); font-size:26px; color: var(--ink); margin-bottom:16px; line-height:1.3;
+  }
+  .travel-card-content p{
+    font-size:17px; line-height:1.6; color: var(--ink); margin-bottom:18px;
+  }
+  .travel-card-content ul{
+    list-style:none; margin:0 0 18px 0; padding:0;
+  }
+  .travel-card-content li{
+    font-size:17px; line-height:1.5; color: var(--ink); background: var(--surface);
+    border-left:3px solid var(--brand); border-radius:8px; padding:12px 14px; margin-bottom:10px;
+  }
+  .travel-card-content .closing{
+    font-size:15.5px; color: var(--ink-soft); border-top:1px solid var(--line); padding-top:16px;
+  }
+  .travel-card-content[dir="rtl"] li{ border-left:none; border-right:3px solid var(--brand); }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
 
@@ -616,7 +659,10 @@
 <body>
 
 <header>
-  <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Changer de thème">🌙 Sombre</button>
+  <div class="header-actions">
+    <button class="travel-card-btn" id="travelCardBtn" type="button" aria-label="Fiche de secours à montrer au serveur">🌍 Fiche voyage</button>
+    <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Changer de thème">🌙 Sombre</button>
+  </div>
   <div class="brand-row">
     <div class="brand-mark"><svg viewBox="150 130 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo EasyEat">
 <line x1="271" y1="409" x2="190" y2="490" stroke="#146652" stroke-width="30" stroke-linecap="round"/>
@@ -647,6 +693,17 @@
     </div>
   </div>
 </header>
+
+<!-- ===================== FICHE DE SECOURS VOYAGE ===================== -->
+<div id="travelCardOverlay" class="travel-card-overlay" role="dialog" aria-modal="true" aria-label="Fiche de secours cœliaque">
+  <div class="travel-card-topbar">
+    <select id="travelCardLangSelect" aria-label="Choisir la langue"></select>
+    <button id="travelCardCloseBtn" type="button" aria-label="Fermer">✕</button>
+  </div>
+  <div class="travel-card-content" id="travelCardContent">
+    <p style="color: var(--ink-soft);">Chargement…</p>
+  </div>
+</div>
 
 <main>
 
@@ -2492,6 +2549,67 @@ function clearPinnedResto(){
     apply(document.documentElement.getAttribute('data-theme') !== 'dark');
   });
 })();
+
+// Fiche de secours multilingue à montrer au serveur (mode voyage).
+// Traductions pré-écrites et vérifiées une fois pour toutes (pas de traduction
+// IA à la volée) : un enjeu de sécurité alimentaire ne doit pas dépendre d'une
+// génération pouvant varier ou se tromper au pire moment.
+const RTL_LANGS = new Set(['ar']);
+let travelCardData = null;
+
+async function loadTravelCardData(){
+  if (travelCardData) return travelCardData;
+  const resp = await fetch('travel-card.json');
+  travelCardData = await resp.json();
+  return travelCardData;
+}
+
+function renderTravelCard(lang){
+  const d = travelCardData[lang];
+  const contentEl = document.getElementById('travelCardContent');
+  const isRtl = RTL_LANGS.has(lang);
+  contentEl.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+  contentEl.innerHTML = `
+    <h2>${escapeHtml(d.title)}</h2>
+    <p>${escapeHtml(d.intro)}</p>
+    <p style="font-weight:600;">${escapeHtml(d.question)}</p>
+    <ul>${d.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+    <p class="closing">${escapeHtml(d.closing)}</p>
+  `;
+}
+
+document.getElementById('travelCardBtn').addEventListener('click', async () => {
+  const overlay = document.getElementById('travelCardOverlay');
+  overlay.classList.add('active');
+  try {
+    await loadTravelCardData();
+  } catch (e) {
+    document.getElementById('travelCardContent').innerHTML =
+      '<p>Impossible de charger la fiche. Vérifiez votre connexion et réessayez.</p>';
+    return;
+  }
+  const langSelect = document.getElementById('travelCardLangSelect');
+  if (!langSelect.options.length){
+    Object.keys(travelCardData).forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = travelCardData[code].label;
+      langSelect.appendChild(opt);
+    });
+    langSelect.addEventListener('change', () => {
+      renderTravelCard(langSelect.value);
+      try { localStorage.setItem('easyeat-travel-lang', langSelect.value); } catch(e){ /* localStorage indisponible */ }
+    });
+  }
+  let savedLang = 'en';
+  try { savedLang = localStorage.getItem('easyeat-travel-lang') || 'en'; } catch(e){ /* localStorage indisponible */ }
+  langSelect.value = travelCardData[savedLang] ? savedLang : 'en';
+  renderTravelCard(langSelect.value);
+});
+
+document.getElementById('travelCardCloseBtn').addEventListener('click', () => {
+  document.getElementById('travelCardOverlay').classList.remove('active');
+});
 
 document.getElementById('restoSearch').addEventListener('input', () => { pinnedRestoId = null; renderRestoList(); });
 ['restoFilterStatus','restoFilterCuisine'].forEach(id =>

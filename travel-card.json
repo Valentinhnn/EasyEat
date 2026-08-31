@@ -1,0 +1,242 @@
+{
+  "fr": {
+    "label": "Français",
+    "title": "Maladie cœliaque, pas une allergie",
+    "intro": "Je suis atteint(e) de la maladie cœliaque, une maladie auto-immune. Je ne peux rien manger contenant du gluten (blé, orge, seigle), même en toute petite quantité. La moindre contamination croisée me rend malade.",
+    "question": "Serait-il possible de :",
+    "bullets": [
+      "Ne pas utiliser la même friteuse que des produits panés ou frits dans de la farine",
+      "Ne pas utiliser le même plan de travail, la même planche ou le même grill sans les nettoyer avant",
+      "Ne pas utiliser l'eau de cuisson des pâtes classiques",
+      "Ne pas ajouter de sauces, bouillons ou vinaigrettes, souvent épaissis à la farine",
+      "Ne pas utiliser de sauce soja, qui contient du blé",
+      "Ne pas laisser le pain ou la chapelure toucher mon plat"
+    ],
+    "closing": "Si ce n'est pas possible de l'éviter, je ne peux malheureusement pas manger ce plat — pour moi ce serait une vraie contamination, pas juste une gêne. Un ustensile propre ou une surface nettoyée avant de préparer mon plat suffisent largement."
+  },
+  "en": {
+    "label": "English",
+    "title": "Coeliac disease, not an allergy",
+    "intro": "I have coeliac disease, an autoimmune disease. I cannot eat anything containing gluten (wheat, barley, rye), even in a very small amount. The slightest cross-contamination makes me ill.",
+    "question": "Would it be possible to:",
+    "bullets": [
+      "Not use the same fryer as breaded or flour-fried products",
+      "Not use the same worktop, cutting board or grill without cleaning it first",
+      "Not use the cooking water from regular pasta",
+      "Not add sauces, broths or dressings, which are often thickened with flour",
+      "Not use soy sauce, which contains wheat",
+      "Not let bread or breadcrumbs touch my plate"
+    ],
+    "closing": "If this cannot be avoided, I unfortunately cannot eat this dish — for me this would be real contamination, not just an inconvenience. A clean utensil or a surface wiped down before preparing my dish is enough."
+  },
+  "es": {
+    "label": "Español",
+    "title": "Enfermedad celíaca, no es una alergia",
+    "intro": "Tengo la enfermedad celíaca, una enfermedad autoinmune. No puedo comer nada que contenga gluten (trigo, cebada, centeno), ni siquiera en una cantidad muy pequeña. La más mínima contaminación cruzada me hace enfermar.",
+    "question": "¿Sería posible...?",
+    "bullets": [
+      "No usar la misma freidora que para productos empanados o fritos con harina",
+      "No usar la misma encimera, la misma tabla de cortar o la misma plancha sin limpiarla antes",
+      "No usar el agua de cocción de la pasta normal",
+      "No añadir salsas, caldos o aliños, que a menudo se espesan con harina",
+      "No usar salsa de soja, que contiene trigo",
+      "No dejar que el pan o el pan rallado toquen mi plato"
+    ],
+    "closing": "Si no es posible evitarlo, lamentablemente no podré comer este plato: para mí sería una contaminación real, no solo una molestia. Basta con un utensilio limpio o una superficie limpiada antes de preparar mi plato."
+  },
+  "it": {
+    "label": "Italiano",
+    "title": "Celiachia, non è un'allergia",
+    "intro": "Sono affetto/a da celiachia, una malattia autoimmune. Non posso mangiare nulla che contenga glutine (grano, orzo, segale), nemmeno in minima quantità. La minima contaminazione crociata mi fa stare male.",
+    "question": "Sarebbe possibile...?",
+    "bullets": [
+      "Non usare la stessa friggitrice usata per prodotti impanati o fritti nella farina",
+      "Non usare lo stesso piano di lavoro, lo stesso tagliere o la stessa griglia senza averli puliti prima",
+      "Non usare l'acqua di cottura della pasta normale",
+      "Non aggiungere salse, brodi o condimenti, spesso addensati con farina",
+      "Non usare la salsa di soia, che contiene grano",
+      "Non lasciare che pane o pangrattato tocchino il mio piatto"
+    ],
+    "closing": "Se non è possibile evitarlo, purtroppo non potrò mangiare questo piatto: per me sarebbe una vera contaminazione, non solo un fastidio. Basta un utensile pulito o una superficie pulita prima di preparare il mio piatto."
+  },
+  "de": {
+    "label": "Deutsch",
+    "title": "Zöliakie, keine Allergie",
+    "intro": "Ich habe Zöliakie, eine Autoimmunerkrankung. Ich darf nichts essen, das Gluten enthält (Weizen, Gerste, Roggen), auch nicht in kleinsten Mengen. Schon die geringste Kreuzkontamination macht mich krank.",
+    "question": "Wäre es möglich...?",
+    "bullets": [
+      "Nicht dieselbe Fritteuse zu benutzen wie für panierte oder in Mehl frittierte Speisen",
+      "Nicht dieselbe Arbeitsfläche, dasselbe Schneidebrett oder denselben Grill ohne vorherige Reinigung zu benutzen",
+      "Nicht das Kochwasser von normalen Nudeln zu verwenden",
+      "Keine Saucen, Brühen oder Dressings hinzuzufügen, die oft mit Mehl gebunden sind",
+      "Keine Sojasauce zu verwenden, da sie Weizen enthält",
+      "Kein Brot oder Paniermehl meinen Teller berühren zu lassen"
+    ],
+    "closing": "Wenn sich das nicht vermeiden lässt, kann ich dieses Gericht leider nicht essen — für mich wäre das eine echte Kontamination, keine bloße Unannehmlichkeit. Ein sauberes Utensil oder eine gereinigte Oberfläche vor der Zubereitung meines Gerichts reichen völlig aus."
+  },
+  "pt": {
+    "label": "Português",
+    "title": "Doença celíaca, não é uma alergia",
+    "intro": "Tenho doença celíaca, uma doença autoimune. Não posso comer nada que contenha glúten (trigo, cevada, centeio), mesmo em quantidades muito pequenas. A mínima contaminação cruzada me deixa doente.",
+    "question": "Seria possível...?",
+    "bullets": [
+      "Não usar a mesma fritadeira usada para produtos empanados ou fritos com farinha",
+      "Não usar a mesma bancada, a mesma tábua ou a mesma grelha sem limpá-las antes",
+      "Não usar a água de cozimento da massa comum",
+      "Não adicionar molhos, caldos ou temperos, muitas vezes engrossados com farinha",
+      "Não usar molho de soja, que contém trigo",
+      "Não deixar que pão ou farinha de rosca toquem meu prato"
+    ],
+    "closing": "Se não for possível evitar isso, infelizmente não poderei comer este prato — para mim seria uma contaminação real, não apenas um incômodo. Um utensílio limpo ou uma superfície limpa antes de preparar meu prato já é suficiente."
+  },
+  "nl": {
+    "label": "Nederlands",
+    "title": "Coeliakie, geen allergie",
+    "intro": "Ik heb coeliakie, een auto-immuunziekte. Ik mag niets eten dat gluten bevat (tarwe, gerst, rogge), zelfs niet in een heel kleine hoeveelheid. De geringste kruisbesmetting maakt me ziek.",
+    "question": "Zou het mogelijk zijn om...?",
+    "bullets": [
+      "Niet dezelfde friteuse te gebruiken als voor gepaneerde of in bloem gebakken producten",
+      "Niet hetzelfde werkblad, dezelfde snijplank of dezelfde grill te gebruiken zonder deze eerst te reinigen",
+      "Geen kookwater van gewone pasta te gebruiken",
+      "Geen sauzen, bouillons of dressings toe te voegen, die vaak met bloem worden gebonden",
+      "Geen sojasaus te gebruiken, want die bevat tarwe",
+      "Geen brood of paneermeel mijn bord te laten raken"
+    ],
+    "closing": "Als dit niet te vermijden is, kan ik dit gerecht helaas niet eten — voor mij zou dat echte besmetting zijn, geen klein ongemak. Een schoon keukengerei of een schoongemaakt oppervlak voordat mijn gerecht wordt bereid, is ruim voldoende."
+  },
+  "el": {
+    "label": "Ελληνικά",
+    "title": "Κοιλιοκάκη, όχι αλλεργία",
+    "intro": "Πάσχω από κοιλιοκάκη, μια αυτοάνοση νόσο. Δεν μπορώ να φάω τίποτα που περιέχει γλουτένη (σιτάρι, κριθάρι, σίκαλη), ακόμη και σε πολύ μικρή ποσότητα. Η παραμικρή διασταυρούμενη επιμόλυνση με κάνει να αρρωσταίνω.",
+    "question": "Θα ήταν δυνατόν...;",
+    "bullets": [
+      "Να μη χρησιμοποιηθεί η ίδια φριτέζα που χρησιμοποιείται για πανέ ή τηγανητά με αλεύρι προϊόντα",
+      "Να μη χρησιμοποιηθεί ο ίδιος πάγκος εργασίας, η ίδια σανίδα κοπής ή η ίδια σχάρα χωρίς προηγούμενο καθαρισμό",
+      "Να μη χρησιμοποιηθεί το νερό βρασμού των κανονικών ζυμαρικών",
+      "Να μην προστεθούν σάλτσες, ζωμοί ή ντρέσινγκ, που συχνά πήζουν με αλεύρι",
+      "Να μη χρησιμοποιηθεί σάλτσα σόγιας, καθώς περιέχει σιτάρι",
+      "Να μην αφεθεί ψωμί ή τριμμένη φρυγανιά να αγγίξει το πιάτο μου"
+    ],
+    "closing": "Αν αυτό δεν μπορεί να αποφευχθεί, δυστυχώς δεν θα μπορέσω να φάω αυτό το πιάτο — για μένα θα ήταν πραγματική επιμόλυνση, όχι απλή ενόχληση. Ένα καθαρό σκεύος ή μια καθαρισμένη επιφάνεια πριν την προετοιμασία του πιάτου μου αρκούν."
+  },
+  "tr": {
+    "label": "Türkçe",
+    "title": "Çölyak hastalığı, alerji değil",
+    "intro": "Bende çölyak hastalığı var, otoimmün bir hastalık. Gluten içeren hiçbir şeyi yiyemem (buğday, arpa, çavdar), çok küçük miktarlarda bile. En ufak çapraz bulaşma bile beni hasta eder.",
+    "question": "Şunlar mümkün müdür...?",
+    "bullets": [
+      "Ekmeklenmiş veya unla kızartılmış ürünlerle aynı fritözün kullanılmaması",
+      "Aynı tezgahın, aynı doğrama tahtasının veya aynı ızgaranın önceden temizlenmeden kullanılmaması",
+      "Normal makarnanın haşlama suyunun kullanılmaması",
+      "Genellikle unla koyulaştırılan sosların, et sularının veya salata soslarının eklenmemesi",
+      "Buğday içerdiği için soya sosunun kullanılmaması",
+      "Ekmek veya galeta ununun tabağıma değmemesi"
+    ],
+    "closing": "Bundan kaçınmak mümkün değilse, maalesef bu yemeği yiyemem — bu benim için gerçek bir bulaşma olur, sadece bir rahatsızlık değil. Yemeğim hazırlanmadan önce temiz bir mutfak aleti veya temizlenmiş bir yüzey yeterlidir."
+  },
+  "ja": {
+    "label": "日本語",
+    "title": "セリアック病であり、アレルギーではありません",
+    "intro": "私はセリアック病という自己免疫疾患を患っています。ごく少量であっても、グルテン(小麦、大麦、ライ麦)を含むものは一切食べられません。わずかな相互汚染でも体調を崩してしまいます。",
+    "question": "次のことは可能でしょうか?",
+    "bullets": [
+      "パン粉付けや小麦粉で揚げた食品と同じ揚げ油(フライヤー)を使わない",
+      "同じ調理台、まな板、グリルを、事前に洗浄せずに使わない",
+      "通常のパスタの茹で汁を使わない",
+      "小麦粉でとろみをつけていることが多いソース、だし、ドレッシングを加えない",
+      "小麦を含む醤油を使わない",
+      "パンやパン粉を私の料理に触れさせない"
+    ],
+    "closing": "もしこれらを避けることができない場合、残念ながらこの料理は食べられません。私にとってこれは単なる不快感ではなく、実際の汚染になります。調理前に清潔な器具や洗浄した調理台を使っていただくだけで十分です。"
+  },
+  "zh": {
+    "label": "中文",
+    "title": "乳糜泻,不是过敏",
+    "intro": "我患有乳糜泻,这是一种自身免疫性疾病。我不能吃任何含有麸质(小麦、大麦、黑麦)的食物,哪怕是极少量。哪怕是轻微的交叉污染也会让我生病。",
+    "question": "是否可以做到以下几点?",
+    "bullets": [
+      "不使用炸过裹粉或面粉油炸食品的同一油炸锅",
+      "不使用未事先清洁的同一操作台、同一菜板或同一烤架",
+      "不使用普通意大利面的煮面水",
+      "不添加通常用面粉勾芡的酱汁、高汤或调味汁",
+      "不使用含有小麦的酱油",
+      "不让面包或面包屑接触我的餐盘"
+    ],
+    "closing": "如果无法避免这些情况,很遗憾我将无法食用这道菜——对我来说这将是真正的污染,而不仅仅是不便。只需在准备我的菜品前使用干净的餐具或清洁过的台面即可。"
+  },
+  "th": {
+    "label": "ไทย",
+    "title": "โรคเซลิแอค ไม่ใช่โรคภูมิแพ้",
+    "intro": "ฉันเป็นโรคเซลิแอค ซึ่งเป็นโรคภูมิต้านทานตนเอง ฉันไม่สามารถกินอาหารที่มีกลูเตน (ข้าวสาลี ข้าวบาร์เลย์ ข้าวไรย์) แม้เพียงเล็กน้อยได้ การปนเปื้อนข้ามแม้เพียงเล็กน้อยก็ทำให้ฉันป่วยได้",
+    "question": "เป็นไปได้ไหมที่จะ...?",
+    "bullets": [
+      "ไม่ใช้กระทะทอดเดียวกับที่ใช้ทอดอาหารชุบเกล็ดขนมปังหรือแป้ง",
+      "ไม่ใช้เขียง เคาน์เตอร์ หรือเตาย่างเดียวกันโดยไม่ทำความสะอาดก่อน",
+      "ไม่ใช้น้ำต้มพาสต้าธรรมดา",
+      "ไม่ใส่ซอส น้ำซุป หรือน้ำสลัดที่มักข้นด้วยแป้งสาลี",
+      "ไม่ใช้ซอสถั่วเหลืองที่มีส่วนผสมของข้าวสาลี",
+      "ไม่ให้ขนมปังหรือเกล็ดขนมปังสัมผัสกับจานอาหารของฉัน"
+    ],
+    "closing": "หากไม่สามารถหลีกเลี่ยงสิ่งเหล่านี้ได้ ฉันคงไม่สามารถกินจานนี้ได้ — สำหรับฉันแล้วนี่คือการปนเปื้อนจริง ไม่ใช่แค่ความไม่สะดวก การใช้ภาชนะสะอาดหรือพื้นผิวที่ทำความสะอาดก่อนเตรียมอาหารของฉันก็เพียงพอแล้ว"
+  },
+  "vi": {
+    "label": "Tiếng Việt",
+    "title": "Bệnh celiac, không phải dị ứng",
+    "intro": "Tôi mắc bệnh celiac, một bệnh tự miễn. Tôi không thể ăn bất cứ thứ gì chứa gluten (lúa mì, lúa mạch, lúa mạch đen), dù chỉ một lượng rất nhỏ. Chỉ cần nhiễm chéo nhẹ cũng khiến tôi bị bệnh.",
+    "question": "Liệu có thể...?",
+    "bullets": [
+      "Không dùng chung chảo chiên với các món tẩm bột chiên hoặc chiên bằng bột mì",
+      "Không dùng chung mặt bàn bếp, thớt hoặc vỉ nướng mà không vệ sinh trước",
+      "Không dùng nước luộc mì Ý thông thường",
+      "Không thêm nước sốt, nước dùng hoặc sốt trộn, thường được làm sánh bằng bột mì",
+      "Không dùng nước tương, vì nó chứa lúa mì",
+      "Không để bánh mì hoặc vụn bánh mì chạm vào món ăn của tôi"
+    ],
+    "closing": "Nếu không thể tránh được điều này, rất tiếc tôi sẽ không thể ăn món này — đối với tôi đây là nhiễm chéo thực sự, chứ không chỉ là bất tiện. Chỉ cần một dụng cụ sạch hoặc bề mặt đã được vệ sinh trước khi chuẩn bị món ăn của tôi là đủ."
+  },
+  "ko": {
+    "label": "한국어",
+    "title": "셀리악병이며, 알레르기가 아닙니다",
+    "intro": "저는 자가면역질환인 셀리악병을 앓고 있습니다. 아주 적은 양이라도 글루텐(밀, 보리, 호밀)이 포함된 음식은 먹을 수 없습니다. 아주 미세한 교차 오염만으로도 병이 납니다.",
+    "question": "다음이 가능할까요?",
+    "bullets": [
+      "빵가루를 입히거나 밀가루로 튀긴 음식과 같은 튀김기를 사용하지 않기",
+      "미리 세척하지 않은 동일한 조리대, 도마, 그릴을 사용하지 않기",
+      "일반 파스타를 삶은 물을 사용하지 않기",
+      "밀가루로 걸쭉하게 만든 경우가 많은 소스, 육수, 드레싱을 추가하지 않기",
+      "밀이 포함된 간장을 사용하지 않기",
+      "빵이나 빵가루가 제 음식에 닿지 않게 하기"
+    ],
+    "closing": "이를 피할 수 없다면, 안타깝지만 이 요리를 먹을 수 없습니다. 저에게는 단순한 불편이 아니라 실제 오염이 됩니다. 요리 전에 깨끗한 조리도구나 세척된 조리대만 사용해 주셔도 충분합니다."
+  },
+  "ar": {
+    "label": "العربية",
+    "title": "مرض السيلياك، وليس حساسية",
+    "intro": "أعاني من مرض السيلياك، وهو مرض مناعي ذاتي. لا يمكنني تناول أي شيء يحتوي على الغلوتين (القمح، الشعير، الجاودار)، حتى بكمية صغيرة جدًا. أدنى تلوث متبادل يجعلني مريضًا.",
+    "question": "هل يمكن...؟",
+    "bullets": [
+      "عدم استخدام نفس المقلاة المستخدمة للمنتجات المغطاة بفتات الخبز أو المقلية بالدقيق",
+      "عدم استخدام نفس سطح العمل أو لوح التقطيع أو الشواية دون تنظيفها أولاً",
+      "عدم استخدام ماء سلق المعكرونة العادية",
+      "عدم إضافة صلصات أو مرق أو تتبيلات، غالبًا ما تكون مكثفة بالدقيق",
+      "عدم استخدام صلصة الصويا، لأنها تحتوي على القمح",
+      "عدم ترك الخبز أو فتات الخبز يلامس طبقي"
+    ],
+    "closing": "إذا لم يكن بالإمكان تجنب ذلك، فللأسف لن أتمكن من تناول هذا الطبق — بالنسبة لي سيكون هذا تلوثًا حقيقيًا، وليس مجرد إزعاج. يكفي استخدام أداة نظيفة أو سطح تم تنظيفه قبل تحضير طبقي."
+  },
+  "pl": {
+    "label": "Polski",
+    "title": "Celiakia, nie alergia",
+    "intro": "Mam celiakię, chorobę autoimmunologiczną. Nie mogę jeść niczego, co zawiera gluten (pszenicę, jęczmień, żyto), nawet w bardzo małej ilości. Najmniejsze zanieczyszczenie krzyżowe powoduje, że się rozchorowuję.",
+    "question": "Czy byłoby możliwe...?",
+    "bullets": [
+      "Nie używać tej samej frytkownicy, w której smażone są produkty panierowane lub w mące",
+      "Nie używać tego samego blatu, deski do krojenia ani grilla bez wcześniejszego umycia",
+      "Nie używać wody po gotowaniu zwykłego makaronu",
+      "Nie dodawać sosów, bulionów ani dressingów, często zagęszczanych mąką",
+      "Nie używać sosu sojowego, ponieważ zawiera pszenicę",
+      "Nie dopuszczać, aby chleb lub bułka tarta dotykały mojego dania"
+    ],
+    "closing": "Jeśli nie da się tego uniknąć, niestety nie będę mógł/mogła zjeść tego dania — dla mnie byłoby to prawdziwe zanieczyszczenie, a nie tylko niedogodność. Wystarczy czyste naczynie lub oczyszczona powierzchnia przed przygotowaniem mojego dania."
+  }
+}
