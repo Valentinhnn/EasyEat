@@ -166,6 +166,44 @@
   }
   .travel-card-content[dir="rtl"] li{ border-left:none; border-right:3px solid var(--brand); }
 
+  /* ---------- Où manger ce soir ---------- */
+  .tonight-field{ margin-bottom:18px; }
+  .tonight-field label{ display:block; font-size:14px; font-weight:600; color: var(--ink); margin-bottom:6px; }
+  .tonight-field select{
+    width:100%; padding:11px 12px; border-radius:10px; border:1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-size:15px;
+  }
+  .tonight-checkbox-list{
+    display:flex; flex-wrap:wrap; gap:8px; max-height:180px; overflow-y:auto;
+    border:1px solid var(--line); border-radius:10px; padding:10px; background: var(--surface);
+  }
+  .tonight-checkbox-list label{
+    display:flex; align-items:center; gap:6px; font-size:13.5px; color: var(--ink);
+    background: var(--brand-tint); border-radius:14px; padding:5px 10px; cursor:pointer; white-space:nowrap;
+  }
+  .tonight-draw-btn{
+    width:100%; padding:14px; border:none; border-radius:12px; background: var(--brand);
+    color: #fff; font-size:16px; font-weight:600; cursor:pointer;
+  }
+  .tonight-draw-btn:hover{ background: var(--brand-dark); }
+  .tonight-result-card{
+    margin-top:20px; padding:18px; border-radius:14px; background: var(--surface);
+    border-left:4px solid var(--brand);
+  }
+  .tonight-result-card h3{ font-family: var(--serif-display); font-size:22px; color: var(--ink); margin-bottom:6px; }
+  .tonight-result-card p{ font-size:14.5px; color: var(--ink-soft); margin-bottom:4px; }
+  .tonight-result-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .tonight-result-actions a, .tonight-result-actions button{
+    flex:1; text-align:center; padding:10px; border-radius:10px; font-size:14px; cursor:pointer;
+    text-decoration:none; border:1px solid var(--line); color: var(--ink); background: var(--bg);
+  }
+  .tonight-result-actions .tonight-reroll{ background: var(--brand); color:#fff; border:none; }
+  .tonight-result-actions .tonight-reroll:hover{ background: var(--brand-dark); }
+  #tonightPickPanel{
+    margin: 10px 0 16px 0; padding:16px; border-radius:14px;
+    background: var(--surface); border:1px solid var(--line);
+  }
+
   *{ box-sizing:border-box; margin:0; padding:0; }
 
   html, body{ height:100%; }
@@ -866,8 +904,38 @@
       </label>
       <button class="resto-reset" id="restoNearMeBtn" type="button">📍 Près de moi</button>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
+      <button class="resto-reset" id="tonightPickToggle" type="button" style="grid-column: 1 / -1;" aria-expanded="false">🎲 Où manger ce soir ?</button>
     </div>
     <div id="restoNearMeStatus" style="display:none; font-size:12.5px; color: var(--ink-soft); margin: 2px 0 4px 0;"></div>
+
+    <div id="tonightPickPanel" style="display:none;">
+      <div class="tonight-field">
+        <label for="tonightVille">Ville <span style="color: var(--danger);">*</span></label>
+        <select id="tonightVille"></select>
+      </div>
+      <div class="tonight-field">
+        <label>Quartiers</label>
+        <div id="tonightQuartiers" class="tonight-checkbox-list"></div>
+      </div>
+      <div class="tonight-field">
+        <label for="tonightCuisine">Cuisine</label>
+        <select id="tonightCuisine"><option value="">Peu importe</option></select>
+      </div>
+      <div class="tonight-field">
+        <label for="tonightStatut">Statut</label>
+        <select id="tonightStatut">
+          <option value="">Peu importe</option>
+          <option value="safe">Sûr uniquement</option>
+          <option value="safe,mixed">Sûr + Mixte</option>
+        </select>
+      </div>
+      <label style="display:flex; align-items:center; gap:6px; font-size:14px; color: var(--ink); cursor:pointer; margin-bottom:16px;">
+        <input type="checkbox" id="tonightFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
+      </label>
+      <button id="tonightDrawBtn" type="button" class="tonight-draw-btn">🎲 Tirer au sort</button>
+      <p id="tonightError" style="display:none; color: var(--danger); font-size:14px; margin-top:12px;"></p>
+      <div id="tonightResult"></div>
+    </div>
 
     <div id="restoAdminZone" style="margin: 6px 0 4px 0;"></div>
 
@@ -2590,10 +2658,19 @@ document.getElementById('travelCardBtn').addEventListener('click', async () => {
   }
   const langSelect = document.getElementById('travelCardLangSelect');
   if (!langSelect.options.length){
+    // Nom en français ajouté entre parenthèses : certains noms de langue dans
+    // leur propre écriture (ไทย, 中文, العربية...) ne sont pas reconnaissables
+    // au premier coup d'œil pour quelqu'un qui ne les lit pas.
+    const LANG_NAMES_FR = {
+      fr: null, en: 'Anglais', es: 'Espagnol', it: 'Italien', de: 'Allemand',
+      pt: 'Portugais', nl: 'Néerlandais', el: 'Grec', tr: 'Turc', ja: 'Japonais',
+      zh: 'Chinois', th: 'Thaï', vi: 'Vietnamien', ko: 'Coréen', ar: 'Arabe', pl: 'Polonais'
+    };
     Object.keys(travelCardData).forEach(code => {
       const opt = document.createElement('option');
       opt.value = code;
-      opt.textContent = travelCardData[code].label;
+      const fr = LANG_NAMES_FR[code];
+      opt.textContent = fr ? `${travelCardData[code].label} (${fr})` : travelCardData[code].label;
       langSelect.appendChild(opt);
     });
     langSelect.addEventListener('change', () => {
@@ -2610,6 +2687,104 @@ document.getElementById('travelCardBtn').addEventListener('click', async () => {
 document.getElementById('travelCardCloseBtn').addEventListener('click', () => {
   document.getElementById('travelCardOverlay').classList.remove('active');
 });
+
+// "Où manger ce soir" : tirage aléatoire parmi les restos correspondant aux
+// critères choisis (formulaire séparé des filtres normaux de la liste,
+// pour ne pas avoir à changer ses filtres habituels pour l'utiliser).
+let tonightPickInitialized = false;
+
+function populateTonightFields(){
+  const villeSel = document.getElementById('tonightVille');
+  const villes = [...new Set(RESTO_DATA.map(r => r.ville))].sort();
+  villeSel.innerHTML = villes.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  updateTonightQuartiersAndCuisine();
+}
+
+function updateTonightQuartiersAndCuisine(){
+  const ville = document.getElementById('tonightVille').value;
+  const scoped = RESTO_DATA.filter(r => r.ville === ville);
+
+  const quartiers = [...new Set(scoped.map(r => r.quartier))].sort(compareQuartiers);
+  const qContainer = document.getElementById('tonightQuartiers');
+  qContainer.innerHTML = `
+    <label><input type="checkbox" id="tonightQuartierAll" checked> Tous</label>
+    ${quartiers.map(q => `<label><input type="checkbox" class="tonight-quartier-cb" value="${escapeHtml(q)}"> ${escapeHtml(q)}</label>`).join('')}
+  `;
+  const allCb = document.getElementById('tonightQuartierAll');
+  const otherCbs = () => [...qContainer.querySelectorAll('.tonight-quartier-cb')];
+  allCb.addEventListener('change', () => { if (allCb.checked) otherCbs().forEach(cb => cb.checked = false); });
+  otherCbs().forEach(cb => cb.addEventListener('change', () => { if (cb.checked) allCb.checked = false; }));
+
+  const cuisines = [...new Set(scoped.map(r => r.cuisine))].sort();
+  const cuisineSel = document.getElementById('tonightCuisine');
+  cuisineSel.innerHTML = '<option value="">Peu importe</option>' +
+    cuisines.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+}
+
+document.getElementById('tonightPickToggle').addEventListener('click', () => {
+  const btn = document.getElementById('tonightPickToggle');
+  const panel = document.getElementById('tonightPickPanel');
+  const opening = panel.style.display === 'none';
+  panel.style.display = opening ? 'block' : 'none';
+  btn.setAttribute('aria-expanded', String(opening));
+  if (opening && !tonightPickInitialized){
+    populateTonightFields();
+    tonightPickInitialized = true;
+  }
+  if (opening) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+document.getElementById('tonightVille').addEventListener('change', updateTonightQuartiersAndCuisine);
+
+function drawTonightPick(){
+  const errorEl = document.getElementById('tonightError');
+  const resultEl = document.getElementById('tonightResult');
+  errorEl.style.display = 'none';
+  resultEl.innerHTML = '';
+
+  const ville = document.getElementById('tonightVille').value;
+  if (!ville){
+    errorEl.textContent = 'Choisissez une ville pour lancer le tirage.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const selectedQuartiers = [...document.querySelectorAll('.tonight-quartier-cb:checked')].map(cb => cb.value);
+  const cuisine = document.getElementById('tonightCuisine').value;
+  const statutValue = document.getElementById('tonightStatut').value; // '', 'safe', 'safe,mixed'
+  const allowedStatuts = statutValue ? statutValue.split(',') : null;
+  const favoritesOnly = document.getElementById('tonightFavoritesOnly').checked;
+
+  let candidates = RESTO_DATA.filter(r => r.ville === ville);
+  if (selectedQuartiers.length) candidates = candidates.filter(r => selectedQuartiers.includes(r.quartier));
+  if (cuisine) candidates = candidates.filter(r => r.cuisine === cuisine);
+  if (allowedStatuts) candidates = candidates.filter(r => allowedStatuts.includes(getRestoStatus(r.id)));
+  if (favoritesOnly) candidates = candidates.filter(r => isFavorite(r.id));
+
+  if (!candidates.length){
+    errorEl.textContent = 'Aucun restaurant ne correspond à ces critères. Essayez de les élargir (par exemple en cochant plusieurs quartiers ou en choisissant "Peu importe").';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  const status = getRestoStatus(pick.id);
+  resultEl.innerHTML = `
+    <div class="tonight-result-card">
+      <h3>${escapeHtml(pick.nom)}</h3>
+      <p>${escapeHtml(pick.cuisine)} · ${escapeHtml(pick.quartier)}</p>
+      <p style="display:flex; align-items:center; gap:6px;"><span class="resto-status-dot ${status}"></span>${STATUS_LABELS[status]}</p>
+      ${pick.adresse ? `<p>${escapeHtml(pick.adresse)}</p>` : ''}
+      <div class="tonight-result-actions">
+        <button type="button" class="tonight-reroll" id="tonightRerollBtn">🎲 Relancer</button>
+        <a href="${googleMapsUrl(pick)}" target="_blank" rel="noopener">📍 Google Maps</a>
+      </div>
+    </div>
+  `;
+  document.getElementById('tonightRerollBtn').addEventListener('click', drawTonightPick);
+}
+
+document.getElementById('tonightDrawBtn').addEventListener('click', drawTonightPick);
 
 document.getElementById('restoSearch').addEventListener('input', () => { pinnedRestoId = null; renderRestoList(); });
 ['restoFilterStatus','restoFilterCuisine'].forEach(id =>
