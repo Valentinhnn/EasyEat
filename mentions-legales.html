@@ -40,7 +40,7 @@
 </div>
 
 <h1>Mentions légales, confidentialité et conditions d'utilisation</h1>
-<p class="updated">Dernière mise à jour : 13/08/2026</p>
+<p class="updated">Dernière mise à jour : 30/09/2026</p>
 
 <h2>1. Informations éditeur</h2>
 
@@ -92,17 +92,18 @@
 <h3>Données collectées et finalités</h3>
 <table>
   <tr><th>Donnée</th><th>Finalité</th><th>Base légale</th></tr>
-  <tr><td>Compte utilisateur</td><td>Créer et gérer votre compte</td><td>Exécution du contrat (CGU)</td></tr>
-  <tr><td>Commentaires</td><td>Publier et modérer les avis sur les restaurants et produits ; l'adresse email Google associée est conservée avec chaque avis (jamais affichée publiquement) afin de pouvoir identifier et supprimer l'avis d'un utilisateur qui exerce son droit à l'effacement</td><td>Exécution du contrat (CGU) ; intérêt légitime (exercice des droits RGPD)</td></tr>
-  <tr><td>Scans de produits</td><td>Identifier la teneur en gluten d'un produit</td><td>Exécution du contrat (CGU)</td></tr>
-  <tr><td>Adresse IP</td><td>Limiter le nombre de scans gratuits par jour (anti-abus) ; vérification anti-robot sur le formulaire d'avis</td><td>Intérêt légitime (sécurité du service)</td></tr>
+  <tr><td>Identité Google (nom, email, identifiant Google)</td><td>Uniquement si vous vous connectez, pour publier ou signaler un avis. EasyEat ne crée pas de compte et ne stocke aucun mot de passe.</td><td>Exécution du contrat (CGU)</td></tr>
+  <tr><td>Avis sur les restaurants (nom Google, note, commentaire, date)</td><td>Publier et modérer les avis. L'adresse email Google est conservée avec chaque avis, jamais affichée publiquement, afin de permettre sa suppression par son auteur ou sur demande.</td><td>Exécution du contrat (CGU) ; intérêt légitime (exercice des droits RGPD)</td></tr>
+  <tr><td>Signalements d'avis (identifiant Google du signalant)</td><td>Empêcher qu'une même personne signale plusieurs fois le même avis.</td><td>Intérêt légitime (modération)</td></tr>
+  <tr><td>Photos de menus et d'étiquettes</td><td>Analyse du gluten. Les photos sont transmises à Google Gemini pour l'analyse et ne sont pas conservées par EasyEat.</td><td>Exécution du contrat (CGU)</td></tr>
+  <tr><td>Adresse IP</td><td>Limiter le nombre de scans gratuits par jour et les abus ; vérification anti-robot sur le formulaire d'avis</td><td>Intérêt légitime (sécurité du service)</td></tr>
 </table>
 
 <h3>Sous-traitants et destinataires des données</h3>
 <table>
   <tr><th>Sous-traitant</th><th>Données reçues</th></tr>
   <tr><td>Google (API Gemini)</td><td>Photos de menus et d'étiquettes envoyées pour l'analyse du gluten. Sur l'offre gratuite utilisée par ce projet, Google peut utiliser ces échanges pour améliorer ses modèles (contrairement à une offre payante). Voir la <a href="https://ai.google.dev/gemini-api/terms" target="_blank">politique de Google AI</a>.</td></tr>
-  <tr><td>Google Identity Services</td><td>Informations standards de connexion Google (nom, email, photo de profil), utilisées pour authentifier les avis et les droits admin.</td></tr>
+  <tr><td>Google Identity Services</td><td>Informations standards de connexion Google (nom, email, identifiant Google), utilisées pour authentifier les avis et les droits admin.</td></tr>
   <tr><td>Open Food Facts</td><td>Code-barres scanné uniquement, aucune donnée personnelle transmise.</td></tr>
   <tr><td>Cloudflare</td><td>Héberge le serveur qui traite l'ensemble des requêtes ci-dessus (adresse IP incluse, pour la limite de scans gratuits).</td></tr>
   <tr><td>Cloudflare Turnstile</td><td>Vérification anti-robot sur le formulaire d'avis restaurants (adresse IP et éléments techniques du navigateur, pas de cookie publicitaire).</td></tr>
@@ -112,7 +113,15 @@
 </table>
 
 <h3>Durée de conservation</h3>
-<p>Les avis et commentaires sont conservés tant qu'ils ne sont pas supprimés par leur auteur, retirés par modération (signalement communautaire ou action de l'éditeur), ou supprimés à la demande de l'utilisateur concerné, adressée à <a href="mailto:hannavalentin269@gmail.com">hannavalentin269@gmail.com</a> et traitée sous un délai d'un mois. L'adresse email associée à chaque avis (voir tableau ci-dessus) est conservée uniquement pour permettre cette identification à la demande de l'utilisateur ; elle n'est jamais affichée publiquement.</p>
+<ul>
+  <li><strong>Avis</strong> : conservés tant qu'ils ne sont pas supprimés par leur auteur (bouton « Supprimer mon avis », une fois connecté avec le même compte Google), retirés par modération, ou supprimés sur demande adressée à <a href="mailto:hannavalentin269@gmail.com">hannavalentin269@gmail.com</a> (traitée sous un mois).</li>
+  <li><strong>Signalements</strong> : l'identifiant Google du signalant est conservé 90 jours.</li>
+  <li><strong>Adresse IP</strong> : compteur de scans conservé 48 heures maximum, compteur anti-spam des avis 2 heures maximum.</li>
+  <li><strong>Photos</strong> : non conservées par EasyEat.</li>
+</ul>
+
+<h3>Transferts hors de l'Union européenne</h3>
+<p>Google et Cloudflare sont des sociétés américaines : certaines données (photos envoyées à l'analyse, adresse IP, identité Google) peuvent être traitées aux États-Unis. Ces transferts reposent sur le cadre de protection des données UE–États-Unis (Data Privacy Framework) auquel ces sociétés adhèrent, et sur leurs clauses contractuelles types.</p>
 
 <h3>Vos droits</h3>
 <p>Vous disposez des droits suivants sur vos données personnelles.</p>
@@ -128,7 +137,8 @@
 
 <h2>5. Cookies</h2>
 <p>EasyEat n'utilise pas de cookies de suivi publicitaire.</p>
-<p>Le site peut utiliser des cookies ou traceurs techniques strictement nécessaires au bon fonctionnement et à la sécurité du site, notamment via Cloudflare (dont Cloudflare Turnstile, anti-robot sur le formulaire d'avis) et Google Identity Services (maintien de la connexion lorsque vous choisissez de vous connecter). Ces cookies ne requièrent pas votre consentement. Tout cookie non essentiel, notamment à des fins de mesure d'audience, ne sera déposé qu'après votre consentement, que vous pouvez retirer à tout moment.</p>
+<p>Le site peut utiliser des cookies ou traceurs techniques strictement nécessaires au bon fonctionnement et à la sécurité du site, notamment via Cloudflare (dont Cloudflare Turnstile, anti-robot sur le formulaire d'avis) et Google Identity Services (maintien de la connexion lorsque vous choisissez de vous connecter). Ces cookies ne requièrent pas votre consentement. La mesure d'audience (Cloudflare Web Analytics) ne dépose aucun cookie. Tout cookie non essentiel ne serait déposé qu'après votre consentement, que vous pourriez retirer à tout moment.</p>
+<p>Le site enregistre aussi, uniquement dans votre navigateur (stockage local), vos restaurants favoris et un cache des horaires issus d'OpenStreetMap. Ces informations ne quittent jamais votre appareil et s'effacent en vidant les données du site dans votre navigateur.</p>
 
 <h2>6. Conditions générales d'utilisation</h2>
 
