@@ -1193,8 +1193,20 @@ let nativeVideoEl = null;
 let nativeLoopId = null;
 
 let scanHintTimer = null;
+// Numéro de session de scan : si l'utilisateur arrête le scan (ou change
+// d'onglet) pendant que la caméra démarre encore, on sait qu'il faut la
+// couper dès qu'elle est prête, au lieu de la laisser allumée en fond.
+let scanSession = 0;
 
 function startScanner(){
+  if (scannerRunning || usingQuagga) return; // déjà en cours (double appui)
+  scanSession++;
+  // Remise à zéro : sans ça, re-scanner le MÊME produit juste après était
+  // ignoré (code identique au précédent), et sur Android la détection native
+  // restait bloquée après le premier scan réussi.
+  lastDetectedCode = null;
+  pendingCode = null; pendingCount = 0;
+  nativeDetectInFlight = false;
   errorBarcode.classList.remove('active');
   resultsBarcode.classList.remove('active');
   startScannerZone.style.display = 'none';
@@ -1213,9 +1225,10 @@ function startScanner(){
 }
 
 async function startNativeScanner(){
+  const mySession = scanSession;
   try{
     nativeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
-    nativeStream = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'environment',
         width: { ideal: 1920 },
@@ -1223,6 +1236,11 @@ async function startNativeScanner(){
         advanced: [{ focusMode: 'continuous' }] // ignoré silencieusement si non supporté
       }
     });
+    if (mySession !== scanSession || !scannerLive.classList.contains('active')){
+      stream.getTracks().forEach(t => t.stop()); // scan annulé pendant le démarrage
+      return;
+    }
+    nativeStream = stream;
     nativeVideoEl = document.createElement('video');
     nativeVideoEl.setAttribute('playsinline', '');
     nativeVideoEl.style.width = '100%';
@@ -1254,6 +1272,7 @@ async function nativeLoop(){
         // d'attendre plusieurs lectures identiques (contrairement à Quagga).
         if (code && isValidEanChecksum(code) && code !== lastDetectedCode){
           lastDetectedCode = code;
+          nativeDetectInFlight = false;
           if (navigator.vibrate) navigator.vibrate(70); // retour tactile de confirmation
           stopScanner();
           lookupProduct(code);
@@ -1268,6 +1287,11 @@ async function nativeLoop(){
 
 function startQuaggaScanner(){
   usingQuagga = true;
+  const mySession = scanSession;
+  // Quagga.stop() ne retire PAS les écouteurs : sans offDetected, chaque
+  // nouveau scan en ajoutait un, et la double lecture de sécurité était
+  // comptée en double (une seule lecture suffisait à valider).
+  Quagga.offDetected(onBarcodeDetected);
   Quagga.init({
     inputStream: {
       type: "LiveStream",
@@ -1289,6 +1313,7 @@ function startQuaggaScanner(){
     decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"] },
     locate: true
   }, (err) => {
+    if (mySession !== scanSession || !usingQuagga) return; // scan annulé entre-temps
     if (err){
       showBarcodeError("Impossible d'accéder à la caméra. Utilisez la saisie manuelle ci-dessous.");
       stopScanner();
@@ -1305,15 +1330,15 @@ function startQuaggaScanner(){
 function stopScanner(){
   if (scanHintTimer){ clearTimeout(scanHintTimer); scanHintTimer = null; }
   document.getElementById('scanHint').classList.remove('active');
-  if (scannerRunning){
-    if (usingQuagga){
-      try { Quagga.stop(); } catch(e){}
-    } else {
-      if (nativeLoopId) cancelAnimationFrame(nativeLoopId);
-      if (nativeStream) nativeStream.getTracks().forEach(t => t.stop());
-    }
-    scannerRunning = false;
+  scanSession++; // invalide tout démarrage de caméra encore en cours
+  // Arrêt systématique, même si la caméra n'avait pas fini de démarrer
+  // (l'ancienne version ne coupait rien dans ce cas : caméra laissée allumée).
+  if (usingQuagga){
+    try { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } catch(e){}
   }
+  if (nativeLoopId){ cancelAnimationFrame(nativeLoopId); nativeLoopId = null; }
+  if (nativeStream){ nativeStream.getTracks().forEach(t => t.stop()); nativeStream = null; }
+  scannerRunning = false;
   usingQuagga = false;
   torchOn = false;
   document.getElementById('torchToggleBtn').classList.remove('active', 'torch-on');
@@ -1418,10 +1443,19 @@ function onBarcodeDetected(result){
 }
 
 manualBarcodeBtn.addEventListener('click', () => {
-  const code = normalizeBarcode(manualBarcodeInput.value.trim());
+  const code = normalizeBarcode(manualBarcodeInput.value.replace(/\s/g, ''));
   if (!code) return;
+  if (!/^\d{8}$|^\d{13}$/.test(code)){
+    showBarcodeError("Un code-barres alimentaire contient 8, 12 ou 13 chiffres. Vérifie la saisie.");
+    return;
+  }
+  if (!isValidEanChecksum(code)){
+    showBarcodeError("Ce code-barres semble contenir une faute de frappe (chiffre de contrôle incorrect). Vérifie la saisie.");
+    return;
+  }
   lookupProduct(code);
 });
+manualBarcodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') manualBarcodeBtn.click(); });
 
 function showBarcodeError(msg){
   errorBarcode.textContent = msg;
@@ -2374,6 +2408,7 @@ async function setCuratedStatus(id, status){
     body: JSON.stringify({ restaurantId: id, status, idToken: googleUser ? googleUser.idToken : null })
   });
   if (!resp.ok){
+    if (resp.status === 401 && !isSessionValid()){ expireSession(); throw new Error('Session expirée, reconnecte-toi.'); }
     const data = await resp.json().catch(()=>({}));
     throw new Error(data.error === 'unauthorized' ? 'Compte non autorisé.' : 'Erreur serveur.');
   }
@@ -2562,18 +2597,27 @@ async function enrichRestosFromOsm(){
 // Après un avis publié/supprimé/masqué : recharge les avis, PUIS met à jour
 // la couleur du marqueur (l'ancienne version la calculait avant la fin du
 // rechargement, donc avec des données périmées).
-async function refreshRestoAfterReviewChange(restaurantId, panel){
-  await loadReviewsPanel(restaurantId, panel);
+async function refreshRestoAfterReviewChange(restaurantId, panel, opts = {}){
+  await loadReviewsPanel(restaurantId, panel, opts);
   if (restoMarkers[restaurantId]) restoMarkers[restaurantId].setStyle(markerStyle(getRestoStatus(restaurantId)));
 }
 
-async function loadReviewsPanel(restaurantId, panel){
+async function loadReviewsPanel(restaurantId, panel, opts = {}){
   panel.innerHTML = `<div style="font-size:12.5px; color:var(--ink-soft);">Chargement des avis…</div>`;
   try{
     const resp = await fetch(`${WORKER_URL}/api/reviews?restaurantId=${encodeURIComponent(restaurantId)}`);
     const data = await resp.json();
-    reviewCache[restaurantId] = data.reviews || [];
+    if (resp.ok) reviewCache[restaurantId] = data.reviews || [];
   } catch(e){ /* garde le cache existant */ }
+  // KV peut mettre jusqu'à ~60 s à propager une écriture : si l'avis tout
+  // juste publié n'est pas encore renvoyé, on l'ajoute localement pour que
+  // son auteur le voie immédiatement.
+  if (opts.justPosted && !(reviewCache[restaurantId] || []).some(r => r.id === opts.justPosted.id)){
+    reviewCache[restaurantId] = [opts.justPosted, ...(reviewCache[restaurantId] || [])];
+  }
+  if (opts.justDeletedId){
+    reviewCache[restaurantId] = (reviewCache[restaurantId] || []).filter(r => r.id !== opts.justDeletedId);
+  }
   const reviews = reviewCache[restaurantId] || [];
 
   const avgRating = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : 'N/A';
@@ -2618,7 +2662,7 @@ async function loadReviewsPanel(restaurantId, panel){
 
   html += reviews.length
     ? reviews.slice(0,20).map(r => `<div class="review-item">
-        <div class="review-item-top"><span>${escapeHtml(r.name)}</span><span>⭐${r.rating} · ${STATUS_LABELS[r.glutenRating] || r.glutenRating}</span></div>
+        <div class="review-item-top"><span>${escapeHtml(r.name)}</span><span>⭐${Number(r.rating) || '?'} · ${escapeHtml(STATUS_LABELS[r.glutenRating] || r.glutenRating)}</span></div>
         ${r.comment ? `<div class="review-item-comment">${escapeHtml(r.comment)}</div>` : ''}
         <button class="review-report-btn" data-review-id="${escapeHtml(r.id || '')}" style="margin-top:4px; background:none; border:none; padding:0; font-size:11px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;">Signaler cet avis</button>
         ${isAdmin() ? `<button class="review-delete-btn" data-review-id="${escapeHtml(r.id || '')}" style="margin-top:4px; margin-left:10px; background:none; border:none; padding:0; font-size:11px; color:#C24632; text-decoration:underline; cursor:pointer;">🗑️ Supprimer (admin)</button>`
@@ -2656,7 +2700,7 @@ async function loadReviewsPanel(restaurantId, panel){
         btn.textContent = data.hidden ? 'Avis masqué' : 'Signalé, merci';
         if (data.hidden){
           panel.dataset.loaded = '';
-          setTimeout(() => refreshRestoAfterReviewChange(restaurantId, panel), 600);
+          refreshRestoAfterReviewChange(restaurantId, panel, { justDeletedId: reviewId });
         }
       } catch(e){
         btn.disabled = false;
@@ -2686,7 +2730,7 @@ async function loadReviewsPanel(restaurantId, panel){
           return;
         }
         panel.dataset.loaded = '';
-        refreshRestoAfterReviewChange(restaurantId, panel);
+        refreshRestoAfterReviewChange(restaurantId, panel, { justDeletedId: reviewId });
       } catch(e){
         btn.disabled = false;
         btn.textContent = '🗑️ Supprimer (admin)';
@@ -2714,7 +2758,7 @@ async function loadReviewsPanel(restaurantId, panel){
           alert(resp.status === 403 ? "Cet avis n'a pas été publié avec ton compte Google." : "Erreur lors de la suppression.");
           return;
         }
-        refreshRestoAfterReviewChange(restaurantId, panel);
+        refreshRestoAfterReviewChange(restaurantId, panel, { justDeletedId: reviewId });
       } catch(e){
         btn.disabled = false; btn.textContent = 'Supprimer mon avis';
         alert("Connexion impossible.");
@@ -2778,7 +2822,7 @@ async function loadReviewsPanel(restaurantId, panel){
         }
         msg.className = 'review-msg ok'; msg.textContent = 'Avis publié, merci !';
         panel.dataset.loaded = '';
-        setTimeout(() => refreshRestoAfterReviewChange(restaurantId, panel), 800);
+        refreshRestoAfterReviewChange(restaurantId, panel, { justPosted: data.review });
       } catch(e){
         msg.className = 'review-msg err'; msg.textContent = 'Connexion impossible.';
       }
@@ -2879,6 +2923,7 @@ async function actOnPendingReview(restaurantId, reviewId, action){
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ restaurantId, reviewId, action, idToken: googleUser.idToken })
     });
+    if (resp.status === 401 || resp.status === 403){ expireSession(); return; }
     if (!resp.ok){ alert("Erreur, réessaie."); return; }
     pendingReviewsCache = pendingReviewsCache.filter(p => !(p.restaurantId === restaurantId && p.review.id === reviewId));
     renderRestoAdminZone();
@@ -2896,11 +2941,11 @@ function renderPendingReviewsPanel(){
     const r = p.review;
     return `<div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:8px;">
         <div style="font-size:12.5px; font-weight:700;">${escapeHtml(restoName)}</div>
-        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(r.name || '')} · ${escapeHtml(String(r.rating || ''))}/5 · ${escapeHtml(r.glutenRating || '')} · ${r.reportCount || '?'} signalement(s)</div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(r.name || '')} · ${escapeHtml(String(r.rating || ''))}/5 · ${escapeHtml(r.glutenRating || '')} · ${Number(r.reportCount) || '?'} signalement(s)</div>
         ${r.comment ? `<div style="font-size:12.5px; margin-top:4px;">${escapeHtml(r.comment)}</div>` : ''}
         <div style="display:flex; gap:8px; margin-top:8px;">
-          <button class="act btn-secondary" style="flex:1; padding:7px; font-size:12px;" onclick="actOnPendingReview('${p.restaurantId}','${r.id}','restore')">✅ Restaurer</button>
-          <button class="act" style="flex:1; padding:7px; font-size:12px; background:#FAE6E1; color:#8a2e1f; border:1px solid #C24632;" onclick="actOnPendingReview('${p.restaurantId}','${r.id}','delete')">🗑️ Supprimer</button>
+          <button class="act btn-secondary pending-act" data-resto="${escapeHtml(p.restaurantId)}" data-review="${escapeHtml(r.id)}" data-action="restore" style="flex:1; padding:7px; font-size:12px;">✅ Restaurer</button>
+          <button class="act pending-act" data-resto="${escapeHtml(p.restaurantId)}" data-review="${escapeHtml(r.id)}" data-action="delete" style="flex:1; padding:7px; font-size:12px; background:#FAE6E1; color:#8a2e1f; border:1px solid #C24632;">🗑️ Supprimer</button>
         </div>
       </div>`;
   }).join('');
@@ -2913,10 +2958,14 @@ function renderRestoAdminZone(){
   if (isAdmin()){
     const count = pendingReviewsCache.length;
     const badge = count > 0
-      ? ` · <span style="cursor:pointer; text-decoration:underline;" onclick="pendingPanelOpen = !pendingPanelOpen; renderRestoAdminZone();">⚠️ ${count} avis à modérer ${pendingPanelOpen ? '▲' : '▼'}</span>`
+      ? ` · <button type="button" id="pendingToggleBtn" style="border:none; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline;">⚠️ ${count} avis à modérer ${pendingPanelOpen ? '▲' : '▼'}</button>`
       : '';
     zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}</div>
       ${pendingPanelOpen ? renderPendingReviewsPanel() : ''}`;
+    const toggle = document.getElementById('pendingToggleBtn');
+    if (toggle) toggle.addEventListener('click', () => { pendingPanelOpen = !pendingPanelOpen; renderRestoAdminZone(); });
+    zone.querySelectorAll('.pending-act').forEach(b => b.addEventListener('click', () =>
+      actOnPendingReview(b.dataset.resto, b.dataset.review, b.dataset.action)));
     return;
   }
   if (googleUser){
