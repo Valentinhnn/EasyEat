@@ -2462,10 +2462,9 @@ function recenterMapOnFilters(ville, quartier){
 async function initRestoMapIfNeeded(){
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
   restoMap = L.map('restoMap', { tap: true }).setView([45.7620, 4.8320], 12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    subdomains: 'abcd',
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(restoMap);
 
   applyOsmCacheToRestoData(); // horaires/téléphone déjà en cache local, avant le tout premier rendu
