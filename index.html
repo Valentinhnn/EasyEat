@@ -3226,6 +3226,9 @@ async function generateRecipe(){
   statusRecipe.classList.add('active');
   const recipeGenerateBtnOriginalText = recipeGenerateBtn.textContent;
   recipeGenerateBtn.textContent = 'Génération en cours…';
+  // Aux heures chargées, le modèle de secours met ~45 s : on rassure au lieu de laisser croire à un plantage.
+  const statusRecipeText = statusRecipe.querySelector('span');
+  const slowRecipeTimer = setTimeout(() => { statusRecipeText.textContent = "Beaucoup de monde en ce moment, ça peut prendre jusqu'à une minute…"; }, 12000);
 
   try{
     const resp = await fetch(`${WORKER_URL}/api/analyze`, {
@@ -3253,6 +3256,8 @@ async function generateRecipe(){
     errorRecipe.classList.add('active');
   } finally {
     recipeInFlight = false;
+    clearTimeout(slowRecipeTimer);
+    statusRecipeText.textContent = 'Génération en cours…';
     statusRecipe.classList.remove('active');
     recipeGenerateBtn.disabled = false;
     recipeGenerateBtn.textContent = recipeGenerateBtnOriginalText;
