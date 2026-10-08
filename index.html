@@ -1884,7 +1884,6 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
-  501: 'safe',   // Five, épicerie/restaurant 100% sans gluten
   502: 'safe',   // Chez Grégoire, pâtisserie 100% sans gluten
   503: 'safe',   // Sans Gluten Pizza Epicerie, 100% sans gluten
   504: 'safe',   // Les Gasteliers, boulangerie 100% sans gluten
@@ -1904,14 +1903,110 @@ const DEFAULT_STATUSES = {
   173: 'mixed',  // Crêperie Marie Morgane, déjà dans la base Geoapify, galettes sans gluten
 
   // Annecy
-  518: 'safe',   // L'histoire du Sept, équipement de cuisine dédié, pain sans gluten dispo
-  519: 'safe',   // Punch, avis explicite "amazing gluten free food"
   520: 'mixed',  // le tandem, pizza sans gluten sur demande, pas dédié
   521: 'mixed',  // chez Frantz, mentionné par plusieurs guides cœliaques
   522: 'mixed',  // Le Chalet, options indiquées au menu, personnel informé, pas dédié
   523: 'mixed',  // La Boussole (Sevrier), options sans gluten mentionnées
   524: 'mixed',  // Abbaye de Talloires, gastronomique, options sans gluten sur demande
   525: 'mixed',  // Lac & Montagne (Saint-Jorioz), mentionné par la communauté cœliaque
+
+  // Paris + ajouts Lyon (version du 1er sept., rétablis le 8 oct. 2026)
+  580: 'safe',   // Little Nonna, avis "the whole restaurant was gluten-free"
+  581: 'safe',   // Tasca, avis "the menu is completely gluten free and organic"
+  582: 'safe',   // La Sajerie, avis "100% gluten-free Lebanese food"
+  583: 'safe',   // Café Mareva, avis "Completely gluten free café"
+  585: 'safe',   // Su Misura, avis "EVERYTHING is gluten free"
+  586: 'safe',   // Judy Rousseau, avis "The whole menu is gluten-free"
+  587: 'safe',   // Judy (Fleurus), même enseigne, menu sans gluten
+  589: 'safe',   // Copains (Blancs Manteaux), boulangerie sans gluten (même enseigne que id 505 à Lyon)
+  593: 'safe',   // Judy - Comptoir Vosges, même enseigne
+  594: 'safe',   // La Manufacture du Sans Gluten, boulangerie 100% sans gluten
+  598: 'safe',   // Boulangerie Chambelland (Ternaux), avis "100% GLUTEN FREE"
+  599: 'safe',   // Maison Plume, pâtisserie sans gluten/sucre
+  600: 'safe',   // Copains (Tiquetonne), même enseigne
+  603: 'safe',   // Clémentine Oliver, boulangerie sans gluten (nom explicite)
+  605: 'safe',   // Noglu (Basfroi), avis "100% GLUTEN FREE"
+  611: 'safe',   // Noglu (Grenelle), même enseigne, avis "100% gluten free"
+  613: 'safe',   // Chambelland (Brochant), même enseigne que id 598
+  579: 'mixed',  // Loulou, avis "lots of gluten free options" mais pas dédié
+  584: 'mixed',  // La Crème de Paris Notre-Dame, crêperie classique, galette possible
+  592: 'mixed',  // Ground To Grow, végan avec options sans gluten mentionnées
+  604: 'mixed',  // Il Quadrifoglio, pizza/pâtes sans gluten sur demande (supplément), pas dédié
+  615: 'mixed',  // Tigermilk Batignolles, même enseigne que id 506 à Lyon
+  616: 'mixed',  // Caramel Sarrasin, galettes sarrasin, pas dédié
+  617: 'mixed',  // Crêperie Paris La Sarrasine, galette sarrasin possible
+  618: 'mixed',  // Le Sarrasin, galettes sarrasin explicitement mentionnées
+  619: 'mixed',  // La Crêperie de Josselin, crêperie bretonne classique
+  620: 'mixed',  // Krügen Gardette, galettes bretonnes classiques
+  621: 'mixed',  // Crêperie Le Goéland d'Aligre, galettes sarrasin
+  622: 'mixed',  // Disco Crêpes, crêperie classique
+  629: 'mixed',  // GreenLab, avis "caters for Gluten-Free, very accommodating", pas dédié
+  630: 'mixed',  // Le Zinc à Burger (République), pain burger sans gluten dispo, pas dédié
+  631: 'mixed',  // Le Zinc à Burger (Part-Dieu), même enseigne
+  633: 'mixed',  // Bagel Corner (Victor Hugo), avis explicite sur bagels sans gluten + vigilance contamination croisée
+  634: 'mixed',  // Bagel Corner (Part-Dieu), même enseigne
+
+  // Recherche web du 8 oct. 2026 (sources dans chaque commentaire)
+  145: 'mixed',  // Côté Sushi — Sauce sans gluten à la place de la sauce soja (Celiaquita)
+  93: 'mixed',  // Comptoir sauvage — Gâteaux et plats sans gluten annoncés, cuisine mixte (Glutons, Audrey Foodies, The Good Seat sept. 2026)
+  635: 'safe',   // Chez Grégoire (Croix-Rousse) — Pâtisserie-brunch 100% sans gluten, même enseigne que #502 (Atly, MyBoulange)
+  636: 'mixed',  // Diploid — Options sans gluten indiquées sur la carte, brunch (Glutons nov. 2025, Audrey Foodies mars 2026)
+  637: 'mixed',  // Toutes les Couleurs — Végétarien bio, nombreux plats sans gluten ou adaptables (Glutons, Audrey Foodies)
+  638: 'mixed',  // Suzette Pancakerie — Galettes 100% sarrasin, options sans gluten et sans lactose (Glutons, Atly)
+  319: 'mixed',  // Against the Grain — Café végan, options sans gluten signalées (Asociación de Celíacos, Atly)
+  639: 'mixed',  // Fruta Madre — Végan, pains et desserts sans gluten faits maison (Atly, Sluurpy 4,9/5)
+  640: 'safe',   // Thaïsil — 100% sans gluten depuis 2021 (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026), Celiaquita)
+  641: 'safe',   // Riz Riz (Marais) — 100% sans gluten et végétalien (GF Alchemist (maj. 31/08/2026), Celiaquita)
+  642: 'safe',   // Riz Riz (Paradis) — 100% sans gluten, même enseigne (GF Alchemist (maj. 31/08/2026))
+  643: 'safe',   // Kapunka (Montorgueil) — Carte 100% sans gluten, bière non SG (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026))
+  644: 'safe',   // Kapunka (Montparnasse) — Carte 100% sans gluten (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026))
+  645: 'safe',   // Kapunka (Cardinet) — Carte 100% sans gluten (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026))
+  646: 'safe',   // CoCoCo — Bento 100% sans gluten, midi seulement (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026), Celiaquita)
+  647: 'safe',   // La Guinguette d'Angèle — 100% sans gluten (GF Alchemist (maj. 31/08/2026), Happy Celiac)
+  648: 'safe',   // Chez Ann — 100% sans gluten, pas de blé sur place (Celiaquita)
+  649: 'safe',   // Sol Semilla — Végan 100% sans gluten (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026))
+  650: 'safe',   // Manicaretti — Italien 100% sans gluten (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026), Happy Celiac)
+  651: 'safe',   // Mon Resto Sans Gluten — 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  652: 'safe',   // Apeti — Végétarien bio 100% sans gluten ; l'adresse du 6e a fermé en 2022 (Glutons (janv. 2026))
+  653: 'safe',   // 42 degrés — Végan cru 100% sans gluten (Glutons (janv. 2026))
+  654: 'safe',   // Café Mareva (République) — 2e adresse, carte entièrement sans gluten (Glutons (janv. 2026), Happy Celiac)
+  655: 'safe',   // La Sajerie (Poncelet) — 2e adresse, libanais 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  656: 'safe',   // Judy (La Grande Épicerie) — Même enseigne que Judy, 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  657: 'safe',   // Noglu (Le Pont Traversé) — 3e adresse Noglu, 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  658: 'safe',   // Copains (Abbesses) — Boulangerie 100% sans gluten (GF Alchemist (maj. 31/08/2026), Glutons (janv. 2026))
+  659: 'safe',   // Copains (Victor Hugo) — Boulangerie 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  660: 'safe',   // Copains (Batignolles) — Boulangerie 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  661: 'safe',   // Copains (Beaugrenelle) — Boulangerie 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  662: 'safe',   // Copains (Le Studio) — Boulangerie 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  663: 'safe',   // Chambelland (La Pompe) — Comptoir Chambelland 100% sans gluten dans une épicerie bio (GF Alchemist (maj. 31/08/2026))
+  664: 'safe',   // Grom (Seine) — Glaces 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  665: 'safe',   // Grom (Montorgueil) — Glaces 100% sans gluten (GF Alchemist (maj. 31/08/2026))
+  666: 'mixed',  // Breizh Café (Marais) — Galettes de sarrasin sans gluten, crêpes au froment aussi (GF Alchemist (maj. 31/08/2026))
+  667: 'mixed',  // Breizh Café (Montorgueil) — Galettes de sarrasin sans gluten (GF Alchemist (maj. 31/08/2026))
+  668: 'mixed',  // Breizh Café (Odéon) — Galettes de sarrasin sans gluten (GF Alchemist (maj. 31/08/2026))
+  669: 'mixed',  // Breizh Café (Abbesses) — Galettes de sarrasin sans gluten (GF Alchemist (maj. 31/08/2026))
+  670: 'mixed',  // Alla Mano — Majorité de la carte sans gluten (GF Alchemist (maj. 31/08/2026))
+  671: 'mixed',  // Amoné (Montmartre) — Carte presque entièrement sans gluten (GF Alchemist (maj. 31/08/2026))
+  672: 'mixed',  // Le Replat Montmartre — Options sans gluten (GF Alchemist (maj. 31/08/2026))
+  673: 'mixed',  // La Florimond — Plats sans gluten signalés « SG » sur la carte (GF Alchemist (maj. 31/08/2026))
+  674: 'mixed',  // La Crème de Paris (Grands Boulevards) — Gaufres et galettes sarrasin sans gluten, même enseigne que #584 (GF Alchemist (maj. 31/08/2026))
+  675: 'mixed',  // Bernadette — Galettes de sarrasin sans gluten (GF Alchemist (maj. 31/08/2026))
+  676: 'mixed',  // Laïa — Options sans gluten midi et soir, desserts non SG (Glutons (janv. 2026))
+  677: 'mixed',  // Le Grenier de Notre Dame — Nombreuses options sans gluten signalées sur la carte en salle (Glutons (janv. 2026))
+  678: 'mixed',  // Sumo — Options sans gluten, risque résiduel minime (Celiaquita)
+  607: 'mixed',  // The Friendly Kitchen — Options sans gluten sur carte végane (GF Alchemist (maj. 31/08/2026))
+  519: 'mixed',  // Punch — Rétrogradé de safe : plats sans gluten signalés sur la carte mais cuisine non dédiée (Celiaquita (vérif. mars 2026)) ; un avis signale une rupture de pain SG
+  518: 'mixed',  // L'histoire du Sept — Rétrogradé de safe : aucune source ne confirme un établissement 100% sans gluten (note d'origine : équipement dédié + pain SG)
+  575: 'mixed',  // The Roster Annecy Centre — Burgers sans gluten (pain en supplément), ustensiles et zone dédiés ; frites NON sans gluten (Celiaquita (vérif. mars 2026))
+  538: 'mixed',  // Haven — Presque tous les plats adaptables sans gluten, personnel formé (Celiaquita (vérif. mars 2026))
+  567: 'mixed',  // Le Tanoué — Galettes de sarrasin sans gluten ajouté, ustensiles séparés (Campings Annecy)
+  542: 'mixed',  // Sapaudia — Pâtes et pizzas sans gluten (avis, Atly)
+  679: 'safe',   // Liber'Art — Pâtisserie-traiteur 100% sans gluten, à emporter, mar-sam 10h-19h (liber-art.fr, Campings Annecy)
+  680: 'mixed',  // Slake Coffee — Petits-déjeuners, déjeuners et pâtisseries maison sans gluten (Celiaquita (vérif. mars 2026))
+  681: 'mixed',  // La Crêperie d'Annecy-le-Vieux — Galettes sans gluten aux ingrédients bio locaux (Atly, Gluten Free Eats)
+  682: 'mixed',  // The Roster (Annecy-le-Vieux) — Pain burger sans gluten, même enseigne que #575 ; frites non SG (Atly)
+  683: 'mixed',  // La Taqueria by Los Primos — Options de carte sans gluten (Atly)
+  684: 'mixed',  // La Galéjade — Options sans gluten sur demande, pas de carte dédiée (Find Me Gluten Free)
 };
 
 let curatedStatuses = {};      // statut renseigné par l'admin (toi), via /api/resto-status
@@ -2424,6 +2519,7 @@ function cuisineIcon(cuisine){
   if (c.includes('italien') || c.includes('pizz')) return '🍕';
   if (c.includes('boulangerie') || c.includes('café') || c.includes('brunch')) return '🥐';
   if (c.includes('mexicain')) return '🌮';
+  if (c.includes('glac')) return '🍨';
   if (c.includes('végé') || c.includes('végan')) return '🥗';
   if (c.includes('sandwich')) return '🥪';
   if (c.includes('grill') || c.includes('steak')) return '🥩';
