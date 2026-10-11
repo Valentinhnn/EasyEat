@@ -471,6 +471,14 @@
   .badge.check{ background: var(--check-bg); color: var(--check); }
   .badge.danger{ background: var(--danger-bg); color: var(--danger); }
   .dish-reason{ font-size:13px; color: var(--ink-soft); line-height:1.5; margin-top:6px; }
+  .suggest-zone{ margin:14px 0 4px; }
+  .suggest-zone > button{ width:100%; padding:10px; font-size:13.5px; }
+  #suggestBox{ margin-top:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background: var(--surface); }
+  #suggestBox label{ display:block; font-size:12.5px; font-weight:700; margin:8px 0 3px; }
+  #suggestBox input, #suggestBox select, #suggestBox textarea{ width:100%; box-sizing:border-box; font:inherit; font-size:14px; padding:8px; border:1px solid var(--line); border-radius:8px; background: var(--bg); color: var(--ink); }
+  .resto-actions{ display:flex; gap:8px; margin-top:6px; }
+  .resto-actions a{ font-size:12.5px; font-weight:700; text-decoration:none; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); }
+  .dish-ask{ font-size:13px; line-height:1.5; margin-top:8px; padding:8px 10px; border-radius:8px; background: var(--surface); border:1px dashed var(--line); }
   .share-btn{
     margin-top:10px; font-family: inherit; font-size:12px; font-weight:700;
     padding:7px 12px; border-radius:8px; border:1px solid var(--line);
@@ -936,6 +944,11 @@
     <div class="resto-count" id="restoCount"></div>
     <div id="restoList"></div>
 
+    <div class="suggest-zone">
+      <button type="button" id="suggestToggleBtn" class="btn-secondary">➕ Un restaurant manque ? Propose-le</button>
+      <div id="suggestBox" style="display:none;"></div>
+    </div>
+
     <div class="disclaimer">
       <strong>Important :</strong> les statuts gluten sont ajoutés manuellement par les organisateurs d'EasyEat, pas vérifiés en continu. Un restaurant "safe" peut changer de recette. Vérifiez toujours sur place.
     </div>
@@ -1107,7 +1120,8 @@ function initGoogleSignIn(){
       document.querySelectorAll('.reviews-panel.active').forEach(p => {
         loadReviewsPanel(p.id.replace('reviews-panel-', ''), p);
       });
-      if (isAdmin()) fetchPendingReviews();
+      if (isAdmin()) { fetchPendingReviews(); fetchSuggestions(); }
+      if (suggestOpen) renderSuggestBox();
       renderRestoList(); // révèle l'UI admin immédiatement si le compte connecté est le tien
     }
   });
@@ -1259,6 +1273,28 @@ resetBtnMenu.addEventListener('click', () => {
   errorMenu.classList.remove('active');
 });
 
+// Question précise à poser au serveur pour un plat « à vérifier », choisie
+// d'après le nom du plat puis la raison donnée par l'IA (1re règle qui colle).
+const WAITER_QUESTIONS = [
+  [/farin|escalope|meuni|piccata|saltimbocca/, "La viande ou le poisson est-il passé dans la farine avant la cuisson ?"],
+  [/sarrasin|galette/, "La galette est-elle 100 % sarrasin, sans farine de blé, et cuite sur une plaque à part ?"],
+  [/frit|friture|beignet|tempura|falafel|pakora|samoussa/, "La friture se fait-elle dans une huile à part, où rien de pané ni de fariné n'est cuit ?"],
+  [/soja|teriyaki|hoisin|huître|miso|ponzu|gochujang/, "La sauce soja utilisée est-elle sans gluten (tamari) ?"],
+  [/saucisse|boudin|merguez|chorizo|andouillette|terrine|pâté|farce|boulette/, "Y a-t-il de la farine, de la chapelure ou du pain dans la préparation ?"],
+  [/pain|tartine|burger|sandwich|croûton|toast/, "Peut-on me le servir sans pain, ou avec un pain sans gluten ?"],
+  [/sauce|jus|lié|velouté|roux|crème|béchamel/, "La sauce est-elle liée avec de la farine, ou faite avec un fond ou un cube du commerce ?"],
+  [/bouillon|soupe|potage|fond/, "Le bouillon est-il fait maison, ou avec un cube ou un fond du commerce ?"],
+  [/bière|malt|orge|seigle|avoine/, "Ce plat contient-il de la bière, du malt, de l'orge, du seigle ou de l'avoine ?"],
+];
+function waiterQuestion(d){
+  for (const text of [d.plat, d.raison]){
+    const t = String(text || '').toLowerCase();
+    const hit = WAITER_QUESTIONS.find(([re]) => re.test(t));
+    if (hit) return hit[1];
+  }
+  return "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?";
+}
+
 analyzeBtnMenu.addEventListener('click', async () => {
   if (!menuBase64) return;
   errorMenu.classList.remove('active'); resultsMenu.classList.remove('active');
@@ -1281,6 +1317,7 @@ analyzeBtnMenu.addEventListener('click', async () => {
             <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
           </div>
           <div class="dish-reason">${escapeHtml(d.raison)}</div>
+          ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »</div>` : ''}
           <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
         card.querySelector('.share-btn').addEventListener('click', () => {
           shareText(
@@ -2151,7 +2188,7 @@ async function initRestoMapIfNeeded(){
   RESTO_DATA.forEach(r => {
     const marker = L.circleMarker([r.lat, r.lon], markerStyle('unknown'))
       .addTo(restoMap)
-      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:var(--ink-soft);font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${safeUrl(r.site) ? `<br><a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Google Maps</a>`);
+      .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:var(--ink-soft);font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}${safeUrl(r.site) ? `<br><a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener" style="font-size:12px;">🔗 Voir la carte</a>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Google Maps</a> · <a href="${directionsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">🧭 Itinéraire</a>`);
     marker.on('click', () => selectRestoFromMap(r.id));
     restoMarkers[r.id] = marker;
   });
@@ -2536,6 +2573,14 @@ function cuisineIcon(cuisine){
   return '🍽️';
 }
 
+function directionsUrl(r){
+  return `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}`;
+}
+// OSM donne parfois plusieurs numéros séparés par « ; » : on garde le premier.
+function telUrl(r){
+  const n = String(r.telephone || '').split(/[;,]/)[0].replace(/[^+0-9]/g, '');
+  return n.length >= 8 ? 'tel:' + n : '';
+}
 function googleMapsUrl(r){
   const query = r.adresse ? `${r.nom}, ${r.adresse}` : `${r.nom}, ${r.ville || 'Lyon'}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -2646,6 +2691,126 @@ function renderPendingReviewsPanel(){
   return `<div style="margin-top:10px;">${items}</div>`;
 }
 
+// --- Restaurants manquants proposés par les visiteurs ---
+let suggestionsCache = [];
+let suggestPanelOpen = false;
+let suggestOpen = false;
+const SUGGEST_STATUS_LABELS = { safe: '100 % sans gluten', mixed: 'Options sans gluten', unknown: 'Ne sait pas' };
+
+async function fetchSuggestions(){
+  if (!isAdmin()) return;
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/suggestions/list`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: googleUser.idToken })
+    });
+    const data = await resp.json();
+    suggestionsCache = resp.ok ? (data.suggestions || []) : [];
+  } catch(e){ suggestionsCache = []; }
+  renderRestoAdminZone();
+}
+
+async function markSuggestionDone(id){
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/suggestions/done`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, idToken: googleUser.idToken })
+    });
+    if (resp.status === 401 || resp.status === 403){ expireSession(); return; }
+    if (!resp.ok){ alert("Erreur, réessaie."); return; }
+    suggestionsCache = suggestionsCache.filter(x => x.id !== id);
+    renderRestoAdminZone();
+  } catch(e){ alert("Erreur réseau, réessaie."); }
+}
+
+function renderSuggestionsPanel(){
+  return `<div style="margin-top:10px;">${suggestionsCache.map(x => `<div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:8px;">
+      <div style="font-size:12.5px; font-weight:700;">${escapeHtml(x.nom)} · ${escapeHtml(x.ville)}</div>
+      <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(SUGGEST_STATUS_LABELS[x.statut] || x.statut)} · proposé par ${escapeHtml(x.name || '?')} le ${escapeHtml(x.date || '')}</div>
+      ${x.adresse ? `<div style="font-size:12.5px; margin-top:4px;">📍 ${escapeHtml(x.adresse)}</div>` : ''}
+      ${x.commentaire ? `<div style="font-size:12.5px; margin-top:4px;">${escapeHtml(x.commentaire)}</div>` : ''}
+      <button class="act btn-secondary suggest-done" data-id="${escapeHtml(x.id)}" style="margin-top:8px; width:100%; padding:7px; font-size:12px;">✅ Traitée (retirer de la liste)</button>
+    </div>`).join('')}</div>`;
+}
+
+function renderSuggestBox(){
+  const box = document.getElementById('suggestBox');
+  if (googleUser && !isSessionValid()) googleUser = null;
+  if (!googleUser){
+    box.innerHTML = `<div class="gsi-slot" id="gsi-slot-suggest"></div>
+      <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">Connexion Google requise pour proposer un restaurant (évite le spam).</div>`;
+    if (window.google && !GOOGLE_CLIENT_ID.startsWith("REMPLACE")){
+      google.accounts.id.renderButton(document.getElementById('gsi-slot-suggest'), { theme: 'outline', size: 'medium' });
+    }
+    return;
+  }
+  box.innerHTML = `<div style="font-size:12.5px;">Connecté comme <strong>${escapeHtml(googleUser.name)}</strong>. Chaque proposition est vérifiée avant d'être ajoutée.</div>
+    <label for="sgNom">Nom du restaurant</label>
+    <input id="sgNom" maxlength="80" autocomplete="off">
+    <label for="sgVille">Ville</label>
+    <input id="sgVille" maxlength="40" list="sgVilles" autocomplete="off">
+    <datalist id="sgVilles"><option value="Lyon"><option value="Annecy"><option value="Paris"></datalist>
+    <label for="sgAdresse">Adresse (optionnel)</label>
+    <input id="sgAdresse" maxlength="150" autocomplete="off">
+    <label for="sgStatut">Sans gluten ?</label>
+    <select id="sgStatut">
+      <option value="safe">100 % sans gluten</option>
+      <option value="mixed" selected>Options sans gluten (cuisine mixte)</option>
+      <option value="unknown">Je ne sais pas</option>
+    </select>
+    <label for="sgCommentaire">Commentaire ou source (optionnel)</label>
+    <textarea id="sgCommentaire" rows="2" maxlength="300" placeholder="Ex. : carte sans gluten, friteuse dédiée, site web…"></textarea>
+    <div class="cf-turnstile" style="margin-top:8px;"></div>
+    <button type="button" id="sgSubmit" style="margin-top:10px; width:100%;">Envoyer la proposition</button>
+    <div class="review-msg" id="sgMsg" style="display:none;"></div>`;
+
+  let widgetId = null;
+  const ts = box.querySelector('.cf-turnstile');
+  const renderTs = () => { widgetId = window.turnstile.render(ts, { sitekey: TURNSTILE_SITE_KEY }); };
+  if (window.turnstile) renderTs();
+  else { const t = setInterval(() => { if (window.turnstile){ clearInterval(t); renderTs(); } }, 200); }
+
+  const msg = document.getElementById('sgMsg');
+  const show = (cls, text) => { msg.style.display = 'block'; msg.className = 'review-msg ' + cls; msg.textContent = text; };
+  document.getElementById('sgSubmit').addEventListener('click', async () => {
+    if (!isSessionValid()){ expireSession(); renderSuggestBox(); return; }
+    const nom = document.getElementById('sgNom').value.trim();
+    const ville = document.getElementById('sgVille').value.trim();
+    if (nom.length < 2 || ville.length < 2){ show('err', "Indique au moins le nom et la ville."); return; }
+    const turnstileToken = (widgetId !== null && window.turnstile) ? window.turnstile.getResponse(widgetId) : null;
+    if (!turnstileToken){ show('err', "Merci de valider la vérification anti-robot avant d'envoyer."); return; }
+    show('', 'Envoi…');
+    try{
+      const resp = await fetch(`${WORKER_URL}/api/suggestions`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nom, ville,
+          adresse: document.getElementById('sgAdresse').value,
+          statut: document.getElementById('sgStatut').value,
+          commentaire: document.getElementById('sgCommentaire').value,
+          idToken: googleUser.idToken, turnstileToken
+        })
+      });
+      if (resp.status === 401){ expireSession(); renderSuggestBox(); return; }
+      if (!resp.ok){
+        const data = await resp.json().catch(() => ({}));
+        show('err', data.error === 'rate_limited' ? "Trop de propositions aujourd'hui, réessaie demain."
+          : data.error === 'turnstile_failed' ? "Vérification anti-robot invalide, réessaie."
+          : "Erreur lors de l'envoi, réessaie.");
+        if (widgetId !== null) window.turnstile.reset(widgetId);
+        return;
+      }
+      box.innerHTML = `<div class="review-msg ok" style="display:block;">Merci ! ${escapeHtml(nom)} sera vérifié puis ajouté à la carte.</div>`;
+    } catch(e){ show('err', 'Connexion impossible.'); }
+  });
+}
+
+document.getElementById('suggestToggleBtn').addEventListener('click', () => {
+  suggestOpen = !suggestOpen;
+  document.getElementById('suggestBox').style.display = suggestOpen ? 'block' : 'none';
+  if (suggestOpen) renderSuggestBox();
+});
+
 function renderRestoAdminZone(){
   const zone = document.getElementById('restoAdminZone');
   if (!zone) return;
@@ -2654,8 +2819,15 @@ function renderRestoAdminZone(){
     const badge = count > 0
       ? ` · <button type="button" id="pendingToggleBtn" style="border:none; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline;">⚠️ ${count} avis à modérer ${pendingPanelOpen ? '▲' : '▼'}</button>`
       : '';
-    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}</div>
-      ${pendingPanelOpen ? renderPendingReviewsPanel() : ''}`;
+    const sBadge = suggestionsCache.length > 0
+      ? ` · <button type="button" id="suggestAdminToggle" style="border:none; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline;">📬 ${suggestionsCache.length} restaurant(s) proposé(s) ${suggestPanelOpen ? '▲' : '▼'}</button>`
+      : '';
+    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}${sBadge}</div>
+      ${pendingPanelOpen ? renderPendingReviewsPanel() : ''}
+      ${suggestPanelOpen ? renderSuggestionsPanel() : ''}`;
+    const sToggle = document.getElementById('suggestAdminToggle');
+    if (sToggle) sToggle.addEventListener('click', () => { suggestPanelOpen = !suggestPanelOpen; renderRestoAdminZone(); });
+    zone.querySelectorAll('.suggest-done').forEach(b => b.addEventListener('click', () => markSuggestionDone(b.dataset.id)));
     const toggle = document.getElementById('pendingToggleBtn');
     if (toggle) toggle.addEventListener('click', () => { pendingPanelOpen = !pendingPanelOpen; renderRestoAdminZone(); });
     zone.querySelectorAll('.pending-act').forEach(b => b.addEventListener('click', () =>
@@ -2750,10 +2922,14 @@ function renderRestoList(opts = {}){
           <div class="resto-meta">${escapeHtml(r.cuisine)} · ${escapeHtml(r.quartier)} · ${STATUS_LABELS[status]}${communityDriven ? ' (vote communauté)' : ''}${preselected ? ' · présélectionné' : ''}${userCoords ? ' · 📍 ' + distanceKm(userCoords.lat, userCoords.lon, r.lat, r.lon).toFixed(1) + ' km' : ''}</div>
           ${r.adresse ? `<div class="resto-meta" style="margin-top:1px;">📍 ${escapeHtml(r.adresse)}</div>` : ''}
           ${r.horaires ? `<div class="resto-meta" style="margin-top:1px;">🕒 ${escapeHtml(r.horaires)}</div>` : ''}
-          ${r.telephone ? `<div class="resto-meta" style="margin-top:1px;">📞 ${escapeHtml(r.telephone)}</div>` : ''}
+          ${r.telephone ? `<div class="resto-meta" style="margin-top:1px;">📞 ${telUrl(r) ? `<a href="${telUrl(r)}" style="color:inherit;">${escapeHtml(r.telephone)}</a>` : escapeHtml(r.telephone)}</div>` : ''}
           <div style="display:flex; gap:12px; margin-top:2px;">
             ${safeUrl(r.site) ? `<a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">🔗 Voir la carte du restaurant</a>` : ''}
             <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px; color: var(--brand-dark); text-decoration:underline;">📍 Voir sur Google Maps</a>
+          </div>
+          <div class="resto-actions">
+            <a href="${directionsUrl(r)}" target="_blank" rel="noopener">🧭 Itinéraire</a>
+            ${telUrl(r) ? `<a href="${telUrl(r)}">📞 Appeler</a>` : ''}
           </div>
         </div>
         <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '⭐' : '☆'}</button>
@@ -3054,6 +3230,7 @@ function drawTonightPick(){
       <div class="tonight-result-actions">
         <button type="button" class="tonight-reroll" id="tonightRerollBtn">🎲 Relancer</button>
         <a href="${googleMapsUrl(pick)}" target="_blank" rel="noopener">📍 Google Maps</a>
+        <a href="${directionsUrl(pick)}" target="_blank" rel="noopener">🧭 Itinéraire</a>
       </div>
     </div>
   `;
