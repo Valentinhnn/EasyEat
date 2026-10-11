@@ -1366,14 +1366,21 @@ resetBtnMenu.addEventListener('click', () => {
 // Question précise à poser au serveur pour un plat « à vérifier », choisie
 // d'après le nom du plat puis la raison donnée par l'IA (1re règle qui colle).
 const WAITER_QUESTIONS = [
-  [/farin|escalope|meuni|piccata|saltimbocca/, "La viande ou le poisson est-il passé dans la farine avant la cuisson ?"],
-  [/sarrasin|galette/, "La galette est-elle 100 % sarrasin, sans farine de blé, et cuite sur une plaque à part ?"],
-  [/frit|friture|beignet|tempura|falafel|pakora|samoussa/, "La friture se fait-elle dans une huile à part, où rien de pané ni de fariné n'est cuit ?"],
-  [/soja|teriyaki|hoisin|huître|miso|ponzu|gochujang/, "La sauce soja utilisée est-elle sans gluten (tamari) ?"],
-  [/saucisse|boudin|merguez|chorizo|andouillette|terrine|pâté|farce|boulette/, "Y a-t-il de la farine, de la chapelure ou du pain dans la préparation ?"],
-  [/pain|tartine|burger|sandwich|croûton|toast/, "Peut-on me le servir sans pain, ou avec un pain sans gluten ?"],
-  [/sauce|jus|lié|velouté|roux|crème|béchamel/, "La sauce est-elle liée avec de la farine, ou faite avec un fond ou un cube du commerce ?"],
-  [/bouillon|soupe|potage|fond/, "Le bouillon est-il fait maison, ou avec un cube ou un fond du commerce ?"],
+  [/farin|escalope|meuni|piccata|saltimbocca|grenouille|truite aux amandes/, "La viande ou le poisson est-il passé dans la farine avant la cuisson ?"],
+  [/sarrasin|galette|blini/, "La galette (ou les blinis) est-elle 100 % sarrasin, sans farine de blé, et cuite sur une plaque à part ?"],
+  [/quesadilla|fajita|taco|tortilla|burrito|enchilada/, "Les tortillas sont-elles 100 % maïs, sans farine de blé ?"],
+  [/frit|friture|beignet|tempura|falafel|pakora|samoussa|samosa|chips|\bnems?\b/, "La friture se fait-elle dans une huile à part, où rien de pané ni de fariné n'est cuit ?"],
+  [/soja|teriyaki|hoisin|huître|miso|ponzu|gochujang|sushi|maki|sashimi|pad tha|bo bun|phở|\bpho\b|bibimbap|nouilles|wok|poke/, "La sauce soja utilisée est-elle sans gluten (tamari) ?"],
+  [/tartare|carpaccio/, "L'assaisonnement contient-il de la sauce Worcestershire ou de la sauce soja (qui contiennent du gluten) ?"],
+  [/saucisse|boudin|merguez|chorizo|andouillette|terrine|pâté|charcut|choucroute|petit salé/, "La charcuterie est-elle garantie sans gluten ? Certaines contiennent de la farine ou de la chapelure."],
+  [/farce|boulette|polpette|kefta|pain de viande|hachis/, "Y a-t-il de la farine, de la chapelure ou du pain dans la préparation ?"],
+  [/gratin|moussaka|soufflé|brandade|tartiflette|lasagne|béchamel/, "Le plat contient-il une béchamel (à la farine) ou de la chapelure sur le dessus ?"],
+  [/fondant|brownie|financier|macaron|cannel|mont-blanc|pavlova|gourmand|dame blanche|affogato|gâteau|tarte|biscuit|crumble|clafoutis|cookie|tiramisu|fondue au chocolat|crêpe|glace|brûlée|panna|mousse|dessert/, "Le dessert contient-il de la farine de blé, des biscuits, ou une décoration (gaufrette, crumble) ?"],
+  [/fondue|raclette|aligot/, "Peut-on l'avoir avec des pommes de terre plutôt que du pain, et le fromage est-il sans farine ajoutée ?"],
+  [/pain|tartine|burger|sandwich|croûton|toast|pita|rouille|foie gras|gaspacho|bruschetta/, "Le plat contient-il du pain ou en est-il accompagné ? Peut-on l'avoir sans, ou avec un pain sans gluten ?"],
+  [/sauce|jus|lié|roux|crème|bourguignon|coq au|blanquette|daube|navarin|carbonade|marengo|stroganoff|civet|fricass|osso|ragoût|ragout|mijot|curry|masala|tajine|chili|moutarde|riesling|beurre blanc|morilles|basquaise|marinière/, "La sauce est-elle liée avec de la farine, ou faite avec un fond ou un cube du commerce ?"],
+  [/bouillon|soupe|potage|velouté|\bfonds?\b|risotto|paella|arroz|polenta|lentilles|dhal|pot-au-feu|ficelle/, "Le bouillon (ou la soupe) est-il fait maison, sans farine ni cube ou fond du commerce ?"],
+  [/mariné|marinade|brochette|grillé|magret|confit|gigot|kebab/, "La viande est-elle marinée ou servie avec une sauce ? Les marinades contiennent souvent de la sauce soja ou de la bière."],
   [/bière|malt|orge|seigle|avoine/, "Ce plat contient-il de la bière, du malt, de l'orge, du seigle ou de l'avoine ?"],
 ];
 function waiterQuestion(d){
