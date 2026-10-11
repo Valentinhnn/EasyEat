@@ -499,6 +499,12 @@
   .resto-actions button{ font:inherit; font-size:12.5px; font-weight:700; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); cursor:pointer; }
   .resto-actions{ flex-wrap:wrap; }
   .resto-actions a{ font-size:12.5px; font-weight:700; text-decoration:none; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); }
+  .shop-item{ display:flex; align-items:flex-start; gap:10px; padding:9px 4px; border-bottom:1px solid var(--line); font-size:15px; cursor:pointer; }
+  .shop-item input{ width:20px; height:20px; margin-top:1px; flex-shrink:0; }
+  .shop-item.done .shop-name{ text-decoration:line-through; color: var(--ink-soft); }
+  .shop-qty{ margin-left:auto; color: var(--ink-soft); white-space:nowrap; padding-left:8px; }
+  .shop-warn{ display:block; font-size:12px; color: var(--check); margin-top:2px; }
+  .shop-group{ font-size:13px; font-weight:700; color: var(--brand-dark); margin:16px 0 4px; text-transform:uppercase; letter-spacing:.03em; }
   .menu-tools{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin:-4px 0 12px; }
   .menu-tools .share-btn{ margin-top:0; }
   .waiter-lang{ font-size:12.5px; color: var(--ink-soft); display:flex; align-items:center; gap:6px; }
@@ -1031,6 +1037,7 @@
     </div>
     <button class="act btn-primary" id="recipeGenerateBtn" style="width:100%;">Générer la recette</button>
     <button type="button" class="history-link" id="savedRecipesLink" hidden></button>
+    <button type="button" class="history-link" id="shoppingLink" hidden></button>
     <button type="button" class="panel-link" id="hostCardBtn">🏠 Invité chez quelqu'un ? Envoie-lui la fiche hôte</button>
 
     <div class="status" id="statusRecipe"><div class="spinner"></div><span>Génération en cours…</span></div>
@@ -1099,7 +1106,7 @@ function saveToHistory(type, items, titre){
 function updateHistoryLinks(){
   const n = loadHistory().length;
   document.querySelectorAll('.history-link').forEach(b => {
-    if (b.id === 'savedRecipesLink') return;
+    if (['savedRecipesLink', 'shoppingLink'].includes(b.id)) return;
     b.hidden = n === 0;
     b.textContent = `🕘 Analyses récentes (${n})`;
   });
@@ -3835,17 +3842,21 @@ document.getElementById('travelCardBtn').addEventListener('click', async () => {
 let listOverlayMode = 'history';
 function openListOverlay(mode){
   listOverlayMode = mode;
-  document.getElementById('historyTitle').textContent = mode === 'recipes' ? '📖 Mes recettes' : '🕘 Analyses récentes';
-  if (mode === 'recipes') renderSavedRecipes(); else renderHistory();
+  document.getElementById('historyTitle').textContent = { recipes: '📖 Mes recettes', shopping: '🛒 Liste de courses' }[mode] || '🕘 Analyses récentes';
+  if (mode === 'recipes') renderSavedRecipes(); else if (mode === 'shopping') renderShopping(); else renderHistory();
   document.getElementById('historyOverlay').classList.add('active');
 }
 document.querySelectorAll('.history-link').forEach(b => {
-  if (b.id !== 'savedRecipesLink') b.addEventListener('click', () => openListOverlay('history'));
+  if (!['savedRecipesLink', 'shoppingLink'].includes(b.id)) b.addEventListener('click', () => openListOverlay('history'));
 });
 document.getElementById('historyCloseBtn').addEventListener('click', () => {
   document.getElementById('historyOverlay').classList.remove('active');
 });
 document.getElementById('historyClearBtn').addEventListener('click', () => {
+  if (listOverlayMode === 'shopping'){
+    if (!confirm("Vider toute la liste de courses ?")) return;
+    storeShopping([]); renderShopping(); return;
+  }
   const recipes = listOverlayMode === 'recipes';
   if (!confirm(recipes ? "Supprimer toutes les recettes enregistrées ?" : "Effacer tout l'historique des analyses ?")) return;
   try { localStorage.removeItem(recipes ? RECIPES_KEY : HISTORY_KEY); } catch(e){}
@@ -4122,6 +4133,69 @@ function recipeToText(r){
   lines.push('', "Attention : plan de travail et ustensiles propres, vérifie les étiquettes de chaque produit.", `Recette générée avec EasyEat : ${location.origin}${location.pathname}`);
   return lines.join('\n');
 }
+// Liste de courses : ingrédients des recettes ajoutées, sur l'appareil seulement.
+// ponytail: pas de fusion des quantités entre recettes (unités libres de l'IA).
+const SHOPPING_KEY = 'easyeat_shopping';
+function loadShopping(){
+  try { return JSON.parse(localStorage.getItem(SHOPPING_KEY)) || []; } catch(e){ return []; }
+}
+function storeShopping(list){
+  try { localStorage.setItem(SHOPPING_KEY, JSON.stringify(list)); } catch(e){}
+  updateShoppingLink();
+}
+function updateShoppingLink(){
+  const n = loadShopping().filter(x => !x.done).length;
+  const b = document.getElementById('shoppingLink');
+  b.hidden = loadShopping().length === 0;
+  b.textContent = `🛒 Ma liste de courses (${n})`;
+}
+function addRecipeToShopping(r){
+  const list = loadShopping().filter(x => x.recette !== (r.plat || 'Recette')); // ré-ajouter remplace
+  (r.ingredients || []).forEach(i => list.push({
+    nom: i.nom || '', qty: `${i.quantite ?? ''}${i.unite ? ' ' + i.unite : ''}`.trim(),
+    warn: recipeIngredientNeedsCheck(i.nom), recette: r.plat || 'Recette', done: false
+  }));
+  storeShopping(list);
+}
+function shoppingToText(list){
+  const lines = ['Liste de courses sans gluten (EasyEat)'];
+  [...new Set(list.map(x => x.recette))].forEach(rec => {
+    const items = list.filter(x => x.recette === rec && !x.done);
+    if (!items.length) return;
+    lines.push('', rec + ' :');
+    items.forEach(x => lines.push(`☐ ${x.nom}${x.qty ? ' : ' + x.qty : ''}${x.warn ? ' (version certifiée sans gluten)' : ''}`));
+  });
+  return lines.join('\n');
+}
+function renderShopping(){
+  const list = loadShopping();
+  const box = document.getElementById('historyContent');
+  if (!list.length){ box.innerHTML = '<p style="color:var(--ink-soft);">Liste vide. Ajoute une recette avec « 🛒 Ajouter à ma liste de courses ».</p>'; return; }
+  box.innerHTML = `<div class="recipe-actions" style="margin-top:0;">
+      <button type="button" id="shopShareBtn">🔗 Partager la liste</button>
+      <button type="button" id="shopClearDoneBtn">Retirer les articles cochés</button>
+    </div>` + [...new Set(list.map(x => x.recette))].map(rec => `<div class="shop-group">${escapeHtml(rec)}</div>` +
+      list.map((x, i) => x.recette !== rec ? '' : `<label class="shop-item${x.done ? ' done' : ''}">
+        <input type="checkbox" data-i="${i}" ${x.done ? 'checked' : ''}>
+        <span><span class="shop-name">${escapeHtml(x.nom)}</span>${x.warn ? '<span class="shop-warn">⚠️ Prendre une version certifiée sans gluten</span>' : ''}</span>
+        <span class="shop-qty">${escapeHtml(x.qty)}</span>
+      </label>`).join('')).join('');
+  box.querySelectorAll('input[data-i]').forEach(c => c.addEventListener('change', () => {
+    list[c.dataset.i].done = c.checked;
+    c.closest('.shop-item').classList.toggle('done', c.checked);
+    storeShopping(list);
+  }));
+  document.getElementById('shopShareBtn').addEventListener('click', () => shareText(shoppingToText(list), 'Liste de courses sans gluten'));
+  document.getElementById('shopClearDoneBtn').addEventListener('click', () => { storeShopping(list.filter(x => !x.done)); renderShopping(); });
+}
+function shoppingButtonHandler(r){
+  return (e) => {
+    addRecipeToShopping(r);
+    e.target.textContent = '✅ Ajoutée à la liste de courses';
+    e.target.disabled = true;
+  };
+}
+
 function renderSavedRecipes(){
   const list = loadSavedRecipes();
   const box = document.getElementById('historyContent');
@@ -4131,6 +4205,7 @@ function renderSavedRecipes(){
       ${recipeHtml(r)}
       <div class="recipe-actions">
         <button type="button" data-share="${i}">🔗 Partager</button>
+        <button type="button" data-shop="${i}">🛒 Liste de courses</button>
         <button type="button" data-del="${i}">🗑️ Supprimer</button>
       </div>
     </details>`).join('');
@@ -4138,6 +4213,7 @@ function renderSavedRecipes(){
     const r = list[b.dataset.share];
     shareText(recipeToText(r), r.plat || 'Recette sans gluten');
   }));
+  box.querySelectorAll('[data-shop]').forEach(b => b.addEventListener('click', shoppingButtonHandler(list[b.dataset.shop])));
   box.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
     list.splice(Number(b.dataset.del), 1);
     storeSavedRecipes(list);
@@ -4165,7 +4241,9 @@ function renderRecipeResult(result){
   recipeCard.innerHTML = recipeHtml(result) + `<div class="recipe-actions">
       <button type="button" id="recipeShareBtn">🔗 Partager</button>
       <button type="button" id="recipeSaveBtn">💾 Enregistrer sur mon téléphone</button>
+      <button type="button" id="recipeShopBtn">🛒 Ajouter à ma liste de courses</button>
     </div>`;
+  document.getElementById('recipeShopBtn').addEventListener('click', shoppingButtonHandler(result));
   document.getElementById('recipeShareBtn').addEventListener('click', () => shareText(recipeToText(result), result.plat || 'Recette sans gluten'));
   document.getElementById('recipeSaveBtn').addEventListener('click', (e) => {
     const list = loadSavedRecipes();
@@ -4270,6 +4348,8 @@ document.getElementById('hostCardBtn').addEventListener('click', () => {
 });
 document.getElementById('hostCloseBtn').addEventListener('click', () => document.getElementById('hostOverlay').classList.remove('active'));
 document.getElementById('savedRecipesLink').addEventListener('click', () => openListOverlay('recipes'));
+document.getElementById('shoppingLink').addEventListener('click', () => openListOverlay('shopping'));
+updateShoppingLink();
 document.getElementById('shareFavsBtn').addEventListener('click', shareFavorites);
 updateSavedRecipesLink();
 
