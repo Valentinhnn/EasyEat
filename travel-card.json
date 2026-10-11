@@ -12,7 +12,23 @@
       "Ne pas utiliser de sauce soja, qui contient du blé",
       "Ne pas laisser le pain ou la chapelure toucher mon plat"
     ],
-    "closing": "Si ce n'est pas possible de l'éviter, je ne peux malheureusement pas manger ce plat. Pour moi ce serait une vraie contamination, pas juste une gêne. Un ustensile propre ou une surface nettoyée avant de préparer mon plat suffisent largement."
+    "closing": "Si ce n'est pas possible de l'éviter, je ne peux malheureusement pas manger ce plat. Pour moi ce serait une vraie contamination, pas juste une gêne. Un ustensile propre ou une surface nettoyée avant de préparer mon plat suffisent largement.",
+    "conseils": {
+      "region": "France",
+      "ok": [
+        "Viande ou poisson grillé nature, sans sauce",
+        "Pommes de terre vapeur, purée maison, riz",
+        "Salades composées sans croûtons",
+        "Crème brûlée, mousse au chocolat, île flottante"
+      ],
+      "pieges": [
+        "Sauces liées à la farine (blanquette, bourguignon, béchamel, sauce au vin)",
+        "Viandes et poissons farinés avant cuisson (meunière, escalope)",
+        "Frites cuites dans la même huile que des produits panés",
+        "Croûtons dans les soupes et salades",
+        "Galettes « de sarrasin » souvent coupées avec du blé"
+      ]
+    }
   },
   "en": {
     "label": "English",
@@ -27,7 +43,22 @@
       "Not use soy sauce, which contains wheat",
       "Not let bread or breadcrumbs touch my plate"
     ],
-    "closing": "If this cannot be avoided, I unfortunately cannot eat this dish. For me this would be real contamination, not just an inconvenience. A clean utensil or a surface wiped down before preparing my dish is enough."
+    "closing": "If this cannot be avoided, I unfortunately cannot eat this dish. For me this would be real contamination, not just an inconvenience. A clean utensil or a surface wiped down before preparing my dish is enough.",
+    "conseils": {
+      "region": "Royaume-Uni, Irlande, États-Unis",
+      "ok": [
+        "Steak, poulet grillé, jacket potato (pomme de terre au four)",
+        "Salades sans croûtons ni vinaigrette industrielle",
+        "La mention « GF » est courante : demande s'il existe un protocole pour les cœliaques"
+      ],
+      "pieges": [
+        "Gravy (sauce brune liée à la farine)",
+        "Fish & chips : pâte à la bière et friteuse partagée",
+        "Vinaigre de malt sur les frites, bière",
+        "Saucisses (souvent avec chapelure ou « rusk »)",
+        "Pies, puddings, Yorkshire pudding, scones"
+      ]
+    }
   },
   "es": {
     "label": "Español",
@@ -42,7 +73,22 @@
       "No usar salsa de soja, que contiene trigo",
       "No dejar que el pan o el pan rallado toquen mi plato"
     ],
-    "closing": "Si no es posible evitarlo, lamentablemente no podré comer este plato: para mí sería una contaminación real, no solo una molestia. Basta con un utensilio limpio o una superficie limpiada antes de preparar mi plato."
+    "closing": "Si no es posible evitarlo, lamentablemente no podré comer este plato: para mí sería una contaminación real, no solo una molestia. Basta con un utensilio limpio o una superficie limpiada antes de preparar mi plato.",
+    "conseils": {
+      "region": "Espagne, Amérique latine",
+      "ok": [
+        "Jamón, tortilla de patatas, pulpo a la gallega",
+        "Viandes et poissons a la plancha",
+        "Paella (vérifie le bouillon)",
+        "En Espagne, beaucoup de restaurants affichent « sin gluten »"
+      ],
+      "pieges": [
+        "Croquetas, rebozados (panés), churros",
+        "Pescaíto frito : poisson fariné, friteuse partagée",
+        "Chorizo et morcilla : composition à vérifier",
+        "Tortillas de blé (« de harina ») en Amérique latine, préfère « de maíz »"
+      ]
+    }
   },
   "it": {
     "label": "Italiano",
@@ -57,7 +103,23 @@
       "Non usare la salsa di soia, che contiene grano",
       "Non lasciare che pane o pangrattato tocchino il mio piatto"
     ],
-    "closing": "Se non è possibile evitarlo, purtroppo non potrò mangiare questo piatto: per me sarebbe una vera contaminazione, non solo un fastidio. Basta un utensile pulito o una superficie pulita prima di preparare il mio piatto."
+    "closing": "Se non è possibile evitarlo, purtroppo non potrò mangiare questo piatto: per me sarebbe una vera contaminazione, non solo un fastidio. Basta un utensile pulito o una superficie pulita prima di preparare il mio piatto.",
+    "conseils": {
+      "region": "Italie",
+      "ok": [
+        "Risotto, polenta",
+        "Carpaccio, viandes et poissons grillés",
+        "Gelato (sans cornet), panna cotta",
+        "Très bon pays pour les cœliaques : cherche le logo AIC, pâtes et pizzas « senza glutine » fréquentes"
+      ],
+      "pieges": [
+        "Pâtes, gnocchi, pizza classique",
+        "« Impanato » (pané) et « fritto » (frit, souvent fariné)",
+        "Eau de cuisson des pâtes réutilisée",
+        "Farine dans les sauces et le ragù",
+        "Tiramisu, cantucci, focaccia"
+      ]
+    }
   },
   "de": {
     "label": "Deutsch",
@@ -72,7 +134,22 @@
       "Keine Sojasauce zu verwenden, da sie Weizen enthält",
       "Kein Brot oder Paniermehl meinen Teller berühren zu lassen"
     ],
-    "closing": "Wenn sich das nicht vermeiden lässt, kann ich dieses Gericht leider nicht essen. Für mich wäre das eine echte Kontamination, keine bloße Unannehmlichkeit. Ein sauberes Utensil oder eine gereinigte Oberfläche vor der Zubereitung meines Gerichts reichen völlig aus."
+    "closing": "Wenn sich das nicht vermeiden lässt, kann ich dieses Gericht leider nicht essen. Für mich wäre das eine echte Kontamination, keine bloße Unannehmlichkeit. Ein sauberes Utensil oder eine gereinigte Oberfläche vor der Zubereitung meines Gerichts reichen völlig aus.",
+    "conseils": {
+      "region": "Allemagne, Autriche, Suisse",
+      "ok": [
+        "Pommes de terre nature (Kartoffeln), salades",
+        "Viandes grillées sans sauce",
+        "« glutenfrei » est bien indiqué sur les emballages"
+      ],
+      "pieges": [
+        "Schnitzel (pané)",
+        "Sauces (Soße, Bratensoße) liées à la farine",
+        "Knödel, Spätzle, Brezel",
+        "Saucisses souvent avec chapelure",
+        "Bière, y compris dans les plats"
+      ]
+    }
   },
   "pt": {
     "label": "Português",
@@ -87,7 +164,21 @@
       "Não usar molho de soja, que contém trigo",
       "Não deixar que pão ou farinha de rosca toquem meu prato"
     ],
-    "closing": "Se não for possível evitar isso, infelizmente não poderei comer este prato. Para mim seria uma contaminação real, não apenas um incômodo. Um utensílio limpo ou uma superfície limpa antes de preparar meu prato já é suficiente."
+    "closing": "Se não for possível evitar isso, infelizmente não poderei comer este prato. Para mim seria uma contaminação real, não apenas um incômodo. Um utensílio limpo ou uma superfície limpa antes de preparar meu prato já é suficiente.",
+    "conseils": {
+      "region": "Portugal, Brésil",
+      "ok": [
+        "Poissons et viandes grillés (« grelhado »)",
+        "Riz et pommes de terre, très présents",
+        "Pão de queijo au Brésil (manioc, à vérifier)"
+      ],
+      "pieges": [
+        "Salgados frits (coxinha, rissóis) : pâte au blé",
+        "Pastel de nata et pâtisseries",
+        "Bifana et prego (servis dans du pain)",
+        "Friture partagée"
+      ]
+    }
   },
   "nl": {
     "label": "Nederlands",
@@ -102,7 +193,21 @@
       "Geen sojasaus te gebruiken, want die bevat tarwe",
       "Geen brood of paneermeel mijn bord te laten raken"
     ],
-    "closing": "Als dit niet te vermijden is, kan ik dit gerecht helaas niet eten. Voor mij zou dat echte besmetting zijn, geen klein ongemak. Een schoon keukengerei of een schoongemaakt oppervlak voordat mijn gerecht wordt bereid, is ruim voldoende."
+    "closing": "Als dit niet te vermijden is, kan ik dit gerecht helaas niet eten. Voor mij zou dat echte besmetting zijn, geen klein ongemak. Een schoon keukengerei of een schoongemaakt oppervlak voordat mijn gerecht wordt bereid, is ruim voldoende.",
+    "conseils": {
+      "region": "Pays-Bas, Belgique",
+      "ok": [
+        "Moules (sans le pain)",
+        "Hareng cru (haring)",
+        "« glutenvrij » bien indiqué en magasin"
+      ],
+      "pieges": [
+        "Frites cuites dans la même friteuse que les snacks panés",
+        "Kroketten, bitterballen (panés)",
+        "Gaufres, stroopwafels, speculoos, pannenkoeken",
+        "Bière dans les plats (carbonade flamande)"
+      ]
+    }
   },
   "el": {
     "label": "Ελληνικά",
@@ -117,7 +222,21 @@
       "Να μη χρησιμοποιηθεί σάλτσα σόγιας, καθώς περιέχει σιτάρι",
       "Να μην αφεθεί ψωμί ή τριμμένη φρυγανιά να αγγίξει το πιάτο μου"
     ],
-    "closing": "Αν αυτό δεν μπορεί να αποφευχθεί, δυστυχώς δεν θα μπορέσω να φάω αυτό το πιάτο. Για μένα θα ήταν πραγματική επιμόλυνση, όχι απλή ενόχληση. Ένα καθαρό σκεύος ή μια καθαρισμένη επιφάνεια πριν την προετοιμασία του πιάτου μου αρκούν."
+    "closing": "Αν αυτό δεν μπορεί να αποφευχθεί, δυστυχώς δεν θα μπορέσω να φάω αυτό το πιάτο. Για μένα θα ήταν πραγματική επιμόλυνση, όχι απλή ενόχληση. Ένα καθαρό σκεύος ή μια καθαρισμένη επιφάνεια πριν την προετοιμασία του πιάτου μου αρκούν.",
+    "conseils": {
+      "region": "Grèce",
+      "ok": [
+        "Souvlaki et grillades, sans pita",
+        "Salade grecque (horiatiki), tzatziki",
+        "Yaourt grec au miel"
+      ],
+      "pieges": [
+        "Pita, moussaka (béchamel à la farine)",
+        "Spanakopita, tiropita (pâte filo au blé)",
+        "Calamars et petits poissons frits (farinés)",
+        "Keftedes (boulettes avec chapelure)"
+      ]
+    }
   },
   "tr": {
     "label": "Türkçe",
@@ -132,7 +251,21 @@
       "Buğday içerdiği için soya sosunun kullanılmaması",
       "Ekmek veya galeta ununun tabağıma değmemesi"
     ],
-    "closing": "Bundan kaçınmak mümkün değilse, maalesef bu yemeği yiyemem. Bu benim için gerçek bir bulaşma olur, sadece bir rahatsızlık değil. Yemeğim hazırlanmadan önce temiz bir mutfak aleti veya temizlenmiş bir yüzey yeterlidir."
+    "closing": "Bundan kaçınmak mümkün değilse, maalesef bu yemeği yiyemem. Bu benim için gerçek bir bulaşma olur, sadece bir rahatsızlık değil. Yemeğim hazırlanmadan önce temiz bir mutfak aleti veya temizlenmiş bir yüzey yeterlidir.",
+    "conseils": {
+      "region": "Turquie",
+      "ok": [
+        "Şiş kebab et grillades, sans pain",
+        "Mezzés : houmous, ezme, cacık",
+        "Riz nature : demande « şehriyesiz » (sans vermicelles)"
+      ],
+      "pieges": [
+        "Pide, lahmacun, börek",
+        "Bulgur pilavı, kısır (boulgour)",
+        "Pilav au riz souvent mélangé à des vermicelles de blé (şehriye)",
+        "Köfte (chapelure), baklava"
+      ]
+    }
   },
   "ja": {
     "label": "日本語",
@@ -147,7 +280,22 @@
       "小麦を含む醤油を使わない",
       "パンやパン粉を私の料理に触れさせない"
     ],
-    "closing": "もしこれらを避けることができない場合、残念ながらこの料理は食べられません。私にとってこれは単なる不快感ではなく、実際の汚染になります。調理前に清潔な器具や洗浄した調理台を使っていただくだけで十分です。"
+    "closing": "もしこれらを避けることができない場合、残念ながらこの料理は食べられません。私にとってこれは単なる不快感ではなく、実際の汚染になります。調理前に清潔な器具や洗浄した調理台を使っていただくだけで十分です。",
+    "conseils": {
+      "region": "Japon",
+      "ok": [
+        "Sashimi, avec ton propre tamari sans gluten",
+        "Riz nature",
+        "Yakitori « shio » (au sel, pas à la sauce tare)",
+        "Maladie peu connue au Japon : la fiche est indispensable"
+      ],
+      "pieges": [
+        "Sauce soja partout (le shoyu contient du blé)",
+        "Ramen, udon, et soba souvent coupées au blé",
+        "Tempura, tonkatsu, karaage",
+        "Miso, teriyaki et tare peuvent contenir du blé ou de l'orge"
+      ]
+    }
   },
   "zh": {
     "label": "中文",
@@ -162,7 +310,20 @@
       "不使用含有小麦的酱油",
       "不让面包或面包屑接触我的餐盘"
     ],
-    "closing": "如果无法避免这些情况,很遗憾我将无法食用这道菜。对我来说这将是真正的污染,而不仅仅是不便。只需在准备我的菜品前使用干净的餐具或清洁过的台面即可。"
+    "closing": "如果无法避免这些情况,很遗憾我将无法食用这道菜。对我来说这将是真正的污染,而不仅仅是不便。只需在准备我的菜品前使用干净的餐具或清洁过的台面即可。",
+    "conseils": {
+      "region": "Chine",
+      "ok": [
+        "Riz nature, légumes sautés sans sauce",
+        "Plats vapeur à base de riz"
+      ],
+      "pieges": [
+        "Sauce soja et sauce d'huître dans presque tous les plats",
+        "Raviolis (jiaozi), baozi, nouilles de blé",
+        "Fritures enrobées",
+        "Seitan (« mianjin », gluten pur) dans les plats végétariens"
+      ]
+    }
   },
   "th": {
     "label": "ไทย",
@@ -177,7 +338,21 @@
       "ไม่ใช้ซอสถั่วเหลืองที่มีส่วนผสมของข้าวสาลี",
       "ไม่ให้ขนมปังหรือเกล็ดขนมปังสัมผัสกับจานอาหารของฉัน"
     ],
-    "closing": "หากไม่สามารถหลีกเลี่ยงสิ่งเหล่านี้ได้ ฉันคงไม่สามารถกินจานนี้ได้ สำหรับฉันแล้วนี่คือการปนเปื้อนจริง ไม่ใช่แค่ความไม่สะดวก การใช้ภาชนะสะอาดหรือพื้นผิวที่ทำความสะอาดก่อนเตรียมอาหารของฉันก็เพียงพอแล้ว"
+    "closing": "หากไม่สามารถหลีกเลี่ยงสิ่งเหล่านี้ได้ ฉันคงไม่สามารถกินจานนี้ได้ สำหรับฉันแล้วนี่คือการปนเปื้อนจริง ไม่ใช่แค่ความไม่สะดวก การใช้ภาชนะสะอาดหรือพื้นผิวที่ทำความสะอาดก่อนเตรียมอาหารของฉันก็เพียงพอแล้ว",
+    "conseils": {
+      "region": "Thaïlande",
+      "ok": [
+        "Riz gluant, riz nature",
+        "Mango sticky rice",
+        "Curry au lait de coco (vérifie la pâte de curry)"
+      ],
+      "pieges": [
+        "Sauce soja et sauce d'huître (pad see ew, sautés)",
+        "Nouilles de blé (bami)",
+        "Fritures enrobées",
+        "Woks partagés avec des plats au blé"
+      ]
+    }
   },
   "vi": {
     "label": "Tiếng Việt",
@@ -192,7 +367,20 @@
       "Không dùng nước tương, vì nó chứa lúa mì",
       "Không để bánh mì hoặc vụn bánh mì chạm vào món ăn của tôi"
     ],
-    "closing": "Nếu không thể tránh được điều này, rất tiếc tôi sẽ không thể ăn món này. Đối với tôi đây là nhiễm chéo thực sự, chứ không chỉ là bất tiện. Chỉ cần một dụng cụ sạch hoặc bề mặt đã được vệ sinh trước khi chuẩn bị món ăn của tôi là đủ."
+    "closing": "Nếu không thể tránh được điều này, rất tiếc tôi sẽ không thể ăn món này. Đối với tôi đây là nhiễm chéo thực sự, chứ không chỉ là bất tiện. Chỉ cần một dụng cụ sạch hoặc bề mặt đã được vệ sinh trước khi chuẩn bị món ăn của tôi là đủ.",
+    "conseils": {
+      "region": "Vietnam",
+      "ok": [
+        "Phở et bún (nouilles de riz) : vérifie les sauces",
+        "Rouleaux de printemps frais (galette de riz)"
+      ],
+      "pieges": [
+        "Sauce hoisin et sauce soja",
+        "Bánh mì (pain)",
+        "Mì (nouilles de blé aux œufs)",
+        "Nems parfois roulés dans une galette de blé"
+      ]
+    }
   },
   "ko": {
     "label": "한국어",
@@ -207,7 +395,20 @@
       "밀이 포함된 간장을 사용하지 않기",
       "빵이나 빵가루가 제 음식에 닿지 않게 하기"
     ],
-    "closing": "이를 피할 수 없다면, 안타깝지만 이 요리를 먹을 수 없습니다. 저에게는 단순한 불편이 아니라 실제 오염이 됩니다. 요리 전에 깨끗한 조리도구나 세척된 조리대만 사용해 주셔도 충분합니다."
+    "closing": "이를 피할 수 없다면, 안타깝지만 이 요리를 먹을 수 없습니다. 저에게는 단순한 불편이 아니라 실제 오염이 됩니다. 요리 전에 깨끗한 조리도구나 세척된 조리대만 사용해 주셔도 충분합니다.",
+    "conseils": {
+      "region": "Corée du Sud",
+      "ok": [
+        "Riz, barbecue coréen sans marinade",
+        "Bibimbap sans gochujang"
+      ],
+      "pieges": [
+        "Gochujang et doenjang contiennent souvent du blé",
+        "Marinades à la sauce soja (bulgogi, galbi)",
+        "Pajeon (galettes au blé), fritures",
+        "Japchae : nouilles de patate douce, mais sauce soja"
+      ]
+    }
   },
   "ar": {
     "label": "العربية",
@@ -222,7 +423,23 @@
       "عدم استخدام صلصة الصويا، لأنها تحتوي على القمح",
       "عدم ترك الخبز أو فتات الخبز يلامس طبقي"
     ],
-    "closing": "إذا لم يكن بالإمكان تجنب ذلك، فللأسف لن أتمكن من تناول هذا الطبق. بالنسبة لي سيكون هذا تلوثًا حقيقيًا، وليس مجرد إزعاج. يكفي استخدام أداة نظيفة أو سطح تم تنظيفه قبل تحضير طبقي."
+    "closing": "إذا لم يكن بالإمكان تجنب ذلك، فللأسف لن أتمكن من تناول هذا الطبق. بالنسبة لي سيكون هذا تلوثًا حقيقيًا، وليس مجرد إزعاج. يكفي استخدام أداة نظيفة أو سطح تم تنظيفه قبل تحضير طبقي.",
+    "conseils": {
+      "region": "Maghreb, Moyen-Orient",
+      "ok": [
+        "Brochettes grillées",
+        "Houmous, baba ghanouj, mezzés (sans le pain)",
+        "Tajines (vérifie qu'il n'y a pas de farine)",
+        "Riz"
+      ],
+      "pieges": [
+        "Couscous (semoule de blé)",
+        "Taboulé (boulgour), freekeh",
+        "Pain servi avec tout (khobz, pita)",
+        "Pâtisseries (feuilles de brick ou de filo, semoule)",
+        "Falafels : friteuse partagée"
+      ]
+    }
   },
   "pl": {
     "label": "Polski",
@@ -237,6 +454,19 @@
       "Nie używać sosu sojowego, ponieważ zawiera pszenicę",
       "Nie dopuszczać, aby chleb lub bułka tarta dotykały mojego dania"
     ],
-    "closing": "Jeśli nie da się tego uniknąć, niestety nie będę mógł/mogła zjeść tego dania. Dla mnie byłoby to prawdziwe zanieczyszczenie, a nie tylko niedogodność. Wystarczy czyste naczynie lub oczyszczona powierzchnia przed przygotowaniem mojego dania."
+    "closing": "Jeśli nie da się tego uniknąć, niestety nie będę mógł/mogła zjeść tego dania. Dla mnie byłoby to prawdziwe zanieczyszczenie, a nie tylko niedogodność. Wystarczy czyste naczynie lub oczyszczona powierzchnia przed przygotowaniem mojego dania.",
+    "conseils": {
+      "region": "Pologne",
+      "ok": [
+        "Pommes de terre, viandes grillées",
+        "« bezglutenowe » de plus en plus indiqué"
+      ],
+      "pieges": [
+        "Pierogi (pâte au blé)",
+        "Kotlet schabowy (pané)",
+        "Żurek (soupe au seigle fermenté)",
+        "Soupes et sauces liées à la farine, bière"
+      ]
+    }
   }
 }

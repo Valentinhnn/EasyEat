@@ -477,12 +477,26 @@
   #historyContent summary{ cursor:pointer; font-size:14px; line-height:1.5; }
   #historyContent summary small{ display:block; color: var(--ink-soft); font-size:12.5px; }
   #historyContent .dish-card{ margin-top:8px; }
+  .travel-tips{ margin-top:8px; border-top:1px solid var(--line); padding-top:14px; }
+  .travel-tips summary{ cursor:pointer; font-weight:700; font-size:15px; color: var(--ink); }
+  .travel-tips h3{ font-size:15px; margin:14px 0 6px; }
+  .travel-tips li{ font-size:15px !important; padding:8px 12px !important; }
+  .travel-tips .bad li{ border-left-color: var(--danger) !important; }
+  .host-content h3{ font-size:17px; margin:20px 0 8px; color: var(--ink); }
+  .host-actions{ display:flex; gap:8px; margin:6px 0 18px; flex-wrap:wrap; }
+  .host-actions button, .recipe-actions button{ font:inherit; font-size:13px; font-weight:700; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background: var(--surface); color: var(--ink); cursor:pointer; }
+  .recipe-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .panel-link{ display:block; margin:10px auto 0; background:none; border:none; font:inherit; font-size:13px; color: var(--brand-dark); text-decoration:underline; cursor:pointer; }
+  #sharedListBanner{ display:none; margin:8px 0; padding:10px 12px; border-radius:12px; background: var(--brand-tint); border:1px solid var(--line); font-size:13.5px; }
+  #sharedListBanner button{ font:inherit; font-size:12.5px; font-weight:700; margin:6px 6px 0 0; padding:6px 10px; border-radius:8px; border:1px solid var(--line); background: var(--surface); color: var(--ink); cursor:pointer; }
   .suggest-zone{ margin:14px 0 4px; }
   .suggest-zone > button{ width:100%; padding:10px; font-size:13.5px; }
   #suggestBox{ margin-top:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background: var(--surface); }
   #suggestBox label{ display:block; font-size:12.5px; font-weight:700; margin:8px 0 3px; }
   #suggestBox input, #suggestBox select, #suggestBox textarea{ width:100%; box-sizing:border-box; font:inherit; font-size:14px; padding:8px; border:1px solid var(--line); border-radius:8px; background: var(--bg); color: var(--ink); }
   .resto-actions{ display:flex; gap:8px; margin-top:6px; }
+  .resto-actions button{ font:inherit; font-size:12.5px; font-weight:700; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); cursor:pointer; }
+  .resto-actions{ flex-wrap:wrap; }
   .resto-actions a{ font-size:12.5px; font-weight:700; text-decoration:none; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); }
   .dish-ask{ font-size:13px; line-height:1.5; margin-top:8px; padding:8px 10px; border-radius:8px; background: var(--surface); border:1px dashed var(--line); }
   .share-btn{
@@ -743,9 +757,17 @@
   </div>
 </div>
 
+<div id="hostOverlay" class="travel-card-overlay" role="dialog" aria-modal="true" aria-label="Fiche pour ton hôte">
+  <div class="travel-card-topbar">
+    <strong style="flex:1; font-size:16px;">🏠 Fiche pour ton hôte</strong>
+    <button id="hostCloseBtn" type="button" aria-label="Fermer">✕</button>
+  </div>
+  <div class="travel-card-content host-content" id="hostContent"></div>
+</div>
+
 <div id="historyOverlay" class="travel-card-overlay" role="dialog" aria-modal="true" aria-label="Analyses récentes">
   <div class="travel-card-topbar">
-    <strong style="flex:1; font-size:16px;">🕘 Analyses récentes</strong>
+    <strong style="flex:1; font-size:16px;" id="historyTitle">🕘 Analyses récentes</strong>
     <button id="historyClearBtn" type="button" style="width:auto; border-radius:10px; padding:0 12px; font-size:13px;">Effacer</button>
     <button id="historyCloseBtn" type="button" aria-label="Fermer">✕</button>
   </div>
@@ -915,6 +937,7 @@
         <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
       </label>
       <button class="resto-reset" id="restoNearMeBtn" type="button">📍 Près de moi</button>
+      <button class="resto-reset" id="shareFavsBtn" type="button">🔗 Partager mes favoris</button>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
       <button class="resto-reset" id="tonightPickToggle" type="button" style="grid-column: 1 / -1;" aria-expanded="false">🎲 Où manger ce soir ?</button>
     </div>
@@ -958,6 +981,7 @@
       <span><span class="dot" style="background:var(--danger);"></span> Non adapté</span>
     </div>
 
+    <div id="sharedListBanner"></div>
     <div class="resto-count" id="restoCount"></div>
     <div id="restoList"></div>
 
@@ -985,6 +1009,8 @@
       </div>
     </div>
     <button class="act btn-primary" id="recipeGenerateBtn" style="width:100%;">Générer la recette</button>
+    <button type="button" class="history-link" id="savedRecipesLink" hidden></button>
+    <button type="button" class="panel-link" id="hostCardBtn">🏠 Invité chez quelqu'un ? Envoie-lui la fiche hôte</button>
 
     <div class="status" id="statusRecipe"><div class="spinner"></div><span>Génération en cours…</span></div>
     <div class="error-box" id="errorRecipe"></div>
@@ -1043,15 +1069,16 @@ const HISTORY_TYPES = { menu: 'Menu', label: 'Étiquette', barcode: 'Code-barres
 function loadHistory(){
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e){ return []; }
 }
-function saveToHistory(type, items){
+function saveToHistory(type, items, titre){
   const list = loadHistory();
-  list.unshift({ t: Date.now(), type, items: items.map(d => ({ plat: d.plat, risque: d.risque, raison: d.raison })) });
+  list.unshift({ t: Date.now(), type, titre, items: items.map(d => ({ plat: d.plat, risque: d.risque, raison: d.raison })) });
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX))); } catch(e){ /* stockage plein ou bloqué */ }
   updateHistoryLinks();
 }
 function updateHistoryLinks(){
   const n = loadHistory().length;
   document.querySelectorAll('.history-link').forEach(b => {
+    if (b.id === 'savedRecipesLink') return;
     b.hidden = n === 0;
     b.textContent = `🕘 Analyses récentes (${n})`;
   });
@@ -1067,7 +1094,7 @@ function renderHistory(){
       ? `${h.items.length} plat${h.items.length > 1 ? 's' : ''} : ${count('sûr')} sûr · ${count('à vérifier')} à vérifier · ${count('à éviter')} à éviter`
       : `${escapeHtml(h.items[0]?.plat || 'Produit')} : ${escapeHtml(h.items[0]?.risque || '')}`;
     return `<details>
-      <summary><strong>${HISTORY_TYPES[h.type] || ''}</strong> · ${escapeHtml(when)}<small>${summary}</small></summary>
+      <summary><strong>${HISTORY_TYPES[h.type] || ''}</strong>${h.titre ? ' · ' + escapeHtml(h.titre) : ''} · ${escapeHtml(when)}<small>${summary}</small></summary>
       ${h.items.map(d => `<div class="dish-card">
         <div class="dish-top"><div class="dish-name">${escapeHtml(d.plat)}</div><div class="badge ${riskClass(d.risque)}">${escapeHtml(d.risque)}</div></div>
         <div class="dish-reason">${escapeHtml(d.raison)}</div>
@@ -1187,11 +1214,11 @@ function initGoogleSignIn(){
   });
 }
 
-async function callVisionAPI(type, base64Data, mediaType){
+async function callVisionAPI(type, base64Data, mediaType, extra = {}){
   const response = await fetch(`${WORKER_URL}/api/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, base64Data, mediaType })
+    body: JSON.stringify({ type, base64Data, mediaType, ...extra })
   });
 
   const data = await response.json().catch(() => ({}));
@@ -1268,6 +1295,9 @@ function handleUrlShortcut(){
   const tab = params.get('tab');
   if (tab === 'menu'){
     activateTab(tabMenuBtn);
+  } else if (params.get('liste')){
+    const ids = params.get('liste').split('.').map(Number).filter(Number.isInteger);
+    if (ids.length){ sharedList = new Set(ids); activateTab(tabRestoBtn); }
   } else if (tab === 'produit'){
     activateTab(tabProductBtn);
     if (params.get('sub') === 'barcode'){
@@ -1355,6 +1385,56 @@ function waiterQuestion(d){
   return "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?";
 }
 
+function renderDishes(dishes, source){
+  dishList.innerHTML = '';
+  dishes.forEach(d => {
+    const cls = riskClass(d.risque);
+    const card = document.createElement('div');
+    card.className = 'dish-card';
+    card.innerHTML = `<div class="dish-top">
+        <div class="dish-name">${escapeHtml(d.plat)}</div>
+        <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
+      </div>
+      <div class="dish-reason">${escapeHtml(d.raison)}</div>
+      ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »</div>` : ''}
+      <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
+    card.querySelector('.share-btn').addEventListener('click', () => {
+      shareText(
+        `EasyEat — verdict gluten\n"${d.plat}" : ${d.risque}\n${d.raison}\n\nVérifié avec EasyEat : ${location.href}`,
+        'Verdict gluten EasyEat'
+      );
+    });
+    dishList.appendChild(card);
+  });
+  resultsCountMenu.textContent = dishes.length + ' plat' + (dishes.length>1?'s':'') + ' analysé' + (dishes.length>1?'s':'');
+  if (source) resultsCountMenu.textContent += ` · carte en ligne de ${source}`;
+  resultsMenu.classList.add('active');
+}
+
+// Analyse la carte en ligne d'un restaurant (site web, PDF ou image) depuis sa fiche.
+async function analyzeRestoMenu(r){
+  activateTab(tabMenuBtn);
+  previewWrapMenu.classList.remove('active');
+  errorMenu.classList.remove('active'); resultsMenu.classList.remove('active');
+  statusMenu.classList.add('active');
+  statusMenu.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  try{
+    const dishes = await callVisionAPI('menu_url', null, null, { url: r.site });
+    if (!Array.isArray(dishes) || dishes.length === 0){
+      errorMenu.textContent = `Aucun plat trouvé sur le site de ${r.nom}. Prends la carte en photo sur place.`;
+      errorMenu.classList.add('active');
+      return;
+    }
+    renderDishes(dishes, r.nom);
+    saveToHistory('menu', dishes, r.nom);
+  } catch(err){
+    errorMenu.textContent = err.message || "Erreur pendant l'analyse.";
+    errorMenu.classList.add('active');
+  } finally {
+    statusMenu.classList.remove('active');
+  }
+}
+
 analyzeBtnMenu.addEventListener('click', async () => {
   if (!menuBase64) return;
   errorMenu.classList.remove('active'); resultsMenu.classList.remove('active');
@@ -1367,29 +1447,8 @@ analyzeBtnMenu.addEventListener('click', async () => {
       errorMenu.textContent = "Aucun plat détecté. Essayez un cadrage plus net.";
       errorMenu.classList.add('active');
     } else {
-      dishList.innerHTML = '';
-      dishes.forEach(d => {
-        const cls = riskClass(d.risque);
-        const card = document.createElement('div');
-        card.className = 'dish-card';
-        card.innerHTML = `<div class="dish-top">
-            <div class="dish-name">${escapeHtml(d.plat)}</div>
-            <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
-          </div>
-          <div class="dish-reason">${escapeHtml(d.raison)}</div>
-          ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »</div>` : ''}
-          <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
-        card.querySelector('.share-btn').addEventListener('click', () => {
-          shareText(
-            `EasyEat — verdict gluten\n"${d.plat}" : ${d.risque}\n${d.raison}\n\nVérifié avec EasyEat : ${location.href}`,
-            'Verdict gluten EasyEat'
-          );
-        });
-        dishList.appendChild(card);
-      });
-      resultsCountMenu.textContent = dishes.length + ' plat' + (dishes.length>1?'s':'') + ' analysé' + (dishes.length>1?'s':'');
+      renderDishes(dishes);
       saveToHistory('menu', dishes);
-      resultsMenu.classList.add('active');
     }
   } catch(err){
     errorMenu.textContent = err.message || "Erreur pendant l'analyse.";
@@ -2928,9 +2987,37 @@ function toggleFavorite(id){
 const RESTO_PAGE_SIZE = 40;
 let restoVisibleLimit = RESTO_PAGE_SIZE;
 
+// Liste de restaurants reçue par lien (?liste=12.45.78) : on n'affiche qu'elle,
+// avec un bandeau pour l'ajouter à ses favoris ou revenir à la carte complète.
+let sharedList = null;
+function renderSharedBanner(){
+  const el = document.getElementById('sharedListBanner');
+  if (!sharedList){ el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = `📋 <strong>Liste partagée</strong> : ${sharedList.size} restaurant${sharedList.size > 1 ? 's' : ''}<br>
+    <button type="button" id="sharedAddFavBtn">⭐ Tout ajouter à mes favoris</button><button type="button" id="sharedCloseBtn">✕ Voir tous les restaurants</button>`;
+  document.getElementById('sharedAddFavBtn').addEventListener('click', () => {
+    sharedList.forEach(id => { if (!isFavorite(id)) toggleFavorite(id); });
+    renderRestoList({ keepLimit: true });
+    document.getElementById('sharedAddFavBtn').textContent = '✅ Ajoutés à tes favoris';
+  });
+  document.getElementById('sharedCloseBtn').addEventListener('click', () => {
+    sharedList = null;
+    history.replaceState(null, '', location.pathname);
+    renderRestoList();
+  });
+}
+function shareFavorites(){
+  const ids = [...getFavorites()];
+  if (!ids.length){ alert("Ajoute d'abord des restaurants à tes favoris (☆)."); return; }
+  const url = `${location.origin}${location.pathname}?liste=${ids.join('.')}`;
+  shareText(`Mes restaurants sans gluten sur EasyEat (${ids.length}) : ${url}`, 'Ma liste EasyEat');
+}
+
 function renderRestoList(opts = {}){
   if (!opts.keepLimit) restoVisibleLimit = RESTO_PAGE_SIZE;
   renderRestoAdminZone();
+  renderSharedBanner();
   const f = getActiveFilters();
   const list = document.getElementById('restoList');
   const countEl = document.getElementById('restoCount');
@@ -2948,6 +3035,7 @@ function renderRestoList(opts = {}){
       if (f.quartier && r.quartier !== f.quartier) return false;
       if (f.ville && r.ville !== f.ville) return false;
       if (f.favoritesOnly && !isFavorite(r.id)) return false;
+      if (sharedList && !sharedList.has(r.id)) return false;
       return true;
     });
   }
@@ -2993,6 +3081,7 @@ function renderRestoList(opts = {}){
           <div class="resto-actions">
             <a href="${directionsUrl(r)}" target="_blank" rel="noopener">🧭 Itinéraire</a>
             ${telUrl(r) ? `<a href="${telUrl(r)}">📞 Appeler</a>` : ''}
+            ${safeUrl(r.site) ? `<button type="button" class="menu-url-btn">🔎 Analyser sa carte</button>` : ''}
           </div>
         </div>
         <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '⭐' : '☆'}</button>
@@ -3006,6 +3095,9 @@ function renderRestoList(opts = {}){
     `;
     const editSelect = card.querySelector('.resto-edit');
     const favBtn = card.querySelector('.fav-btn');
+    card.querySelectorAll('.resto-actions a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+    const menuUrlBtn = card.querySelector('.menu-url-btn');
+    if (menuUrlBtn) menuUrlBtn.addEventListener('click', e => { e.stopPropagation(); analyzeRestoMenu(r); });
     favBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleFavorite(r.id);
@@ -3158,6 +3250,13 @@ function renderTravelCard(lang){
     <p style="font-weight:600;">${escapeHtml(d.question)}</p>
     <ul>${d.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
     <p class="closing">${escapeHtml(d.closing)}</p>
+    ${d.conseils ? `<details class="travel-tips" dir="ltr" lang="fr">
+      <summary>🍽️ Pour toi : plats souvent sûrs et pièges (${escapeHtml(d.conseils.region)})</summary>
+      <h3>✅ Souvent sans gluten (toujours vérifier)</h3>
+      <ul>${d.conseils.ok.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+      <h3>⚠️ Pièges fréquents</h3>
+      <ul class="bad">${d.conseils.pieges.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+    </details>` : ''}
   `;
 }
 
@@ -3199,18 +3298,26 @@ document.getElementById('travelCardBtn').addEventListener('click', async () => {
   renderTravelCard(langSelect.value);
 });
 
-document.querySelectorAll('.history-link').forEach(b => b.addEventListener('click', () => {
-  renderHistory();
+// La même fenêtre sert à l'historique des analyses et aux recettes enregistrées.
+let listOverlayMode = 'history';
+function openListOverlay(mode){
+  listOverlayMode = mode;
+  document.getElementById('historyTitle').textContent = mode === 'recipes' ? '📖 Mes recettes' : '🕘 Analyses récentes';
+  if (mode === 'recipes') renderSavedRecipes(); else renderHistory();
   document.getElementById('historyOverlay').classList.add('active');
-}));
+}
+document.querySelectorAll('.history-link').forEach(b => {
+  if (b.id !== 'savedRecipesLink') b.addEventListener('click', () => openListOverlay('history'));
+});
 document.getElementById('historyCloseBtn').addEventListener('click', () => {
   document.getElementById('historyOverlay').classList.remove('active');
 });
 document.getElementById('historyClearBtn').addEventListener('click', () => {
-  if (!confirm("Effacer tout l'historique des analyses ?")) return;
-  try { localStorage.removeItem(HISTORY_KEY); } catch(e){}
-  renderHistory();
-  updateHistoryLinks();
+  const recipes = listOverlayMode === 'recipes';
+  if (!confirm(recipes ? "Supprimer toutes les recettes enregistrées ?" : "Effacer tout l'historique des analyses ?")) return;
+  try { localStorage.removeItem(recipes ? RECIPES_KEY : HISTORY_KEY); } catch(e){}
+  if (recipes){ renderSavedRecipes(); updateSavedRecipesLink(); }
+  else { renderHistory(); updateHistoryLinks(); }
 });
 updateHistoryLinks();
 
@@ -3458,6 +3565,54 @@ function recipeIngredientNeedsCheck(name){
   return RECIPE_GLUTEN_WORDS.some(w => new RegExp(`(^|[^a-zàâäéèêëïîôöùûüç])${w}`, 'i').test(n));
 }
 
+// Recettes enregistrées : uniquement sur l'appareil, 30 au plus.
+const RECIPES_KEY = 'easyeat_recipes';
+const RECIPES_MAX = 30;
+function loadSavedRecipes(){
+  try { return JSON.parse(localStorage.getItem(RECIPES_KEY)) || []; } catch(e){ return []; }
+}
+function storeSavedRecipes(list){
+  try { localStorage.setItem(RECIPES_KEY, JSON.stringify(list.slice(0, RECIPES_MAX))); return true; } catch(e){ return false; }
+}
+function updateSavedRecipesLink(){
+  const n = loadSavedRecipes().length;
+  const b = document.getElementById('savedRecipesLink');
+  b.hidden = n === 0;
+  b.textContent = `📖 Mes recettes (${n})`;
+}
+function recipeToText(r){
+  const lines = [`${r.plat || 'Recette'}${r.portions ? ` (${r.portions} pers.)` : ''} - sans gluten`, '', 'Ingrédients :'];
+  (r.ingredients || []).forEach(i => lines.push(`- ${i.nom || ''}${i.quantite ? ` : ${i.quantite}${i.unite ? ' ' + i.unite : ''}` : ''}`));
+  if ((r.etapes || []).length){ lines.push('', 'Préparation :'); r.etapes.forEach((e, k) => lines.push(`${k + 1}. ${e}`)); }
+  if ((r.substitutions || []).length){ lines.push('', 'Substitutions sans gluten :'); r.substitutions.forEach(x => lines.push(`- ${x}`)); }
+  if (r.notes) lines.push('', r.notes);
+  lines.push('', "Attention : plan de travail et ustensiles propres, vérifie les étiquettes de chaque produit.", `Recette générée avec EasyEat : ${location.origin}${location.pathname}`);
+  return lines.join('\n');
+}
+function renderSavedRecipes(){
+  const list = loadSavedRecipes();
+  const box = document.getElementById('historyContent');
+  if (!list.length){ box.innerHTML = '<p style="color:var(--ink-soft);">Aucune recette enregistrée.</p>'; return; }
+  box.innerHTML = list.map((r, i) => `<details>
+      <summary><strong>${escapeHtml(r.plat || 'Recette')}</strong>${r.portions ? ` · ${escapeHtml(String(r.portions))} pers.` : ''}</summary>
+      ${recipeHtml(r)}
+      <div class="recipe-actions">
+        <button type="button" data-share="${i}">🔗 Partager</button>
+        <button type="button" data-del="${i}">🗑️ Supprimer</button>
+      </div>
+    </details>`).join('');
+  box.querySelectorAll('[data-share]').forEach(b => b.addEventListener('click', () => {
+    const r = list[b.dataset.share];
+    shareText(recipeToText(r), r.plat || 'Recette sans gluten');
+  }));
+  box.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    list.splice(Number(b.dataset.del), 1);
+    storeSavedRecipes(list);
+    renderSavedRecipes();
+    updateSavedRecipesLink();
+  }));
+}
+
 function renderRecipeResult(result){
   const ingredients = result.ingredients || [];
 
@@ -3474,6 +3629,23 @@ function renderRecipeResult(result){
     return;
   }
 
+  recipeCard.innerHTML = recipeHtml(result) + `<div class="recipe-actions">
+      <button type="button" id="recipeShareBtn">🔗 Partager</button>
+      <button type="button" id="recipeSaveBtn">💾 Enregistrer sur mon téléphone</button>
+    </div>`;
+  document.getElementById('recipeShareBtn').addEventListener('click', () => shareText(recipeToText(result), result.plat || 'Recette sans gluten'));
+  document.getElementById('recipeSaveBtn').addEventListener('click', (e) => {
+    const list = loadSavedRecipes();
+    list.unshift(result);
+    e.target.textContent = storeSavedRecipes(list) ? '✅ Enregistrée dans « Mes recettes »' : '❌ Stockage du téléphone indisponible';
+    e.target.disabled = true;
+    updateSavedRecipesLink();
+  });
+  resultsRecipe.classList.add('active');
+}
+
+function recipeHtml(result){
+  const ingredients = result.ingredients || [];
   const ingredientsHtml = ingredients.map(ing => {
     const qty = `${escapeHtml(String(ing.quantite ?? ''))}${ing.unite ? ' ' + escapeHtml(ing.unite) : ''}`;
     const warn = recipeIngredientNeedsCheck(ing.nom)
@@ -3496,7 +3668,7 @@ function renderRecipeResult(result){
       </div>`
     : '';
 
-  recipeCard.innerHTML = `<div class="recipe-result">
+  return `<div class="recipe-result">
       <div class="recipe-result-head">
         <div class="recipe-dish-name">${escapeHtml(result.plat || 'Recette')}</div>
         ${result.portions ? `<div class="recipe-portions">${escapeHtml(String(result.portions))} pers.</div>` : ''}
@@ -3512,8 +3684,61 @@ function renderRecipeResult(result){
       ${subsHtml}
       ${result.notes ? `<div class="recipe-section"><div class="recipe-note">${escapeHtml(result.notes)}</div></div>` : ''}
     </div>`;
-  resultsRecipe.classList.add('active');
 }
+
+// Fiche à envoyer à quelqu'un qui reçoit une personne cœliaque (texte figé, pas d'IA).
+const HOST_CARD = {
+  intro: "La maladie cœliaque n'est pas une préférence alimentaire : même une miette de gluten abîme l'intestin, parfois sans symptôme visible. Merci beaucoup de prendre ces quelques précautions !",
+  sections: [
+    ["🌾 Ce qui contient du gluten", [
+      "Blé sous toutes ses formes : farine, pain, pâtes, semoule, couscous, boulgour",
+      "Seigle, orge, épeautre, kamut",
+      "Avoine, sauf si le paquet indique « sans gluten »",
+    ]],
+    ["🕵️ Les pièges cachés", [
+      "Bouillon cube et fonds de sauce",
+      "Sauce soja (le tamari sans gluten convient)",
+      "Chapelure, panure, farine pour lier une sauce ou fariner une viande",
+      "Bière et malt",
+      "Charcuterie (saucisses, pâtés), biscuits et desserts du commerce",
+      "Levure chimique et mélanges d'épices : vérifier l'étiquette",
+    ]],
+    ["🍳 Éviter la contamination", [
+      "Plan de travail, planche et ustensiles bien lavés avant de commencer",
+      "Jamais la même eau de cuisson que des pâtes, ni la même huile de friture",
+      "Pas de grille-pain ni de passoire déjà utilisés avec du pain ou des pâtes",
+      "Servir la part sans gluten en premier, avec ses propres couverts",
+      "Beurre, confiture, fromage : un pot ou un morceau à part (les miettes du couteau suffisent à contaminer)",
+    ]],
+    ["😋 Des idées simples, naturellement sans gluten", [
+      "Viande ou poisson grillé, légumes, pommes de terre, riz",
+      "Risotto ou polenta (avec un bouillon maison ou certifié sans gluten)",
+      "Salades composées sans croûtons",
+      "Fruits, mousse au chocolat, crème brûlée, panna cotta",
+    ]],
+  ],
+  closing: "Garde les emballages pour que ton invité puisse vérifier les étiquettes. Le logo de l'épi barré garantit un produit sans gluten. Dans le doute, n'hésite pas à demander !",
+};
+function hostCardText(){
+  const lines = ["Recevoir une personne cœliaque à table", '', HOST_CARD.intro];
+  HOST_CARD.sections.forEach(([title, items]) => { lines.push('', title); items.forEach(i => lines.push(`- ${i}`)); });
+  lines.push('', HOST_CARD.closing, '', `Fiche EasyEat : ${location.origin}${location.pathname}`);
+  return lines.join('\n');
+}
+document.getElementById('hostCardBtn').addEventListener('click', () => {
+  document.getElementById('hostContent').innerHTML = `
+    <h2>Recevoir une personne cœliaque à table</h2>
+    <p>${escapeHtml(HOST_CARD.intro)}</p>
+    <div class="host-actions"><button type="button" id="hostShareBtn">📤 Envoyer à mon hôte</button></div>
+    ${HOST_CARD.sections.map(([title, items]) => `<h3>${escapeHtml(title)}</h3><ul>${items.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`).join('')}
+    <p class="closing">${escapeHtml(HOST_CARD.closing)}</p>`;
+  document.getElementById('hostShareBtn').addEventListener('click', () => shareText(hostCardText(), 'Recevoir une personne cœliaque'));
+  document.getElementById('hostOverlay').classList.add('active');
+});
+document.getElementById('hostCloseBtn').addEventListener('click', () => document.getElementById('hostOverlay').classList.remove('active'));
+document.getElementById('savedRecipesLink').addEventListener('click', () => openListOverlay('recipes'));
+document.getElementById('shareFavsBtn').addEventListener('click', shareFavorites);
+updateSavedRecipesLink();
 
 recipeGenerateBtn.addEventListener('click', generateRecipe);
 recipeDishInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') generateRecipe(); });
