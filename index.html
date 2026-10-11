@@ -471,6 +471,12 @@
   .badge.check{ background: var(--check-bg); color: var(--check); }
   .badge.danger{ background: var(--danger-bg); color: var(--danger); }
   .dish-reason{ font-size:13px; color: var(--ink-soft); line-height:1.5; margin-top:6px; }
+  .history-link{ display:block; margin:8px auto 0; background:none; border:none; font:inherit; font-size:12.5px; color: var(--ink-soft); text-decoration:underline; cursor:pointer; }
+  .history-link[hidden]{ display:none; }
+  #historyContent details{ background: var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:10px; }
+  #historyContent summary{ cursor:pointer; font-size:14px; line-height:1.5; }
+  #historyContent summary small{ display:block; color: var(--ink-soft); font-size:12.5px; }
+  #historyContent .dish-card{ margin-top:8px; }
   .suggest-zone{ margin:14px 0 4px; }
   .suggest-zone > button{ width:100%; padding:10px; font-size:13.5px; }
   #suggestBox{ margin-top:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background: var(--surface); }
@@ -737,6 +743,15 @@
   </div>
 </div>
 
+<div id="historyOverlay" class="travel-card-overlay" role="dialog" aria-modal="true" aria-label="Analyses récentes">
+  <div class="travel-card-topbar">
+    <strong style="flex:1; font-size:16px;">🕘 Analyses récentes</strong>
+    <button id="historyClearBtn" type="button" style="width:auto; border-radius:10px; padding:0 12px; font-size:13px;">Effacer</button>
+    <button id="historyCloseBtn" type="button" aria-label="Fermer">✕</button>
+  </div>
+  <div class="travel-card-content" id="historyContent"></div>
+</div>
+
 <main>
 
   <!-- ===================== PANEL: MENU ===================== -->
@@ -754,6 +769,7 @@
       <div class="vf-sub">ou cliquez pour importer une image</div>
     </div>
 
+    <button type="button" class="history-link" hidden></button>
     <input type="file" id="fileInputMenu" accept="image/*" capture="environment">
 
     <div class="preview-wrap" id="previewWrapMenu">
@@ -779,6 +795,7 @@
   <!-- ===================== PANEL: PRODUIT ===================== -->
   <div class="panel" id="panelProduct">
 
+    <button type="button" class="history-link" hidden></button>
     <div class="sub-toggle">
       <button class="active" id="subBarcodeBtn">Scanner le code-barres</button>
       <button id="subLabelBtn">Photo de l'étiquette</button>
@@ -1017,6 +1034,49 @@ function decodeJwtPayload(token){
   const bytes = Uint8Array.from(atob(padded), c => c.charCodeAt(0));
   return JSON.parse(new TextDecoder().decode(bytes));
 }
+// Historique des analyses : uniquement sur l'appareil (localStorage), jamais
+// envoyé. Verdicts seulement (pas les photos), 20 dernières analyses.
+const HISTORY_KEY = 'easyeat_history';
+const HISTORY_MAX = 20;
+const HISTORY_TYPES = { menu: 'Menu', label: 'Étiquette', barcode: 'Code-barres' };
+
+function loadHistory(){
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e){ return []; }
+}
+function saveToHistory(type, items){
+  const list = loadHistory();
+  list.unshift({ t: Date.now(), type, items: items.map(d => ({ plat: d.plat, risque: d.risque, raison: d.raison })) });
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX))); } catch(e){ /* stockage plein ou bloqué */ }
+  updateHistoryLinks();
+}
+function updateHistoryLinks(){
+  const n = loadHistory().length;
+  document.querySelectorAll('.history-link').forEach(b => {
+    b.hidden = n === 0;
+    b.textContent = `🕘 Analyses récentes (${n})`;
+  });
+}
+function renderHistory(){
+  const list = loadHistory();
+  const box = document.getElementById('historyContent');
+  if (!list.length){ box.innerHTML = '<p style="color:var(--ink-soft);">Aucune analyse enregistrée.</p>'; return; }
+  box.innerHTML = list.map(h => {
+    const count = r => h.items.filter(d => d.risque === r).length;
+    const when = new Date(h.t).toLocaleString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const summary = h.type === 'menu'
+      ? `${h.items.length} plat${h.items.length > 1 ? 's' : ''} : ${count('sûr')} sûr · ${count('à vérifier')} à vérifier · ${count('à éviter')} à éviter`
+      : `${escapeHtml(h.items[0]?.plat || 'Produit')} : ${escapeHtml(h.items[0]?.risque || '')}`;
+    return `<details>
+      <summary><strong>${HISTORY_TYPES[h.type] || ''}</strong> · ${escapeHtml(when)}<small>${summary}</small></summary>
+      ${h.items.map(d => `<div class="dish-card">
+        <div class="dish-top"><div class="dish-name">${escapeHtml(d.plat)}</div><div class="badge ${riskClass(d.risque)}">${escapeHtml(d.risque)}</div></div>
+        <div class="dish-reason">${escapeHtml(d.raison)}</div>
+        ${h.type === 'menu' && d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »</div>` : ''}
+      </div>`).join('')}
+    </details>`;
+  }).join('');
+}
+
 function riskClass(risque){
   if (risque === 'sûr') return 'safe';
   if (risque === 'à vérifier') return 'check';
@@ -1328,6 +1388,7 @@ analyzeBtnMenu.addEventListener('click', async () => {
         dishList.appendChild(card);
       });
       resultsCountMenu.textContent = dishes.length + ' plat' + (dishes.length>1?'s':'') + ' analysé' + (dishes.length>1?'s':'');
+      saveToHistory('menu', dishes);
       resultsMenu.classList.add('active');
     }
   } catch(err){
@@ -1735,6 +1796,7 @@ async function lookupProduct(code){
             </div>
             <div class="dish-reason">${escapeHtml(raison)}</div>
           </div>`;
+        saveToHistory('barcode', [{ plat: brand ? `${name} (${brand})` : name, risque, raison }]);
       }
     }
 
@@ -1887,6 +1949,7 @@ analyzeBtnLabel.addEventListener('click', async () => {
       );
     });
     resultsLabel.classList.add('active');
+    saveToHistory('label', [{ plat: result.produit, risque: result.risque, raison: result.raison }]);
   } catch(err){
     errorLabel.textContent = err.message || "Erreur pendant l'analyse.";
     errorLabel.classList.add('active');
@@ -3135,6 +3198,21 @@ document.getElementById('travelCardBtn').addEventListener('click', async () => {
   langSelect.value = travelCardData[savedLang] ? savedLang : 'en';
   renderTravelCard(langSelect.value);
 });
+
+document.querySelectorAll('.history-link').forEach(b => b.addEventListener('click', () => {
+  renderHistory();
+  document.getElementById('historyOverlay').classList.add('active');
+}));
+document.getElementById('historyCloseBtn').addEventListener('click', () => {
+  document.getElementById('historyOverlay').classList.remove('active');
+});
+document.getElementById('historyClearBtn').addEventListener('click', () => {
+  if (!confirm("Effacer tout l'historique des analyses ?")) return;
+  try { localStorage.removeItem(HISTORY_KEY); } catch(e){}
+  renderHistory();
+  updateHistoryLinks();
+});
+updateHistoryLinks();
 
 document.getElementById('travelCardCloseBtn').addEventListener('click', () => {
   document.getElementById('travelCardOverlay').classList.remove('active');
