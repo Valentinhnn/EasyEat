@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
-<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité à Lyon : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés, et recettes sans gluten. Gratuit.">
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 13 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
 <link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EasyEat">
 <meta property="og:title" content="EasyEat, manger sans y penser">
-<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés et recettes sans gluten à Lyon. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 13 villes de France. Gratuit, pensé pour les personnes cœliaques.">
 <meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
 <meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EasyEat, manger sans y penser">
-<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés et recettes sans gluten à Lyon. Gratuit.">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 13 villes de France et recettes. Gratuit.">
 <meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -2054,6 +2054,199 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
+  685: 'safe',   // La Pépite (Le Panier) (Marseille), Restaurant-pâtisserie 100% sans gluten, bio
+  686: 'safe',   // La Pépite (rue Sainte) (Marseille), Atelier-pâtisserie sans gluten, sans lait ou végan
+  687: 'safe',   // Le Balagan (Marseille), Végétarien bio, classé 100% sans gluten
+  688: 'mixed',  // Le Bistro Vénitien Chez Marie (Marseille), Carte sans gluten sur demande, jugé adapté aux cœliaques
+  689: 'mixed',  // Fuxia (Marseille), Jugé adapté aux cœliaques
+  690: 'mixed',  // Tigermilk Marseille (Marseille), Options sans gluten
+  691: 'mixed',  // Oh Faon ! (Marseille), Options sans gluten
+  692: 'mixed',  // Marie Rebuffat Pâtisserie (Marseille), Pâtisseries sans gluten
+  693: 'mixed',  // Baghera (Marseille), Options sans gluten
+  694: 'mixed',  // Deïa Coffee & Kitchen (Marseille), Options sans gluten
+  695: 'mixed',  // Café l'Écomotive (Marseille), Options sans gluten
+  696: 'mixed',  // Carlotta With (Marseille), Options sans gluten
+  697: 'mixed',  // Papa Fredo (Cours Julien) (Marseille), Options sans gluten
+  698: 'mixed',  // Le Bistro du Panier (Marseille), Options sans gluten
+  699: 'mixed',  // Crêperie Oil and Wax (Marseille), Galettes sans gluten
+  700: 'mixed',  // Lulo Bar (Marseille), Options sans gluten
+  701: 'mixed',  // Café Bovo (Marseille), Options sans gluten
+  702: 'mixed',  // La Baie du Dragon (Marseille), Options sans gluten
+  703: 'mixed',  // Toasty Poke (Marseille), Options sans gluten
+  704: 'mixed',  // L'Iroise (Marseille), Galettes sans gluten
+  705: 'mixed',  // Shimla (Marseille), Options sans gluten
+  706: 'mixed',  // V&V Coti (Marseille), Options sans gluten
+  707: 'mixed',  // Gingembre Noailles (Marseille), Options sans gluten
+  708: 'safe',   // Amour (pâtisserie végétale) (Nice), Pâtisserie-brunch 100% sans gluten et végane
+  709: 'safe',   // Bio Brod (Nice), Boulangerie sans gluten, adaptée aux cœliaques
+  710: 'mixed',  // GiGi Tavola (Nice), Pizzas sans gluten, jugé adapté aux cœliaques
+  711: 'mixed',  // GiGi Tavola Saint-Isidore (Nice), Pizzas sans gluten
+  712: 'mixed',  // Popote Bistrot (Nice), Galettes sans gluten, presque tout adaptable
+  713: 'mixed',  // La Vieille Crêpe (Nice), Jugé adapté aux cœliaques
+  714: 'mixed',  // Crêperie Suzette (Nice), Jugé adapté aux cœliaques
+  715: 'mixed',  // HUG Café (Nice), Jugé adapté aux cœliaques
+  716: 'mixed',  // Chez RiTho (Portovenere) (Nice), Jugé adapté aux cœliaques
+  717: 'mixed',  // Tigermilk Nice (Nice), Jugé adapté aux cœliaques
+  718: 'mixed',  // Route des Indes (Nice), Jugé adapté aux cœliaques
+  719: 'mixed',  // Acqua & Farina (Nice), Options sans gluten
+  720: 'mixed',  // La Femme du Boulanger (Nice), Options sans gluten
+  721: 'mixed',  // Paper Plane (Nice), Options sans gluten
+  722: 'mixed',  // Le Country Store (Nice), Options sans gluten
+  723: 'mixed',  // La Popote d'Ondine (Blacas) (Nice), Options sans gluten
+  724: 'mixed',  // La Popote d'Ondine (Gioffredo) (Nice), Options sans gluten
+  725: 'mixed',  // Mama Baker (Nice), Options sans gluten, pas une cuisine dédiée
+  726: 'mixed',  // Chez Pipo (Nice), Socca (farine de pois chiche), options sans gluten
+  727: 'mixed',  // Kalōs (Nice), Options sans gluten
+  728: 'mixed',  // Le Frog (Nice), Options sans gluten
+  729: 'mixed',  // Terra Madre (Nice), Options sans gluten
+  730: 'mixed',  // Le Kalice (Nice), Options sans gluten
+  731: 'mixed',  // SAJ by Milla (Nice), Options sans gluten
+  732: 'mixed',  // Galinetta (Nice), Options sans gluten
+  733: 'mixed',  // Bollywood Lollywood (Nice), Options sans gluten
+  734: 'mixed',  // Le Séjour (Nice), Options sans gluten
+  735: 'mixed',  // Pinpin (Nice), Options sans gluten
+  736: 'mixed',  // Casa Nissa (Nice), Options sans gluten
+  737: 'mixed',  // Panama (Nice), Options sans gluten
+  738: 'mixed',  // 21 Paysans (Nice), Options sans gluten
+  739: 'mixed',  // Onakaya (Nice), Options sans gluten
+  740: 'mixed',  // Peixes (Bonaparte) (Nice), Options sans gluten
+  741: 'mixed',  // Palace Café (Nice), Options sans gluten
+  742: 'mixed',  // Fenocchio (Nice), Glaces sans gluten
+  743: 'mixed',  // Goji Goji (Nice), Options sans gluten
+  744: 'safe',   // Silex & Fourchette (Toulouse), Cuisine paléo sans gluten ni lactose, midi seulement
+  745: 'mixed',  // Pastel et Sarrasin (Toulouse), Galettes de sarrasin, jugé adapté aux cœliaques
+  746: 'mixed',  // Pizza Mongelli (Côte Pavée) (Toulouse), Four dédié aux pizzas sans gluten
+  747: 'mixed',  // Chez Hippolyte (Toulouse), Pâte sans gluten, commander la veille
+  748: 'mixed',  // La Sandia (Toulouse), Jugé adapté aux cœliaques
+  749: 'mixed',  // Salon Cacao'T (Toulouse), Options sans gluten
+  750: 'mixed',  // Le Salon d'Eugénie (Toulouse), Options sans gluten
+  751: 'mixed',  // Clubbbbb Superfood (Toulouse), Options sans gluten
+  752: 'mixed',  // Peacock (Toulouse), Options sans gluten
+  753: 'mixed',  // Café La Fiancée (Capitole) (Toulouse), Options sans gluten
+  754: 'mixed',  // Café Brûlé (Toulouse), Options sans gluten
+  755: 'mixed',  // La Compagnie Française (Toulouse), Options sans gluten
+  756: 'mixed',  // Manger Autrement chez Prasad (Toulouse), Options sans gluten
+  757: 'mixed',  // The Roll (Toulouse), Pains sans gluten
+  758: 'mixed',  // Grand Café Le Florida (Toulouse), Options sans gluten
+  759: 'safe',   // BAG Bakery Art Gallery (Bordeaux), Boulangerie bio 100% sans gluten
+  760: 'safe',   // Glut (Bordeaux), Street food 100% sans gluten (burgers, pâtes)
+  761: 'mixed',  // Max à table ! (Bordeaux), Jugé adapté aux cœliaques
+  762: 'mixed',  // La Crêperie (Bordeaux), Jugé adapté aux cœliaques
+  763: 'mixed',  // Miah Café (Bordeaux), Options sans gluten
+  764: 'mixed',  // Jolly (Bordeaux), Options sans gluten
+  765: 'mixed',  // Osteria Da Luigi (Bordeaux), Options sans gluten
+  766: 'mixed',  // Le Comptoir des Chats (Bordeaux), Options sans gluten
+  767: 'mixed',  // La Parenthèse (Bordeaux), Options sans gluten
+  768: 'mixed',  // Michel MaBelle (Bordeaux), Options sans gluten
+  769: 'mixed',  // L'Entrecôte (Bordeaux) (Bordeaux), Options sans gluten
+  770: 'mixed',  // Tigermilk Bordeaux (Bordeaux), Options sans gluten
+  771: 'mixed',  // Breizh Café (Chartrons) (Bordeaux), Galettes de sarrasin sans gluten
+  772: 'mixed',  // Modjo (Bordeaux), Options sans gluten
+  773: 'mixed',  // Monzù Grands Hommes (Bordeaux), Options sans gluten
+  774: 'mixed',  // La Douce Parenthèse (Bordeaux), Options sans gluten
+  775: 'mixed',  // Nom d'une Crêpe (Bordeaux), Galettes sans gluten
+  776: 'mixed',  // Le Michel's (Bordeaux), Options sans gluten
+  777: 'mixed',  // Madame Pang (Bordeaux), Options sans gluten
+  778: 'mixed',  // Santosha (Bordeaux), Options sans gluten
+  779: 'mixed',  // Mamacam (Bordeaux), Options sans gluten
+  780: 'mixed',  // Zéphirine (Bordeaux), Options sans gluten
+  781: 'mixed',  // Books & Coffee (Bordeaux), Options sans gluten
+  782: 'mixed',  // Le Petit Atelier des Faures (Bordeaux), Options sans gluten
+  783: 'mixed',  // Tuk Tik Thai Food District (Bordeaux), Options sans gluten
+  784: 'mixed',  // Le Rajwal (Bordeaux), Options sans gluten
+  785: 'mixed',  // Sakura Sushi (Bordeaux), Options sans gluten
+  786: 'mixed',  // Neva Brunch (Bordeaux), Chaque plat existe en version sans gluten
+  787: 'safe',   // Les Demoiselles de Montpellier (Montpellier), Salon de thé 100% sans gluten et végan
+  788: 'safe',   // Takkito (Montpellier), 100% sans gluten et sans lactose, friteuse dédiée
+  789: 'safe',   // Joy Healthyfood (Montpellier), Végan fait maison, 100% sans gluten
+  790: 'safe',   // Flavors d'Amarante (Montpellier), Boulangerie 100% sans gluten
+  791: 'mixed',  // Pizzeria Il Fornetto (Montpellier), Jugé adapté aux cœliaques
+  792: 'mixed',  // Tudisco Pizza (Montpellier), Pizzas sans gluten, traces possibles
+  793: 'mixed',  // Amazone Coffee (Montpellier), Options sans gluten
+  794: 'mixed',  // Peacefood Café (Montpellier), Pains à burger sans gluten
+  795: 'mixed',  // Bonobo (centre-ville) (Montpellier), Options sans gluten
+  796: 'mixed',  // Coldrip (Montpellier), Options sans gluten
+  797: 'mixed',  // Froment & Sarrasin (Montpellier), Jugé adapté aux cœliaques
+  798: 'mixed',  // Green Lab (Montpellier), Options sans gluten
+  799: 'mixed',  // Green Gorilla (Montpellier), Options sans gluten
+  800: 'mixed',  // La Trattoria (Montpellier), Options sans gluten
+  801: 'mixed',  // Djaam (Montpellier), Options sans gluten
+  802: 'mixed',  // Mamaona (Halles du Lez) (Montpellier), Options sans gluten
+  803: 'mixed',  // Oh K-fée d'Mj (Nantes), Majeure partie de la carte sans gluten, jugé adapté aux cœliaques
+  804: 'mixed',  // Délicatessaine (Nantes), Pâtisseries sans gluten
+  805: 'mixed',  // Chacha (Nantes), Options sans gluten
+  806: 'mixed',  // Amour de Pomme de Terre (Nantes), Presque toute la carte sans gluten
+  807: 'mixed',  // L'Entrecôte (Nantes) (Nantes), Options sans gluten
+  808: 'mixed',  // Amonē Nantes (Nantes), Cordons bleus sans gluten, fours partagés
+  809: 'mixed',  // L'Éthiquête (Nantes), Plats sans gluten et sans lactose
+  810: 'mixed',  // Le Melting Potes (Nantes), Burger sans gluten
+  811: 'mixed',  // Café Cult' (Nantes), Options sans gluten
+  812: 'mixed',  // Sugar Blue (Nantes), Options sans gluten
+  813: 'mixed',  // Suppli Factory (Nantes), Panure sans gluten sur demande
+  814: 'mixed',  // TerraVega (Nantes), Options sans gluten
+  815: 'safe',   // L'Eden Libre de Gluten (Strasbourg), Boulangerie-salon de thé 100% sans gluten
+  816: 'safe',   // Harmonie Bowl and Juice (Strasbourg), Café-restaurant végan et sans gluten
+  817: 'mixed',  // Mama Bubbele (Strasbourg), Tarte flambée sans gluten, jugé adapté aux cœliaques
+  818: 'mixed',  // Bistrot & Chocolat (Strasbourg), Carte sans gluten dédiée
+  819: 'mixed',  // Origin Coffee Shop Végétal (Strasbourg), Options sans gluten
+  820: 'mixed',  // Madame Julia (Strasbourg), Options sans gluten
+  821: 'mixed',  // PNY Grand'Rue (Strasbourg), Pains sans gluten
+  822: 'mixed',  // Vélicious Burger (Strasbourg), Options sans gluten
+  823: 'mixed',  // La Table du Gayot (Strasbourg), Options sans gluten
+  824: 'mixed',  // Hey Mama Cathédrale (Strasbourg), Options sans gluten
+  825: 'mixed',  // Houmous & Co (Strasbourg), Options sans gluten
+  826: 'mixed',  // La Bolée de Cidre (Strasbourg), Galettes sans gluten
+  827: 'mixed',  // Steakhouse District (Strasbourg), Options sans gluten
+  828: 'mixed',  // Strassburger (Strasbourg), Options sans gluten
+  829: 'mixed',  // La Cuiller à Pot (Strasbourg), Options sans gluten
+  830: 'mixed',  // Le Baeckeoffe d'Alsace (Strasbourg), Options sans gluten
+  831: 'mixed',  // Da Pietro (Strasbourg), Options sans gluten
+  832: 'mixed',  // Chez l'Oncle Freddy (Strasbourg), Options sans gluten
+  833: 'mixed',  // Au Vieux Strasbourg (Strasbourg), Options sans gluten
+  834: 'mixed',  // Au Petit Bois Vert (Strasbourg), Options sans gluten
+  835: 'mixed',  // Koa Thaï (Strasbourg), Options sans gluten
+  836: 'mixed',  // Perles de Saveurs (Strasbourg), Options sans gluten
+  837: 'safe',   // Og Boulangerie (Lille), Boulangerie 100% sans gluten et sans lait
+  838: 'mixed',  // Lou (Lille), Pâte à pizza sans gluten préparée à part
+  839: 'mixed',  // Coffee Makers (Lille), Options sans gluten
+  840: 'mixed',  // Bocal by Les Fishtons (Lille), Cité comme l'adresse la plus sûre de Lille
+  841: 'mixed',  // La Dinette (Lille), Options sans gluten
+  842: 'mixed',  // La Clairière (Lille), Options sans gluten
+  843: 'mixed',  // Brutus (Lille), Jugé adapté aux cœliaques
+  844: 'mixed',  // Elizabeth's (Lille), Options sans gluten
+  845: 'mixed',  // Hopen Source (Lille), Options sans gluten
+  846: 'mixed',  // Bloom Café (Lille), Options sans gluten
+  847: 'mixed',  // Il Ristorante (Lille), Options sans gluten
+  848: 'mixed',  // La Wilderie (Lille), Options sans gluten
+  849: 'mixed',  // Crêperie Beaurepaire (Lille), Galettes de sarrasin
+  850: 'mixed',  // Banana Drama (Lille), Options sans gluten
+  851: 'mixed',  // Aoyama (Lille), Options sans gluten
+  852: 'mixed',  // Nuts ! (Lille), Jugé adapté aux cœliaques
+  853: 'mixed',  // Daikanyama (Lille), Options sans gluten
+  854: 'mixed',  // La Crêperie Grand Place (Lille), Galettes sans gluten
+  855: 'mixed',  // Tigermilk Lille (Lille), Options sans gluten
+  856: 'mixed',  // Estaminet La Ch'tite Brigitte (Lille), Options sans gluten
+  857: 'mixed',  // Restaurant Suzanne (Lille), Options sans gluten
+  858: 'mixed',  // Nachos (Lille), Options sans gluten
+  859: 'mixed',  // PNY Vieux-Lille (Lille), Pains sans gluten
+  860: 'mixed',  // Creap'eat (Lille), Crêpes et desserts sans gluten
+  861: 'mixed',  // Le Lys (Lille), Options sans gluten
+  862: 'mixed',  // L'Abbaye (Lille), Carte des allergènes sur demande
+  863: 'mixed',  // Les Brocanteurs (Rennes), Burgers sans gluten, friteuse séparée
+  864: 'mixed',  // Chawp Shop (Rennes), Options sans gluten
+  865: 'mixed',  // The New Me (Rennes), Pâtisseries sans gluten
+  866: 'mixed',  // Crêperie Au Marché des Lices (Rennes), Galettes 100% sarrasin
+  867: 'mixed',  // Crêperie l'Épi de Blé (Rennes), Galettes au sarrasin noir sans gluten
+  868: 'mixed',  // Le Coffee Crêpes (Rennes), Options sans gluten
+  869: 'mixed',  // Au Clair de Lune (Grenoble), Options sans gluten
+  870: 'mixed',  // Escale Indienne (Grenoble), Options sans gluten
+  871: 'mixed',  // Fit & Gourmande (Grenoble), Options sans gluten
+  872: 'mixed',  // Le Seven (Grenoble), Options sans gluten
+  873: 'mixed',  // Le Dos Argenté (Grenoble), Options sans gluten
+  874: 'mixed',  // L'Ardoise (Grenoble), Options sans gluten
+  875: 'mixed',  // Crêperie de Gordes (Grenoble), Options sans gluten mises en avant
+  876: 'mixed',  // L'Atelier Artisan Crêpier (Grenoble), Galettes sans gluten
+  877: 'mixed',  // Le Coq Hardi (Grenoble), Plats sans gluten
   502: 'safe',   // Chez Grégoire, pâtisserie 100% sans gluten
   503: 'safe',   // Sans Gluten Pizza Epicerie, 100% sans gluten
   504: 'safe',   // Les Gasteliers, boulangerie 100% sans gluten
@@ -2268,6 +2461,16 @@ const CITY_CENTERS = {
   'Lyon': { lat: 45.7620, lon: 4.8320, zoom: 12 },
   'Annecy': { lat: 45.8990, lon: 6.1270, zoom: 11 }, // couvre aussi Sevrier/Talloires/Saint-Jorioz/Annecy-le-Vieux à proximité
   'Paris': { lat: 48.8600, lon: 2.3470, zoom: 12 },
+  'Marseille': { lat: 43.2936, lon: 5.3760, zoom: 13 },
+  'Nice': { lat: 43.6984, lon: 7.2727, zoom: 13 },
+  'Toulouse': { lat: 43.6048, lon: 1.4441, zoom: 13 },
+  'Bordeaux': { lat: 44.8397, lon: -0.5720, zoom: 13 },
+  'Montpellier': { lat: 43.6096, lon: 3.8762, zoom: 13 },
+  'Nantes': { lat: 47.2152, lon: -1.5557, zoom: 13 },
+  'Strasbourg': { lat: 48.5812, lon: 7.7475, zoom: 13 },
+  'Lille': { lat: 50.6370, lon: 3.0626, zoom: 13 },
+  'Rennes': { lat: 48.1117, lon: -1.6802, zoom: 13 },
+  'Grenoble': { lat: 45.1908, lon: 5.7255, zoom: 13 },
 };
 
 function recenterMapOnVille(ville){
@@ -2881,7 +3084,7 @@ function renderSuggestBox(){
     <input id="sgNom" maxlength="80" autocomplete="off">
     <label for="sgVille">Ville</label>
     <input id="sgVille" maxlength="40" list="sgVilles" autocomplete="off">
-    <datalist id="sgVilles"><option value="Lyon"><option value="Annecy"><option value="Paris"></datalist>
+    <datalist id="sgVilles">${[...new Set(RESTO_DATA.map(r => r.ville))].sort().map(v => `<option value="${escapeHtml(v)}">`).join("")}</datalist>
     <label for="sgAdresse">Adresse (optionnel)</label>
     <input id="sgAdresse" maxlength="150" autocomplete="off">
     <label for="sgStatut">Sans gluten ?</label>

@@ -1,7 +1,7 @@
 {
   "name": "EasyEat, manger sans y penser",
   "short_name": "EasyEat",
-  "description": "Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés et recettes sans gluten à Lyon.",
+  "description": "Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés dans 13 villes de France et recettes sans gluten.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
