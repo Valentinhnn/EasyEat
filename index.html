@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
-<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 35 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 49 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
 <link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EasyEat">
 <meta property="og:title" content="EasyEat, manger sans y penser">
-<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 35 villes de France. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 49 villes de France. Gratuit, pensé pour les personnes cœliaques.">
 <meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
 <meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EasyEat, manger sans y penser">
-<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 35 villes de France et recettes. Gratuit.">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 49 villes de France et recettes. Gratuit.">
 <meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -2054,6 +2054,77 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
+  1030: 'mixed',  // Grand Ours (Halles Notre-Dame) (Poitiers), Cuisine maison, options sans gluten
+  1031: 'mixed',  // Manhattan Café (Poitiers), Serveur au fait du gluten, pain burger sans gluten
+  1032: 'mixed',  // L'Essentiel (Poitiers), Pain sans gluten servi sur demande
+  1033: 'safe',   // La Ciboulette (Le Mans), Toute la carte est sans gluten
+  1034: 'mixed',  // La Boîte à Déjeuner (Le Mans), Options sans gluten
+  1035: 'mixed',  // Auberge des 7 Plats (Le Mans), Options sans gluten
+  1036: 'mixed',  // Hyperbols (Le Mans), Bols, desserts et boissons sans gluten
+  1037: 'mixed',  // L'Africaine (Le Mans), Carte sûre pour cœliaques sauf les gâteaux
+  1038: 'mixed',  // Layaly (Le Mans), Plats préparés en conséquence si on signale la maladie cœliaque
+  1039: 'mixed',  // Zèbre Jaune (Chambéry), Cuisine sans gluten de blé ni lactose, risque de contamination signalé
+  1040: 'mixed',  // Le Gulliver (Chambéry), Pancakes et salades sans gluten
+  1041: 'mixed',  // Crêperie Bleu de Toi (Chambéry) (Chambéry), Galettes pur sarrasin
+  1042: 'mixed',  // La Table Sébastien Gravé (Bayonne), Options sans gluten
+  1043: 'mixed',  // Santosha (Bayonne) (Bayonne), Options sans gluten
+  1044: 'mixed',  // Burger Bar des Remparts (Bayonne), Options sans gluten
+  1045: 'mixed',  // Eklat (Bayonne), Petit-déjeuner et brunch sans gluten
+  1046: 'safe',   // Xuxu (Biarritz), 100 % végan, bio et sans gluten strict
+  1047: 'mixed',  // Milwaukee Café (Biarritz), Carte riche en plats sans gluten
+  1048: 'mixed',  // Le Blé Noir (Biarritz), Galettes sans gluten
+  1049: 'mixed',  // California Kitchen (Biarritz), Options sans gluten
+  1050: 'mixed',  // Coffee Ekia (Biarritz), Options sans gluten
+  1051: 'mixed',  // Hungry Belly (Biarritz), Restaurant-pâtisserie végétal avec options sans gluten
+  1052: 'mixed',  // Dolce Vita (Valence) (Valence), Pizzas sans gluten sur commande
+  1053: 'mixed',  // Chez Gayane (Valence), Régime sans gluten pris en compte
+  1054: 'mixed',  // Le Shalimar (Valence), Plusieurs plats sans gluten proposés à un client cœliaque
+  1055: 'mixed',  // Le Majeur (Nancy), Options sans gluten, intolérance prise en compte
+  1056: 'mixed',  // Big Sister (Nancy), Quelques options sans gluten
+  1057: 'mixed',  // Poké Bar Nancy (Nancy), Poké bowls sans gluten, allergènes indiqués
+  1058: 'mixed',  // Les Bacchanales (Nancy), Desserts et menus sans gluten
+  1059: 'mixed',  // La Maison dans le Parc (Nancy), Menu entièrement adapté sans gluten
+  1060: 'mixed',  // La Terre est Plate (Mulhouse), Options sans gluten
+  1061: 'mixed',  // Lc2 (Mulhouse), Options sans gluten
+  1062: 'mixed',  // Yayourt (Ajaccio), Options sans gluten
+  1063: 'mixed',  // L'Amirauté Chez Rita (Ajaccio), Jugé adapté aux cœliaques (port Charles Ornano)
+  1064: 'mixed',  // Cuit lu Cru (Colmar), Options sans gluten (marché couvert)
+  1065: 'mixed',  // Bistrot Gourmand (Colmar), Options sans gluten
+  1066: 'mixed',  // Le Palais Gourmand (Colmar), Options sans gluten
+  1067: 'mixed',  // Le Touareg (Colmar), Options sans gluten
+  1068: 'mixed',  // Wistub Brenner (Colmar), Options sans gluten
+  1069: 'mixed',  // L'Arpège (Colmar), Options sans gluten
+  1070: 'mixed',  // Le Fer Rouge (Colmar), Options sans gluten
+  1071: 'mixed',  // JY's (Colmar), Options sans gluten
+  1072: 'mixed',  // La Gourmand'ille (Saint-Malo), Options sans gluten
+  1073: 'mixed',  // Bergamote (Saint-Malo), Options sans gluten
+  1074: 'mixed',  // Annadata (Saint-Malo), Options sans gluten
+  1075: 'mixed',  // Le Tourne Pierre (Saint-Malo), Options sans gluten
+  1076: 'mixed',  // Chapati Indian Street Food (Saint-Malo), Options sans gluten
+  1077: 'mixed',  // La Touline (Saint-Malo), Options sans gluten
+  1078: 'mixed',  // Crêperie Dan Ewen (Vannes), Galettes sans gluten
+  1079: 'mixed',  // Comme à la Maison (Vannes), Options sans gluten
+  1080: 'mixed',  // Bella Storia (Cannes), Pizzas sans gluten
+  1081: 'mixed',  // Maison Charlotte Busset (Cannes), Options sans gluten
+  1082: 'mixed',  // Acai Spot (Cannes), Options sans gluten
+  1083: 'mixed',  // Crêperie La Bigoudène (Cannes), Galettes sans gluten
+  1084: 'mixed',  // La Casa di Nonna (Cannes), Options sans gluten
+  1085: 'mixed',  // Chaï Dee (Cannes), Pad thaï et plats sans gluten
+  1086: 'mixed',  // Tredici (Cannes), Options sans gluten
+  1087: 'mixed',  // Rosana (Cannes), Brunch, frites et desserts sans gluten
+  1088: 'mixed',  // L'Assiette Provençale (Cannes), Options sans gluten
+  1089: 'mixed',  // Le Welcome (Cannes), Galettes sans gluten
+  1090: 'mixed',  // Choopy's (Antibes), Jugé adapté aux cœliaques
+  1091: 'mixed',  // Healthy Lounge (Antibes), Options sans gluten
+  1092: 'mixed',  // Les Filles du Micocoulier (Antibes), Options sans gluten
+  1093: 'mixed',  // La Cafetière Fêlée (Antibes), Options sans gluten
+  1094: 'mixed',  // Mamalu (Antibes), Options sans gluten
+  1095: 'mixed',  // Salé/Sucré (Antibes), Options sans gluten
+  1096: 'mixed',  // Miss Socca (Antibes), Socca (farine de pois chiche)
+  1097: 'mixed',  // MamaBoon (Antibes), Options sans gluten
+  1098: 'mixed',  // L'Escale (Juan-les-Pins) (Antibes), Options sans gluten
+  1099: 'mixed',  // Ti Toques (Antibes), Options sans gluten
+  1100: 'mixed',  // Le Phenicia (Antibes), Options sans gluten
   973: 'mixed',  // Crêperie du Port (Toulon), Galettes salées sans gluten
   974: 'mixed',  // Chez Florabio (Toulon), Cuisine bio sans gluten ni lactose
   975: 'mixed',  // Les Têtes d'Ail (Toulon), Plats sans gluten maison, attention à la contamination croisée
@@ -2623,6 +2694,20 @@ const CITY_CENTERS = {
   'Lille': { lat: 50.6370, lon: 3.0626, zoom: 13 },
   'Rennes': { lat: 48.1117, lon: -1.6802, zoom: 13 },
   'Grenoble': { lat: 45.1908, lon: 5.7255, zoom: 13 },
+  'Poitiers': { lat: 46.5831, lon: 0.3441, zoom: 14 },
+  'Le Mans': { lat: 48.0055, lon: 0.1976, zoom: 14 },
+  'Chambéry': { lat: 45.5645, lon: 5.9223, zoom: 14 },
+  'Bayonne': { lat: 43.4908, lon: -1.4765, zoom: 14 },
+  'Biarritz': { lat: 43.4815, lon: -1.5587, zoom: 14 },
+  'Valence': { lat: 44.9289, lon: 4.8913, zoom: 14 },
+  'Nancy': { lat: 48.6896, lon: 6.1851, zoom: 14 },
+  'Mulhouse': { lat: 47.7472, lon: 7.3391, zoom: 14 },
+  'Ajaccio': { lat: 41.9245, lon: 8.7392, zoom: 14 },
+  'Colmar': { lat: 48.0765, lon: 7.3583, zoom: 14 },
+  'Saint-Malo': { lat: 48.6496, lon: -2.0248, zoom: 14 },
+  'Vannes': { lat: 47.6588, lon: -2.7543, zoom: 14 },
+  'Cannes': { lat: 43.5520, lon: 7.0161, zoom: 14 },
+  'Antibes': { lat: 43.5802, lon: 7.1246, zoom: 14 },
   'Toulon': { lat: 43.1218, lon: 5.9334, zoom: 14 },
   'Le Havre': { lat: 49.4966, lon: 0.1172, zoom: 14 },
   'Saint-Étienne': { lat: 45.4342, lon: 4.3906, zoom: 14 },
