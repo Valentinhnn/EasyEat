@@ -111,6 +111,7 @@
     color-scheme: dark; /* champs de saisie, listes et barres de défilement natives en sombre */
   }
   html, body{ transition: background-color .2s ease, color .2s ease; }
+  html[data-theme="dark"] .resto-actions a, html[data-theme="dark"] .resto-actions button, html[data-theme="dark"] .panel-link{ color: var(--brand); } /* --brand-dark trop peu contrasté sur fond sombre */
   html[data-theme="dark"] #restoMap .leaflet-tile-pane{
     filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
   }
@@ -933,11 +934,13 @@
       <select id="restoFilterQuartier" aria-label="Filtrer par quartier">
         <option value="">Quartier : tous</option>
       </select>
-      <label style="grid-column: 1 / -1; display:flex; align-items:center; gap:6px; font-size:12.5px; color: var(--ink-soft); cursor:pointer;">
-        <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
-      </label>
+      <div style="grid-column: 1 / -1; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color: var(--ink-soft); cursor:pointer;">
+          <input type="checkbox" id="restoFavoritesOnly" style="cursor:pointer;"> ⭐ Mes favoris uniquement
+        </label>
+        <button type="button" id="shareFavsBtn" class="history-link" style="margin:0;" hidden>🔗 Partager mes favoris</button>
+      </div>
       <button class="resto-reset" id="restoNearMeBtn" type="button">📍 Près de moi</button>
-      <button class="resto-reset" id="shareFavsBtn" type="button">🔗 Partager mes favoris</button>
       <button class="resto-reset" id="restoReset">Réinitialiser</button>
       <button class="resto-reset" id="tonightPickToggle" type="button" style="grid-column: 1 / -1;" aria-expanded="false">🎲 Où manger ce soir ?</button>
     </div>
@@ -1366,7 +1369,7 @@ resetBtnMenu.addEventListener('click', () => {
 // Question précise à poser au serveur pour un plat « à vérifier », choisie
 // d'après le nom du plat puis la raison donnée par l'IA (1re règle qui colle).
 const WAITER_QUESTIONS = [
-  [/farin|escalope|meuni|piccata|saltimbocca|grenouille|truite aux amandes/, "La viande ou le poisson est-il passé dans la farine avant la cuisson ?"],
+  [/fariné|escalope|meuni|piccata|saltimbocca|grenouille|truite aux amandes/, "La viande ou le poisson est-il passé dans la farine avant la cuisson ?"],
   [/sarrasin|galette|blini/, "La galette (ou les blinis) est-elle 100 % sarrasin, sans farine de blé, et cuite sur une plaque à part ?"],
   [/quesadilla|fajita|taco|tortilla|burrito|enchilada/, "Les tortillas sont-elles 100 % maïs, sans farine de blé ?"],
   [/frit|friture|beignet|tempura|falafel|pakora|samoussa|samosa|chips|\bnems?\b/, "La friture se fait-elle dans une huile à part, où rien de pané ni de fariné n'est cuit ?"],
@@ -3025,6 +3028,7 @@ function renderRestoList(opts = {}){
   if (!opts.keepLimit) restoVisibleLimit = RESTO_PAGE_SIZE;
   renderRestoAdminZone();
   renderSharedBanner();
+  document.getElementById('shareFavsBtn').hidden = getFavorites().size === 0;
   const f = getActiveFilters();
   const list = document.getElementById('restoList');
   const countEl = document.getElementById('restoCount');
@@ -3108,6 +3112,7 @@ function renderRestoList(opts = {}){
     favBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleFavorite(r.id);
+      document.getElementById('shareFavsBtn').hidden = getFavorites().size === 0;
       favBtn.textContent = isFavorite(r.id) ? '⭐' : '☆';
       favBtn.setAttribute('aria-label', isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris');
       if (getActiveFilters().favoritesOnly) renderRestoList({ keepLimit: true });
