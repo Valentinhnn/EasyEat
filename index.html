@@ -499,6 +499,11 @@
   .resto-actions button{ font:inherit; font-size:12.5px; font-weight:700; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); cursor:pointer; }
   .resto-actions{ flex-wrap:wrap; }
   .resto-actions a{ font-size:12.5px; font-weight:700; text-decoration:none; color: var(--brand-dark); padding:5px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); }
+  .menu-tools{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin:-4px 0 12px; }
+  .menu-tools .share-btn{ margin-top:0; }
+  .waiter-lang{ font-size:12.5px; color: var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .waiter-lang select{ font:inherit; font-size:12.5px; padding:5px 6px; border-radius:8px; border:1px solid var(--line); background: var(--surface); color: var(--ink); }
+  .dish-ask-tr{ margin-top:6px; font-size:15px; font-weight:600; color: var(--ink); }
   .dish-ask{ font-size:13px; line-height:1.5; margin-top:8px; padding:8px 10px; border-radius:8px; background: var(--surface); border:1px dashed var(--line); }
   .share-btn{
     margin-top:10px; font-family: inherit; font-size:12px; font-weight:700;
@@ -810,6 +815,19 @@
       <div class="results-header">
         <span class="results-title">Résultats</span>
         <span class="results-count" id="resultsCountMenu"></span>
+      </div>
+      <div class="menu-tools">
+        <button class="share-btn" type="button" id="shareMenuBtn">🔗 Partager tout le menu</button>
+        <label class="waiter-lang">🌍 Questions au serveur en
+          <select id="waiterLangSel" aria-label="Langue des questions au serveur">
+            <option value="fr">français</option><option value="en">English</option><option value="es">Español</option>
+            <option value="it">Italiano</option><option value="de">Deutsch</option><option value="pt">Português</option>
+            <option value="nl">Nederlands</option><option value="el">Ελληνικά</option><option value="tr">Türkçe</option>
+            <option value="pl">Polski</option><option value="ja">日本語</option><option value="zh">中文</option>
+            <option value="ko">한국어</option><option value="th">ไทย</option><option value="vi">Tiếng Việt</option>
+            <option value="ar">العربية</option>
+          </select>
+        </label>
       </div>
       <div id="dishList"></div>
     </div>
@@ -1386,16 +1404,31 @@ const WAITER_QUESTIONS = [
   [/mariné|marinade|brochette|grillé|magret|confit|gigot|kebab/, "La viande est-elle marinée ou servie avec une sauce ? Les marinades contiennent souvent de la sauce soja ou de la bière."],
   [/bière|malt|orge|seigle|avoine/, "Ce plat contient-il de la bière, du malt, de l'orge, du seigle ou de l'avoine ?"],
 ];
-function waiterQuestion(d){
+// Index dans WAITER_QUESTIONS (WAITER_QUESTIONS.length = question générale) :
+// sert aussi à retrouver la traduction figée dans travel-card.json (« questions »).
+function waiterQuestionIndex(d){
   for (const text of [d.plat, d.raison]){
     const t = String(text || '').toLowerCase();
-    const hit = WAITER_QUESTIONS.find(([re]) => re.test(t));
-    if (hit) return hit[1];
+    const i = WAITER_QUESTIONS.findIndex(([re]) => re.test(t));
+    if (i !== -1) return i;
   }
-  return "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?";
+  return WAITER_QUESTIONS.length;
+}
+function waiterQuestion(d){
+  const i = waiterQuestionIndex(d);
+  return i < WAITER_QUESTIONS.length ? WAITER_QUESTIONS[i][1]
+    : "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?";
+}
+// Traduction de la question dans la langue choisie, si la fiche voyage est chargée.
+function waiterQuestionTranslated(d){
+  const lang = waiterLangSel.value;
+  if (lang === 'fr' || !travelCardData || !travelCardData[lang]?.questions) return '';
+  return travelCardData[lang].questions[waiterQuestionIndex(d)] || '';
 }
 
+let lastMenu = null; // derniers verdicts affichés, pour changer de langue ou tout partager
 function renderDishes(dishes, source){
+  lastMenu = { dishes, source };
   dishList.innerHTML = '';
   dishes.forEach(d => {
     const cls = riskClass(d.risque);
@@ -1406,7 +1439,7 @@ function renderDishes(dishes, source){
         <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
       </div>
       <div class="dish-reason">${escapeHtml(d.raison)}</div>
-      ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »</div>` : ''}
+      ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »${waiterQuestionTranslated(d) ? `<div class="dish-ask-tr" lang="${waiterLangSel.value}" dir="auto">${escapeHtml(waiterQuestionTranslated(d))}</div>` : ''}</div>` : ''}
       <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
     card.querySelector('.share-btn').addEventListener('click', () => {
       shareText(
@@ -1444,6 +1477,32 @@ async function analyzeRestoMenu(r){
     statusMenu.classList.remove('active');
   }
 }
+
+const waiterLangSel = document.getElementById('waiterLangSel');
+try { waiterLangSel.value = localStorage.getItem('easyeat-waiter-lang') || 'fr'; } catch(e){}
+if (waiterLangSel.value !== 'fr') loadTravelCardData().catch(() => {}); // traductions prêtes avant la 1re analyse
+waiterLangSel.addEventListener('change', async () => {
+  try { localStorage.setItem('easyeat-waiter-lang', waiterLangSel.value); } catch(e){}
+  if (waiterLangSel.value !== 'fr'){
+    try { await loadTravelCardData(); } catch(e){ alert("Traductions indisponibles, vérifie ta connexion."); return; }
+  }
+  if (lastMenu) renderDishes(lastMenu.dishes, lastMenu.source);
+});
+
+// Résumé de tous les verdicts du menu, à envoyer à la personne avec qui on dîne.
+document.getElementById('shareMenuBtn').addEventListener('click', () => {
+  if (!lastMenu) return;
+  const groups = [['✅ Sûr', 'sûr'], ['⚠️ À vérifier', 'à vérifier'], ['⛔ À éviter', 'à éviter']];
+  const lines = [`EasyEat : verdicts gluten (${lastMenu.dishes.length} plats)${lastMenu.source ? `, carte de ${lastMenu.source}` : ''}`];
+  groups.forEach(([title, r]) => {
+    const list = lastMenu.dishes.filter(d => d.risque === r);
+    if (!list.length) return;
+    lines.push('', `${title} :`);
+    list.forEach(d => lines.push(`- ${d.plat}${r === 'à vérifier' ? ` (demander : ${waiterQuestion(d)})` : ''}`));
+  });
+  lines.push('', "Verdicts indicatifs : confirmez toujours auprès du restaurant.", `Vérifié avec EasyEat : ${location.origin}${location.pathname}`);
+  shareText(lines.join('\n'), 'Menu vérifié avec EasyEat');
+});
 
 analyzeBtnMenu.addEventListener('click', async () => {
   if (!menuBase64) return;

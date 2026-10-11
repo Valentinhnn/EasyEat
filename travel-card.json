@@ -28,7 +28,26 @@
         "Croûtons dans les soupes et salades",
         "Galettes « de sarrasin » souvent coupées avec du blé"
       ]
-    }
+    },
+    "questions": [
+      "La viande ou le poisson est-il passé dans la farine avant la cuisson ?",
+      "La galette (ou les blinis) est-elle 100 % sarrasin, sans farine de blé, et cuite sur une plaque à part ?",
+      "Les tortillas sont-elles 100 % maïs, sans farine de blé ?",
+      "La friture se fait-elle dans une huile à part, où rien de pané ni de fariné n'est cuit ?",
+      "La sauce soja utilisée est-elle sans gluten (tamari) ?",
+      "L'assaisonnement contient-il de la sauce Worcestershire ou de la sauce soja (qui contiennent du gluten) ?",
+      "La charcuterie est-elle garantie sans gluten ? Certaines contiennent de la farine ou de la chapelure.",
+      "Y a-t-il de la farine, de la chapelure ou du pain dans la préparation ?",
+      "Le plat contient-il une béchamel (à la farine) ou de la chapelure sur le dessus ?",
+      "Le dessert contient-il de la farine de blé, des biscuits, ou une décoration (gaufrette, crumble) ?",
+      "Peut-on l'avoir avec des pommes de terre plutôt que du pain, et le fromage est-il sans farine ajoutée ?",
+      "Le plat contient-il du pain ou en est-il accompagné ? Peut-on l'avoir sans, ou avec un pain sans gluten ?",
+      "La sauce est-elle liée avec de la farine, ou faite avec un fond ou un cube du commerce ?",
+      "Le bouillon (ou la soupe) est-il fait maison, sans farine ni cube ou fond du commerce ?",
+      "La viande est-elle marinée ou servie avec une sauce ? Les marinades contiennent souvent de la sauce soja ou de la bière.",
+      "Ce plat contient-il de la bière, du malt, de l'orge, du seigle ou de l'avoine ?",
+      "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?"
+    ]
   },
   "en": {
     "label": "English",
@@ -58,7 +77,26 @@
         "Saucisses (souvent avec chapelure ou « rusk »)",
         "Pies, puddings, Yorkshire pudding, scones"
       ]
-    }
+    },
+    "questions": [
+      "Is the meat or fish coated in flour before cooking?",
+      "Is the galette (or the blinis) made with 100% buckwheat, with no wheat flour, and cooked on a separate griddle?",
+      "Are the tortillas 100% corn, with no wheat flour?",
+      "Is the frying done in separate oil, where nothing breaded or floured is cooked?",
+      "Is the soy sauce gluten-free (tamari)?",
+      "Does the seasoning contain Worcestershire sauce or soy sauce (both contain gluten)?",
+      "Are the cold cuts or sausages guaranteed gluten-free? Some contain flour or breadcrumbs.",
+      "Is there any flour, breadcrumbs or bread in this dish?",
+      "Does the dish contain a béchamel sauce (made with flour) or breadcrumbs on top?",
+      "Does the dessert contain wheat flour, biscuits, or decorations (wafer, crumble)?",
+      "Can I have it with potatoes instead of bread, and is the cheese free of added flour?",
+      "Does the dish contain bread or come with bread? Can I have it without, or with gluten-free bread?",
+      "Is the sauce thickened with flour, or made with a store-bought stock or stock cube?",
+      "Is the stock (or soup) homemade, with no flour, stock cube or store-bought base?",
+      "Is the meat marinated or served with a sauce? Marinades often contain soy sauce or beer.",
+      "Does this dish contain beer, malt, barley, rye or oats?",
+      "Does this dish contain wheat, barley or rye, even in the sauce, and can it be prepared separately?"
+    ]
   },
   "es": {
     "label": "Español",
@@ -88,7 +126,26 @@
         "Chorizo et morcilla : composition à vérifier",
         "Tortillas de blé (« de harina ») en Amérique latine, préfère « de maíz »"
       ]
-    }
+    },
+    "questions": [
+      "¿La carne o el pescado se pasa por harina antes de cocinarlo?",
+      "¿La galette (o los blinis) es 100 % de trigo sarraceno, sin harina de trigo, y se cocina en una plancha aparte?",
+      "¿Las tortillas son 100 % de maíz, sin harina de trigo?",
+      "¿Se fríe en un aceite aparte, donde no se cocina nada rebozado ni enharinado?",
+      "¿La salsa de soja es sin gluten (tamari)?",
+      "¿El aliño lleva salsa Worcestershire o salsa de soja (que contienen gluten)?",
+      "¿Los embutidos están garantizados sin gluten? Algunos llevan harina o pan rallado.",
+      "¿La preparación lleva harina, pan rallado o pan?",
+      "¿El plato lleva bechamel (con harina) o pan rallado por encima?",
+      "¿El postre lleva harina de trigo, galletas o decoración (barquillo, crumble)?",
+      "¿Me lo pueden servir con patatas en lugar de pan, y el queso no lleva harina añadida?",
+      "¿El plato lleva pan o se sirve con pan? ¿Me lo pueden servir sin pan, o con pan sin gluten?",
+      "¿La salsa está espesada con harina, o hecha con un caldo o una pastilla comercial?",
+      "¿El caldo (o la sopa) es casero, sin harina ni pastilla o caldo comercial?",
+      "¿La carne está marinada o se sirve con salsa? Los adobos suelen llevar salsa de soja o cerveza.",
+      "¿Este plato lleva cerveza, malta, cebada, centeno o avena?",
+      "¿Este plato lleva trigo, cebada o centeno, aunque sea en la salsa, y se puede preparar aparte?"
+    ]
   },
   "it": {
     "label": "Italiano",
@@ -119,7 +176,26 @@
         "Farine dans les sauces et le ragù",
         "Tiramisu, cantucci, focaccia"
       ]
-    }
+    },
+    "questions": [
+      "La carne o il pesce viene infarinato prima della cottura?",
+      "La galette (o i blinis) è al 100 % di grano saraceno, senza farina di frumento, e cotta su una piastra separata?",
+      "Le tortillas sono al 100 % di mais, senza farina di frumento?",
+      "La frittura avviene in un olio separato, dove non si cuoce nulla di impanato o infarinato?",
+      "La salsa di soia è senza glutine (tamari)?",
+      "Il condimento contiene salsa Worcestershire o salsa di soia (che contengono glutine)?",
+      "I salumi sono garantiti senza glutine? Alcuni contengono farina o pangrattato.",
+      "Nella preparazione c'è farina, pangrattato o pane?",
+      "Il piatto contiene besciamella (con farina) o pangrattato sopra?",
+      "Il dolce contiene farina di frumento, biscotti o decorazioni (cialda, crumble)?",
+      "Posso averlo con patate invece del pane, e il formaggio è senza farina aggiunta?",
+      "Il piatto contiene pane o è servito con pane? Posso averlo senza, o con pane senza glutine?",
+      "La salsa è addensata con farina, o fatta con un brodo o un dado industriale?",
+      "Il brodo (o la zuppa) è fatto in casa, senza farina né dado o brodo industriale?",
+      "La carne è marinata o servita con una salsa? Le marinate contengono spesso salsa di soia o birra.",
+      "Questo piatto contiene birra, malto, orzo, segale o avena?",
+      "Questo piatto contiene frumento, orzo o segale, anche nella salsa, e può essere preparato a parte?"
+    ]
   },
   "de": {
     "label": "Deutsch",
@@ -149,7 +225,26 @@
         "Saucisses souvent avec chapelure",
         "Bière, y compris dans les plats"
       ]
-    }
+    },
+    "questions": [
+      "Wird das Fleisch oder der Fisch vor dem Garen in Mehl gewendet?",
+      "Ist die Galette (oder sind die Blinis) zu 100 % aus Buchweizen, ohne Weizenmehl, und auf einer separaten Platte gebacken?",
+      "Sind die Tortillas zu 100 % aus Mais, ohne Weizenmehl?",
+      "Wird in separatem Öl frittiert, in dem nichts Paniertes oder Bemehltes gegart wird?",
+      "Ist die Sojasauce glutenfrei (Tamari)?",
+      "Enthält die Würzung Worcestershiresauce oder Sojasauce (beide enthalten Gluten)?",
+      "Ist die Wurst garantiert glutenfrei? Manche enthalten Mehl oder Paniermehl.",
+      "Ist in der Zubereitung Mehl, Paniermehl oder Brot enthalten?",
+      "Enthält das Gericht Béchamelsauce (mit Mehl) oder Paniermehl obendrauf?",
+      "Enthält das Dessert Weizenmehl, Kekse oder Dekoration (Waffel, Streusel)?",
+      "Kann ich es mit Kartoffeln statt Brot bekommen, und ist der Käse ohne zugesetztes Mehl?",
+      "Enthält das Gericht Brot oder wird es mit Brot serviert? Kann ich es ohne oder mit glutenfreiem Brot bekommen?",
+      "Ist die Sauce mit Mehl gebunden oder mit einem Fertigfond oder Brühwürfel gemacht?",
+      "Ist die Brühe (oder Suppe) hausgemacht, ohne Mehl, Brühwürfel oder Fertigfond?",
+      "Ist das Fleisch mariniert oder wird es mit Sauce serviert? Marinaden enthalten oft Sojasauce oder Bier.",
+      "Enthält dieses Gericht Bier, Malz, Gerste, Roggen oder Hafer?",
+      "Enthält dieses Gericht Weizen, Gerste oder Roggen, auch in der Sauce, und kann es separat zubereitet werden?"
+    ]
   },
   "pt": {
     "label": "Português",
@@ -178,7 +273,26 @@
         "Bifana et prego (servis dans du pain)",
         "Friture partagée"
       ]
-    }
+    },
+    "questions": [
+      "A carne ou o peixe é passado em farinha antes de cozinhar?",
+      "A galette (ou os blinis) é 100 % de trigo-sarraceno, sem farinha de trigo, e cozida numa chapa separada?",
+      "As tortilhas são 100 % de milho, sem farinha de trigo?",
+      "A fritura é feita num óleo separado, onde não se frita nada panado nem enfarinhado?",
+      "O molho de soja é sem glúten (tamari)?",
+      "O tempero contém molho inglês (Worcestershire) ou molho de soja (que contêm glúten)?",
+      "Os enchidos são garantidamente sem glúten? Alguns contêm farinha ou pão ralado.",
+      "A preparação leva farinha, pão ralado ou pão?",
+      "O prato tem molho bechamel (com farinha) ou pão ralado por cima?",
+      "A sobremesa contém farinha de trigo, bolachas ou decoração (bolacha, crumble)?",
+      "Posso comer com batatas em vez de pão, e o queijo não tem farinha adicionada?",
+      "O prato leva pão ou é servido com pão? Posso comer sem pão, ou com pão sem glúten?",
+      "O molho é engrossado com farinha, ou feito com caldo ou cubo industrial?",
+      "O caldo (ou a sopa) é caseiro, sem farinha nem cubo ou caldo industrial?",
+      "A carne é marinada ou servida com molho? As marinadas costumam ter molho de soja ou cerveja.",
+      "Este prato contém cerveja, malte, cevada, centeio ou aveia?",
+      "Este prato contém trigo, cevada ou centeio, mesmo no molho, e pode ser preparado à parte?"
+    ]
   },
   "nl": {
     "label": "Nederlands",
@@ -207,7 +321,26 @@
         "Gaufres, stroopwafels, speculoos, pannenkoeken",
         "Bière dans les plats (carbonade flamande)"
       ]
-    }
+    },
+    "questions": [
+      "Wordt het vlees of de vis vóór het bereiden door de bloem gehaald?",
+      "Is de galette (of zijn de blini's) van 100 % boekweit, zonder tarwebloem, en op een aparte plaat gebakken?",
+      "Zijn de tortilla's van 100 % maïs, zonder tarwebloem?",
+      "Wordt er gefrituurd in aparte olie, waarin niets gepaneerds of met bloem wordt gebakken?",
+      "Is de sojasaus glutenvrij (tamari)?",
+      "Zit er worcestershiresaus of sojasaus (die gluten bevatten) in de kruiding?",
+      "Zijn de vleeswaren gegarandeerd glutenvrij? Sommige bevatten bloem of paneermeel.",
+      "Zit er bloem, paneermeel of brood in de bereiding?",
+      "Bevat het gerecht bechamelsaus (met bloem) of paneermeel erbovenop?",
+      "Bevat het dessert tarwebloem, koekjes of decoratie (wafeltje, crumble)?",
+      "Kan ik het met aardappelen in plaats van brood krijgen, en zit er geen bloem in de kaas?",
+      "Bevat het gerecht brood of wordt het met brood geserveerd? Kan ik het zonder, of met glutenvrij brood krijgen?",
+      "Is de saus gebonden met bloem, of gemaakt met kant-en-klare fond of een bouillonblokje?",
+      "Is de bouillon (of soep) huisgemaakt, zonder bloem, bouillonblokje of kant-en-klare fond?",
+      "Is het vlees gemarineerd of wordt het met saus geserveerd? Marinades bevatten vaak sojasaus of bier.",
+      "Bevat dit gerecht bier, mout, gerst, rogge of haver?",
+      "Bevat dit gerecht tarwe, gerst of rogge, ook in de saus, en kan het apart worden bereid?"
+    ]
   },
   "el": {
     "label": "Ελληνικά",
@@ -236,7 +369,26 @@
         "Calamars et petits poissons frits (farinés)",
         "Keftedes (boulettes avec chapelure)"
       ]
-    }
+    },
+    "questions": [
+      "Το κρέας ή το ψάρι αλευρώνεται πριν από το μαγείρεμα;",
+      "Η γκαλέτ (ή τα μπλίνι) είναι 100 % από φαγόπυρο, χωρίς αλεύρι σίτου, και ψήνεται σε ξεχωριστή πλάκα;",
+      "Οι τορτίγιες είναι 100 % από καλαμπόκι, χωρίς αλεύρι σίτου;",
+      "Το τηγάνισμα γίνεται σε ξεχωριστό λάδι, όπου δεν τηγανίζεται τίποτα πανέ ή αλευρωμένο;",
+      "Η σάλτσα σόγιας είναι χωρίς γλουτένη (ταμάρι);",
+      "Το καρύκευμα περιέχει σάλτσα Worcestershire ή σάλτσα σόγιας (που περιέχουν γλουτένη);",
+      "Τα αλλαντικά είναι εγγυημένα χωρίς γλουτένη; Ορισμένα περιέχουν αλεύρι ή φρυγανιά.",
+      "Υπάρχει αλεύρι, φρυγανιά ή ψωμί στην παρασκευή;",
+      "Το πιάτο περιέχει μπεσαμέλ (με αλεύρι) ή φρυγανιά από πάνω;",
+      "Το επιδόρπιο περιέχει αλεύρι σίτου, μπισκότα ή διακόσμηση (γκοφρέτα, κραμπλ);",
+      "Μπορώ να το έχω με πατάτες αντί για ψωμί, και το τυρί είναι χωρίς πρόσθετο αλεύρι;",
+      "Το πιάτο περιέχει ψωμί ή σερβίρεται με ψωμί; Μπορώ να το έχω χωρίς ή με ψωμί χωρίς γλουτένη;",
+      "Η σάλτσα δένεται με αλεύρι ή γίνεται με έτοιμο ζωμό ή κύβο;",
+      "Ο ζωμός (ή η σούπα) είναι σπιτικός, χωρίς αλεύρι, κύβο ή έτοιμο ζωμό;",
+      "Το κρέας είναι μαριναρισμένο ή σερβίρεται με σάλτσα; Οι μαρινάδες συχνά περιέχουν σάλτσα σόγιας ή μπίρα.",
+      "Περιέχει αυτό το πιάτο μπίρα, βύνη, κριθάρι, σίκαλη ή βρώμη;",
+      "Περιέχει αυτό το πιάτο σιτάρι, κριθάρι ή σίκαλη, ακόμα και στη σάλτσα, και μπορεί να ετοιμαστεί χωριστά;"
+    ]
   },
   "tr": {
     "label": "Türkçe",
@@ -265,7 +417,26 @@
         "Pilav au riz souvent mélangé à des vermicelles de blé (şehriye)",
         "Köfte (chapelure), baklava"
       ]
-    }
+    },
+    "questions": [
+      "Et veya balık pişirilmeden önce una bulanıyor mu?",
+      "Galeta (veya blini) %100 karabuğday mı, buğday unu içermiyor mu ve ayrı bir sacda mı pişiriliyor?",
+      "Tortillalar %100 mısırdan mı, buğday unu içermiyor mu?",
+      "Kızartma, pane veya unlu hiçbir şeyin pişirilmediği ayrı bir yağda mı yapılıyor?",
+      "Soya sosu glutensiz mi (tamari)?",
+      "Baharat karışımında Worcestershire sosu veya soya sosu (gluten içerirler) var mı?",
+      "Şarküteri ürünlerinin glutensiz olduğu garanti mi? Bazıları un veya galeta unu içerir.",
+      "Hazırlanışında un, galeta unu veya ekmek var mı?",
+      "Yemekte beşamel sos (unlu) veya üstünde galeta unu var mı?",
+      "Tatlıda buğday unu, bisküvi veya süsleme (gofret, crumble) var mı?",
+      "Ekmek yerine patatesle alabilir miyim ve peynire un eklenmemiş mi?",
+      "Yemekte ekmek var mı ya da ekmekle mi servis ediliyor? Ekmeksiz veya glutensiz ekmekle alabilir miyim?",
+      "Sos unla mı koyulaştırılıyor, yoksa hazır et suyu veya bulyon tableti ile mi yapılıyor?",
+      "Et suyu (veya çorba) ev yapımı mı, un, bulyon tableti veya hazır et suyu olmadan mı?",
+      "Et marine edilmiş mi veya sosla mı servis ediliyor? Marinatlar genellikle soya sosu veya bira içerir.",
+      "Bu yemekte bira, malt, arpa, çavdar veya yulaf var mı?",
+      "Bu yemekte, sosu dahil, buğday, arpa veya çavdar var mı ve ayrı hazırlanabilir mi?"
+    ]
   },
   "ja": {
     "label": "日本語",
@@ -295,7 +466,26 @@
         "Tempura, tonkatsu, karaage",
         "Miso, teriyaki et tare peuvent contenir du blé ou de l'orge"
       ]
-    }
+    },
+    "questions": [
+      "肉や魚は調理前に小麦粉をまぶしていますか？",
+      "ガレット（またはブリニ）はそば粉100％で小麦粉を使わず、別の鉄板で焼いていますか？",
+      "トルティーヤはトウモロコシ100％で、小麦粉は入っていませんか？",
+      "揚げ物は、衣や小麦粉をつけたものを揚げない別の油で揚げていますか？",
+      "醤油はグルテンフリー（たまり醤油）ですか？",
+      "味付けにウスターソースや醤油（グルテンを含みます）を使っていますか？",
+      "ハムやソーセージ類はグルテンフリーと保証されていますか？小麦粉やパン粉を含むものがあります。",
+      "この料理に小麦粉、パン粉、パンは入っていますか？",
+      "この料理にベシャメルソース（小麦粉入り）や、上にパン粉は使われていますか？",
+      "デザートに小麦粉、ビスケット、飾り（ウエハース、クランブル）は入っていますか？",
+      "パンの代わりにじゃがいもにできますか？チーズに小麦粉は加えられていませんか？",
+      "この料理にパンは入っていますか、またはパンが添えられますか？パンなし、またはグルテンフリーのパンにできますか？",
+      "ソースは小麦粉でとろみをつけていますか？市販のフォンやブイヨンキューブを使っていますか？",
+      "スープ（だし）は手作りで、小麦粉や市販のブイヨンを使っていませんか？",
+      "肉はマリネしていますか、またはソースがかかっていますか？マリネ液には醤油やビールがよく使われます。",
+      "この料理にビール、麦芽、大麦、ライ麦、オーツ麦は入っていますか？",
+      "この料理には、ソースも含めて小麦、大麦、ライ麦が入っていますか？別に調理してもらえますか？"
+    ]
   },
   "zh": {
     "label": "中文",
@@ -323,7 +513,26 @@
         "Fritures enrobées",
         "Seitan (« mianjin », gluten pur) dans les plats végétariens"
       ]
-    }
+    },
+    "questions": [
+      "肉或鱼在烹饪前裹了面粉吗？",
+      "这个荞麦饼（或布林饼）是100%荞麦、不含小麦粉，并在单独的煎板上制作的吗？",
+      "玉米饼是100%玉米做的、不含小麦粉吗？",
+      "油炸是否使用单独的油，没有炸过裹面包糠或面粉的食物？",
+      "酱油是无麸质的吗（溜酱油）？",
+      "调味料里有伍斯特酱或酱油吗（它们含有麸质）？",
+      "这些肉制品保证不含麸质吗？有些含有面粉或面包糠。",
+      "这道菜里有面粉、面包糠或面包吗？",
+      "这道菜有白酱（含面粉）或表面撒了面包糠吗？",
+      "甜点里有小麦粉、饼干或装饰（威化、酥粒）吗？",
+      "可以用土豆代替面包吗？奶酪里没有添加面粉吧？",
+      "这道菜含面包或配面包吗？可以不要面包，或换成无麸质面包吗？",
+      "酱汁是用面粉勾芡的，还是用市售高汤或汤块做的？",
+      "高汤（或汤）是自制的吗？不含面粉、汤块或市售高汤？",
+      "肉是腌制过的或配酱汁吗？腌料常含有酱油或啤酒。",
+      "这道菜含有啤酒、麦芽、大麦、黑麦或燕麦吗？",
+      "这道菜（包括酱汁）含有小麦、大麦或黑麦吗？可以单独制作吗？"
+    ]
   },
   "th": {
     "label": "ไทย",
@@ -352,7 +561,26 @@
         "Fritures enrobées",
         "Woks partagés avec des plats au blé"
       ]
-    }
+    },
+    "questions": [
+      "เนื้อหรือปลาคลุกแป้งสาลีก่อนปรุงหรือไม่",
+      "กาแลตต์ (หรือบลินี) ทำจากแป้งบัควีท 100% ไม่มีแป้งสาลี และทำบนกระทะแยกหรือไม่",
+      "แผ่นตอร์ติญ่าทำจากข้าวโพด 100% ไม่มีแป้งสาลีหรือไม่",
+      "ทอดในน้ำมันแยก ที่ไม่ได้ใช้ทอดของชุบแป้งหรือชุบเกล็ดขนมปังหรือไม่",
+      "ซีอิ๊วที่ใช้ปราศจากกลูเตนหรือไม่ (ทามาริ)",
+      "เครื่องปรุงมีซอสวูสเตอร์หรือซีอิ๊ว (ซึ่งมีกลูเตน) หรือไม่",
+      "แฮมและไส้กรอกรับประกันว่าไม่มีกลูเตนหรือไม่ บางชนิดมีแป้งหรือเกล็ดขนมปัง",
+      "ในอาหารนี้มีแป้งสาลี เกล็ดขนมปัง หรือขนมปังหรือไม่",
+      "อาหารนี้มีซอสเบชาเมล (ทำจากแป้ง) หรือโรยเกล็ดขนมปังด้านบนหรือไม่",
+      "ของหวานมีแป้งสาลี บิสกิต หรือของตกแต่ง (เวเฟอร์ ครัมเบิล) หรือไม่",
+      "ขอเป็นมันฝรั่งแทนขนมปังได้ไหม และชีสไม่มีแป้งผสมใช่ไหม",
+      "อาหารนี้มีขนมปังหรือเสิร์ฟพร้อมขนมปังหรือไม่ ขอไม่ใส่ หรือเปลี่ยนเป็นขนมปังไร้กลูเตนได้ไหม",
+      "ซอสทำให้ข้นด้วยแป้งสาลี หรือใช้น้ำสต็อกสำเร็จรูปหรือซุปก้อนหรือไม่",
+      "น้ำซุปทำเองหรือไม่ ไม่มีแป้ง ซุปก้อน หรือน้ำสต็อกสำเร็จรูปใช่ไหม",
+      "เนื้อหมักหรือเสิร์ฟพร้อมซอสหรือไม่ น้ำหมักมักมีซีอิ๊วหรือเบียร์",
+      "อาหารนี้มีเบียร์ มอลต์ ข้าวบาร์เลย์ ข้าวไรย์ หรือข้าวโอ๊ตหรือไม่",
+      "อาหารนี้มีข้าวสาลี ข้าวบาร์เลย์ หรือข้าวไรย์ แม้แต่ในซอสหรือไม่ และทำแยกได้ไหม"
+    ]
   },
   "vi": {
     "label": "Tiếng Việt",
@@ -380,7 +608,26 @@
         "Mì (nouilles de blé aux œufs)",
         "Nems parfois roulés dans une galette de blé"
       ]
-    }
+    },
+    "questions": [
+      "Thịt hoặc cá có được lăn bột mì trước khi nấu không?",
+      "Bánh galette (hoặc blini) có làm từ 100% bột kiều mạch, không có bột mì, và nướng trên chảo riêng không?",
+      "Bánh tortilla có làm từ 100% ngô, không có bột mì không?",
+      "Có chiên bằng dầu riêng, không chiên đồ tẩm bột chiên xù hay lăn bột mì không?",
+      "Nước tương có không chứa gluten (tamari) không?",
+      "Gia vị có sốt Worcestershire hoặc nước tương (có chứa gluten) không?",
+      "Đồ nguội (xúc xích, giăm bông) có đảm bảo không chứa gluten không? Một số loại có bột mì hoặc vụn bánh mì.",
+      "Món này có bột mì, vụn bánh mì hoặc bánh mì không?",
+      "Món này có sốt béchamel (làm từ bột mì) hoặc rắc vụn bánh mì bên trên không?",
+      "Món tráng miệng có bột mì, bánh quy hoặc đồ trang trí (bánh xốp, crumble) không?",
+      "Tôi có thể dùng khoai tây thay bánh mì không, và phô mai có trộn thêm bột mì không?",
+      "Món này có bánh mì hoặc ăn kèm bánh mì không? Có thể bỏ bánh mì hoặc đổi sang bánh mì không gluten không?",
+      "Nước sốt có làm sệt bằng bột mì, hay dùng nước dùng đóng gói hoặc viên súp không?",
+      "Nước dùng (hoặc súp) có tự nấu, không có bột mì, viên súp hay nước dùng đóng gói không?",
+      "Thịt có được ướp hoặc ăn kèm nước sốt không? Nước ướp thường có nước tương hoặc bia.",
+      "Món này có bia, mạch nha, lúa mạch, lúa mạch đen hoặc yến mạch không?",
+      "Món này có lúa mì, lúa mạch hoặc lúa mạch đen, kể cả trong nước sốt không, và có thể nấu riêng không?"
+    ]
   },
   "ko": {
     "label": "한국어",
@@ -408,7 +655,26 @@
         "Pajeon (galettes au blé), fritures",
         "Japchae : nouilles de patate douce, mais sauce soja"
       ]
-    }
+    },
+    "questions": [
+      "고기나 생선에 조리 전에 밀가루를 묻히나요?",
+      "갈레트(또는 블리니)는 메밀 100%로 밀가루 없이 별도의 철판에서 굽나요?",
+      "토르티야는 옥수수 100%로 밀가루가 들어가지 않나요?",
+      "튀김은 빵가루나 밀가루를 입힌 음식을 튀기지 않는 별도의 기름을 사용하나요?",
+      "간장은 글루텐 프리(타마리)인가요?",
+      "양념에 우스터소스나 간장(글루텐 함유)이 들어가나요?",
+      "햄·소시지류는 글루텐 프리가 보장되나요? 일부에는 밀가루나 빵가루가 들어갑니다.",
+      "이 요리에 밀가루, 빵가루 또는 빵이 들어가나요?",
+      "이 요리에 베샤멜 소스(밀가루 함유)나 위에 빵가루가 들어가나요?",
+      "디저트에 밀가루, 비스킷 또는 장식(웨이퍼, 크럼블)이 들어가나요?",
+      "빵 대신 감자로 받을 수 있나요? 치즈에 밀가루가 첨가되지 않았나요?",
+      "이 요리에 빵이 들어가거나 빵이 함께 나오나요? 빵 없이 또는 글루텐 프리 빵으로 받을 수 있나요?",
+      "소스는 밀가루로 걸쭉하게 만드나요, 아니면 시판 육수나 고형 육수를 사용하나요?",
+      "육수(또는 수프)는 직접 만드나요? 밀가루, 고형 육수, 시판 육수 없이요?",
+      "고기를 양념에 재우거나 소스와 함께 나오나요? 양념에는 간장이나 맥주가 자주 들어갑니다.",
+      "이 요리에 맥주, 맥아, 보리, 호밀 또는 귀리가 들어가나요?",
+      "이 요리에는 소스를 포함해 밀, 보리 또는 호밀이 들어가나요? 따로 조리해 주실 수 있나요?"
+    ]
   },
   "ar": {
     "label": "العربية",
@@ -439,7 +705,26 @@
         "Pâtisseries (feuilles de brick ou de filo, semoule)",
         "Falafels : friteuse partagée"
       ]
-    }
+    },
+    "questions": [
+      "هل يُغطّى اللحم أو السمك بالطحين قبل الطهي؟",
+      "هل الفطيرة (أو البليني) مصنوعة من الحنطة السوداء 100% بدون طحين القمح، وتُطهى على صفيحة منفصلة؟",
+      "هل خبز التورتيلا مصنوع من الذرة 100% بدون طحين القمح؟",
+      "هل يتم القلي في زيت منفصل لا يُقلى فيه أي شيء مغطّى بالبقسماط أو الطحين؟",
+      "هل صلصة الصويا خالية من الغلوتين (تاماري)؟",
+      "هل يحتوي التتبيل على صلصة ورشستر أو صلصة الصويا (وهما تحتويان على الغلوتين)؟",
+      "هل اللحوم المصنّعة مضمونة خالية من الغلوتين؟ بعضها يحتوي على طحين أو بقسماط.",
+      "هل يحتوي الطبق على طحين أو بقسماط أو خبز؟",
+      "هل يحتوي الطبق على صلصة البشاميل (بالطحين) أو بقسماط على الوجه؟",
+      "هل تحتوي الحلوى على طحين القمح أو بسكويت أو زينة (ويفر، كرامبل)؟",
+      "هل يمكن تقديمه مع البطاطس بدلاً من الخبز، وهل الجبن خالٍ من الطحين المضاف؟",
+      "هل يحتوي الطبق على خبز أو يُقدَّم مع خبز؟ هل يمكن تقديمه بدونه أو مع خبز خالٍ من الغلوتين؟",
+      "هل تُكثَّف الصلصة بالطحين، أم تُحضَّر بمرق جاهز أو مكعب مرق؟",
+      "هل المرق (أو الحساء) محضَّر في المطبخ، بدون طحين أو مكعب مرق أو مرق جاهز؟",
+      "هل اللحم متبّل أو يُقدَّم مع صلصة؟ غالباً ما تحتوي التتبيلات على صلصة الصويا أو البيرة.",
+      "هل يحتوي هذا الطبق على بيرة أو مالت أو شعير أو جاودار أو شوفان؟",
+      "هل يحتوي هذا الطبق على القمح أو الشعير أو الجاودار، حتى في الصلصة، وهل يمكن تحضيره بشكل منفصل؟"
+    ]
   },
   "pl": {
     "label": "Polski",
@@ -467,6 +752,25 @@
         "Żurek (soupe au seigle fermenté)",
         "Soupes et sauces liées à la farine, bière"
       ]
-    }
+    },
+    "questions": [
+      "Czy mięso lub ryba jest obtaczane w mące przed przyrządzeniem?",
+      "Czy galette (lub bliny) jest w 100% z mąki gryczanej, bez mąki pszennej, i smażona na osobnej płycie?",
+      "Czy tortille są w 100% kukurydziane, bez mąki pszennej?",
+      "Czy smażenie odbywa się w osobnym oleju, w którym nie smaży się nic panierowanego ani w mące?",
+      "Czy sos sojowy jest bezglutenowy (tamari)?",
+      "Czy przyprawa zawiera sos Worcestershire lub sos sojowy (zawierają gluten)?",
+      "Czy wędliny są na pewno bezglutenowe? Niektóre zawierają mąkę lub bułkę tartą.",
+      "Czy w potrawie jest mąka, bułka tarta lub chleb?",
+      "Czy danie zawiera beszamel (z mąką) lub bułkę tartą na wierzchu?",
+      "Czy deser zawiera mąkę pszenną, herbatniki lub dekoracje (wafelek, kruszonkę)?",
+      "Czy mogę dostać ziemniaki zamiast chleba i czy ser jest bez dodatku mąki?",
+      "Czy danie zawiera chleb lub jest podawane z chlebem? Czy mogę dostać je bez chleba lub z chlebem bezglutenowym?",
+      "Czy sos jest zagęszczany mąką, czy robiony na gotowym bulionie lub kostce rosołowej?",
+      "Czy bulion (lub zupa) jest domowy, bez mąki, kostki rosołowej i gotowego bulionu?",
+      "Czy mięso jest marynowane lub podawane z sosem? Marynaty często zawierają sos sojowy lub piwo.",
+      "Czy to danie zawiera piwo, słód, jęczmień, żyto lub owies?",
+      "Czy to danie zawiera pszenicę, jęczmień lub żyto, również w sosie, i czy można je przygotować osobno?"
+    ]
   }
 }
