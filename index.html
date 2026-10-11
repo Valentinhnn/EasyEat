@@ -873,6 +873,7 @@
         <option value="">Statut : tous</option>
         <option value="safe">Safe</option>
         <option value="mixed">Mixte</option>
+        <option value="safe,mixed">Safe + Mixte</option>
         <option value="unsafe">Non adapté</option>
         <option value="unknown">Inconnu</option>
       </select>
@@ -2707,7 +2708,7 @@ function renderRestoList(opts = {}){
     filtered = RESTO_DATA.filter(r => {
       const status = getRestoStatus(r.id);
       if (f.search && !r.nom.toLowerCase().includes(f.search)) return false;
-      if (f.status && status !== f.status) return false;
+      if (f.status && !f.status.split(",").includes(status)) return false;
       if (f.cuisine && r.cuisine !== f.cuisine) return false;
       if (f.quartier && r.quartier !== f.quartier) return false;
       if (f.ville && r.ville !== f.ville) return false;
