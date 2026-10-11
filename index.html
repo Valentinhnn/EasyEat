@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
-<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 23 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 35 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
 <link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EasyEat">
 <meta property="og:title" content="EasyEat, manger sans y penser">
-<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 23 villes de France. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 35 villes de France. Gratuit, pensé pour les personnes cœliaques.">
 <meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
 <meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EasyEat, manger sans y penser">
-<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 23 villes de France et recettes. Gratuit.">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 35 villes de France et recettes. Gratuit.">
 <meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -2054,6 +2054,63 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
+  973: 'mixed',  // Crêperie du Port (Toulon), Galettes salées sans gluten
+  974: 'mixed',  // Chez Florabio (Toulon), Cuisine bio sans gluten ni lactose
+  975: 'mixed',  // Les Têtes d'Ail (Toulon), Plats sans gluten maison, attention à la contamination croisée
+  976: 'mixed',  // Dégus'Thé (Toulon), Plats adaptés sans gluten
+  977: 'mixed',  // Spud Bencer (Le Havre), Pain burger sans gluten
+  978: 'mixed',  // Black Pearl (Le Havre), Attentif aux besoins sans gluten, crêpes
+  979: 'mixed',  // Himalayan Yak and Yeti (Le Havre), Options sans gluten
+  980: 'mixed',  // Soleil Vert (Le Havre), Options sans gluten indiquées sur la carte
+  981: 'mixed',  // Numéro Dix (Saint-Étienne), Cantine végétarienne, plats sans gluten chaque jour
+  982: 'mixed',  // Madame, table de cheffe (Saint-Étienne), Options sans gluten
+  983: 'mixed',  // Izee (Brest), Soupes, salades, plats et desserts sans gluten
+  984: 'mixed',  // La Casa Nostra (Brest), Pizzas et pâtes sans gluten préparées à part
+  985: 'mixed',  // L'Auberge de la Crêpe (Brest), Galettes de sarrasin sans gluten
+  986: 'mixed',  // Maja (Brest), Gaufres au sarrasin, demander une préparation à part
+  987: 'mixed',  // Moulin d'Élise Café (Brest), Options sans gluten
+  988: 'mixed',  // Les Bartavelles (Nîmes), Presque toute la carte sans gluten (classé 100 % par Atly)
+  989: 'mixed',  // Farmers (Nîmes), Formule 100 % sans gluten possible
+  990: 'mixed',  // La Locanda (Nîmes), Options sans gluten
+  991: 'mixed',  // L'Arbousier (Nîmes), Plats sans gluten sur demande
+  992: 'mixed',  // Le Dé-K-Lé (Nîmes), Options sans gluten
+  993: 'mixed',  // Cali Kitchen (Nîmes), Options sans gluten
+  994: 'mixed',  // Origine Pizza (Nîmes), Pizzas en version sans gluten
+  995: 'mixed',  // La Petite Graine (Limoges), Tous les desserts sans gluten
+  996: 'mixed',  // Le Cheverny (Limoges), Plats sans gluten sur demande
+  997: 'mixed',  // La Cuisine du Cloître (Limoges), Options sans gluten
+  998: 'mixed',  // Crêperie des 2 Lions (Limoges), Galettes de sarrasin
+  999: 'mixed',  // Max à Table (Limoges) (Limoges), Toute la carte peut être faite sans gluten
+  1000: 'mixed',  // Peach Fit (Limoges), Gaufres et crêpes sans gluten
+  1001: 'mixed',  // Basilic Instant (Besançon), Options sans gluten
+  1002: 'mixed',  // Maison Cocoëlle (Besançon), Pâtisserie végétale, version sans gluten possible
+  1003: 'mixed',  // Da Nando (Perpignan), Carte de pizzas sans gluten, jugé adapté aux cœliaques
+  1004: 'mixed',  // Crêperie du Théâtre (Perpignan), Presque tout adapté aux cœliaques
+  1005: 'mixed',  // Crêperie La Taverne Bretonne (Perpignan), Menu adapté aux cœliaques
+  1006: 'mixed',  // Neo (Perpignan), Options sans gluten
+  1007: 'mixed',  // Le Quart d'Heure (Perpignan), Bar à tapas annoncé 100 % sans gluten par des avis, à confirmer
+  1008: 'mixed',  // Frida's (Perpignan), Plats sans gluten
+  1009: 'mixed',  // Le Boulevard (Pau), Options sans gluten
+  1010: 'mixed',  // Po-nouilles (Pau), Nouilles sans gluten
+  1011: 'mixed',  // Blend Café (Pau), Pâtisseries sans gluten
+  1012: 'mixed',  // Torra Mano (Pau), Cookies et brownies sans gluten
+  1013: 'mixed',  // L'Interprète (Pau), Adapté aux besoins sans gluten
+  1014: 'safe',   // No Gluten Lover's (La Rochelle), Boutique-traiteur 100 % sans gluten (pains, plats, desserts)
+  1015: 'mixed',  // Crêperie des Dames (La Rochelle), Jugé adapté aux cœliaques
+  1016: 'mixed',  // La Cabosse Enchantée (La Rochelle), Options sans gluten
+  1017: 'mixed',  // Le Ginger (La Rochelle), Options sans gluten
+  1018: 'mixed',  // Carlotta (La Rochelle) (La Rochelle), Options sans gluten
+  1019: 'mixed',  // Mamie Bigoude (La Rochelle) (La Rochelle), Options sans gluten
+  1020: 'mixed',  // Palem Café (La Rochelle), Options sans gluten
+  1021: 'mixed',  // Oh Terroir (Orléans), Pain et options sans gluten
+  1022: 'mixed',  // Les Burgers du Boucher (Orléans), Pain burger sans gluten
+  1023: 'mixed',  // Crêperie Bretonne (rue de Bourgogne) (Orléans), Attentive aux besoins sans gluten
+  1024: 'mixed',  // K&Ji (Orléans), Options sans gluten
+  1025: 'safe',   // Snack'in (Amiens), Restauration rapide 100 % sans gluten
+  1026: 'mixed',  // Crêperie La Mangeoire (Amiens), Crêpes 100 % sarrasin possibles
+  1027: 'mixed',  // Break (Amiens), Plats et gâteaux sans gluten, attention à la contamination
+  1028: 'mixed',  // Le Dos d'Âne (Amiens), Options sans gluten signalées sur la carte
+  1029: 'mixed',  // Les Gâteaux de Margot (Amiens), Gâteaux sans gluten
   878: 'mixed',  // Le Bœuf sur le Balcon (Rennes), Pains burger sans gluten, viandes grillées, purée maison
   879: 'mixed',  // OEUF La Crêperie (Rennes), Personnel au fait de la maladie cœliaque
   880: 'mixed',  // Ouzh-Taol (Rennes), Galettes, options sans gluten
@@ -2566,6 +2623,18 @@ const CITY_CENTERS = {
   'Lille': { lat: 50.6370, lon: 3.0626, zoom: 13 },
   'Rennes': { lat: 48.1117, lon: -1.6802, zoom: 13 },
   'Grenoble': { lat: 45.1908, lon: 5.7255, zoom: 13 },
+  'Toulon': { lat: 43.1218, lon: 5.9334, zoom: 14 },
+  'Le Havre': { lat: 49.4966, lon: 0.1172, zoom: 14 },
+  'Saint-Étienne': { lat: 45.4342, lon: 4.3906, zoom: 14 },
+  'Brest': { lat: 48.3965, lon: -4.4766, zoom: 14 },
+  'Nîmes': { lat: 43.8376, lon: 4.3571, zoom: 14 },
+  'Limoges': { lat: 45.8304, lon: 1.2581, zoom: 14 },
+  'Besançon': { lat: 47.2348, lon: 6.0314, zoom: 14 },
+  'Perpignan': { lat: 42.6998, lon: 2.8926, zoom: 14 },
+  'Pau': { lat: 43.2953, lon: -0.3668, zoom: 14 },
+  'La Rochelle': { lat: 46.1611, lon: -1.1493, zoom: 14 },
+  'Orléans': { lat: 47.8993, lon: 1.9081, zoom: 14 },
+  'Amiens': { lat: 49.8948, lon: 2.2982, zoom: 14 },
   'Aix-en-Provence': { lat: 43.5290, lon: 5.4472, zoom: 14 },
   'Dijon': { lat: 47.3226, lon: 5.0396, zoom: 14 },
   'Tours': { lat: 47.3884, lon: 0.6893, zoom: 14 },
