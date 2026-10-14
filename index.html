@@ -1970,38 +1970,26 @@ async function lookupProduct(code){
 }
 
 // --- Vérification des rappels officiels de produits (RappelConso / DGCCRF),
-//     données publiques ouvertes (Licence Ouverte 2.0), gratuites, sans clé
-//     API requise pour un usage en lecture. Utilise l'Explore API v2.1
-//     (l'ancienne API v1.0 "records/1.0/search" est dépréciée). ---
+//     données publiques ouvertes (Licence Ouverte 2.0), sans clé API.
+//     Jeu « gtin-trie » : un enregistrement par code-barres, champ `gtin`
+//     numérique (zéros de tête perdus, d'où Number()). Le jeu « gtin-espaces »
+//     utilisé avant ne permettait pas de chercher par code-barres : aucun rappel
+//     n'était jamais trouvé (corrigé le 14 oct. 2026). ---
 async function checkRappelConso(code){
+  if (!/^\d{8,14}$/.test(code)) return null;
   try{
-    const url = `https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?q=${encodeURIComponent(code)}&limit=5`;
+    const url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/records'
+      + `?where=${encodeURIComponent('gtin=' + Number(code))}&order_by=${encodeURIComponent('date_publication desc')}&limit=1`;
     const resp = await fetch(url);
     if (!resp.ok) return null;
-    const data = await resp.json();
-    if (!data.results || !data.results.length) return null;
-
-    // Le nom exact du champ GTIN peut varier selon les évolutions du jeu de
-    // données ; plutôt que de le deviner, on vérifie que le code apparaît
-    // comme token exact dans au moins un champ du résultat (plus robuste).
-    // (v2.1 renvoie des objets plats, contrairement à v1 qui les imbriquait
-    // dans "fields".)
-    const matches = data.results.filter(r =>
-      Object.values(r).some(v => typeof v === 'string' && v.split(/\s+/).includes(code))
-    );
-    if (!matches.length) return null;
-    // Le plus récent en premier si la date est disponible
-    const pubDate = r => r.date_publication || r.date_de_publication || '';
-    matches.sort((a, b) => String(pubDate(b)).localeCompare(String(pubDate(a))));
-    const match = matches[0];
-    const rawDate = pubDate(match);
-    const d = rawDate ? new Date(rawDate) : null;
-
+    const match = (await resp.json()).results?.[0];
+    if (!match) return null;
+    const d = match.date_publication ? new Date(match.date_publication) : null;
     return {
-      libelle: match.libelle || match.noms_des_modeles_ou_references || match.nom_de_la_marque_du_produit || 'Produit rappelé',
-      motif: match.motif_du_rappel || '',
+      libelle: [match.marque_produit, match.libelle].filter(Boolean).join(' : ') || 'Produit rappelé',
+      motif: match.motif_rappel || '',
       risques: match.risques_encourus || '',
-      lien: match.lien_vers_la_fiche_rappel || match.liens_vers_la_fiche_rappel || null,
+      lien: match.lien_vers_la_fiche_rappel || null,
       date: (d && !isNaN(d)) ? d.toLocaleDateString('fr-FR') : null,
     };
   } catch(e){
