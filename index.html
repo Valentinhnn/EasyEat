@@ -1852,16 +1852,34 @@ function showBarcodeErrorHtml(html){
   errorBarcode.classList.add('active');
 }
 
+let lastScanId = 0; // ignore un rappel qui arrive après qu'un autre produit a été scanné
 async function lookupProduct(code){
+  const scanId = ++lastScanId;
   errorBarcode.classList.remove('active');
   resultsBarcode.classList.remove('active');
   statusBarcode.classList.add('active');
   hideQuotaDisplay(); // le scan code-barres n'utilise pas le quota Gemini, pas de message à afficher
 
-  // Vérification des rappels officiels (RappelConso, DGCCRF/data.gouv.fr) en
-  // parallèle de la recherche OFF, indépendante du résultat gluten, un
-  // produit peut être rappelé même si Open Food Facts ne le connaît pas.
-  const recallPromise = checkRappelConso(code);
+  // Rappels officiels (RappelConso) en parallèle, sans bloquer l'affichage :
+  // le verdict gluten s'affiche dès qu'Open Food Facts répond (~0,2 s) et
+  // l'encadré rouge s'ajoute en tête s'il y a un rappel (RappelConso met
+  // 0,5 à 4 s sur un code jamais demandé). Un produit peut être rappelé même
+  // si Open Food Facts ne le connaît pas.
+  checkRappelConso(code).then(recall => {
+    if (!recall || scanId !== lastScanId) return;
+    const recallLink = safeUrl(recall.lien);
+    productCard.insertAdjacentHTML('afterbegin', `<div class="dish-card" style="border:2px solid #C24632; background:#FAE6E1; margin-bottom:10px;">
+        <div class="dish-top"><div class="dish-name" style="color:#8a2e1f;">⚠️ Rappel officiel trouvé pour ce code-barres (RappelConso)</div></div>
+        <div class="dish-reason">
+          <strong>${escapeHtml(recall.libelle)}</strong>${recall.date ? ` · publié le ${escapeHtml(recall.date)}` : ''}<br>
+          ${escapeHtml(recall.motif || 'Motif non précisé.')}${recall.risques ? ', ' + escapeHtml(recall.risques) : ''}<br>
+          <span style="font-size:12px;">Un rappel concerne souvent des lots précis : comparez le numéro de lot de votre produit avec la fiche officielle.</span>
+        </div>
+        ${recallLink ? `<a href="${escapeHtml(recallLink)}" target="_blank" rel="noopener" style="font-size:12px; font-weight:700;">Voir la fiche officielle →</a>` : ''}
+      </div>`);
+    resultsBarcode.classList.add('active');
+  });
+  productCard.innerHTML = '';
 
   try{
     // Appel direct et gratuit à Open Food Facts, pas besoin de passer
@@ -1935,19 +1953,8 @@ async function lookupProduct(code){
       }
     }
 
-    const recall = await recallPromise;
-    const recallLink = recall ? safeUrl(recall.lien) : null;
-    const recallHtml = recall ? `<div class="dish-card" style="border:2px solid #C24632; background:#FAE6E1; margin-bottom:10px;">
-        <div class="dish-top"><div class="dish-name" style="color:#8a2e1f;">⚠️ Rappel officiel trouvé pour ce code-barres (RappelConso)</div></div>
-        <div class="dish-reason">
-          <strong>${escapeHtml(recall.libelle)}</strong>${recall.date ? ` · publié le ${escapeHtml(recall.date)}` : ''}<br>
-          ${escapeHtml(recall.motif || 'Motif non précisé.')}${recall.risques ? ', ' + escapeHtml(recall.risques) : ''}<br>
-          <span style="font-size:12px;">Un rappel concerne souvent des lots précis : comparez le numéro de lot de votre produit avec la fiche officielle.</span>
-        </div>
-        ${recallLink ? `<a href="${escapeHtml(recallLink)}" target="_blank" rel="noopener" style="font-size:12px; font-weight:700;">Voir la fiche officielle →</a>` : ''}
-      </div>` : '';
-
-    if (!productFound && !recall){
+    if (scanId !== lastScanId) return; // un autre scan a pris le relais
+    if (!productFound){
       showBarcodeErrorHtml(`
         Ce produit (code ${escapeHtml(code)}) n'est pas dans la base Open Food Facts, c'est une base communautaire qui ne connaît pas encore tous les produits, notamment certaines marques distributeur ou régionales.<br><br>
         <button type="button" id="fallbackToLabelBtn" class="act btn-primary" style="width:auto; padding:8px 14px; font-size:13px;">📷 Essayer avec une photo de l'étiquette</button>
@@ -1958,7 +1965,7 @@ async function lookupProduct(code){
       return;
     }
 
-    productCard.innerHTML = recallHtml + productHtml;
+    productCard.insertAdjacentHTML('beforeend', productHtml); // l'éventuel rappel reste en tête
     resultsBarcode.classList.add('active');
 
   } catch(err){
