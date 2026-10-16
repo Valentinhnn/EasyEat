@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EasyEat, qui sommes-nous et fiabilité</title>
+<meta name="description" content="Qui développe EasyEat, comment les verdicts sans gluten sont produits et testés, d'où viennent les restaurants, et les limites de l'outil.">
+<style>
+  :root{
+    --bg: #FAF3E6; --surface: #FFFFFF; --ink: #064E3B; --ink-soft: #4F6B5E;
+    --line: #E5DBC5; --brand: #064E3B; --brand-dark: #043528;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 680px; margin: 0 auto; padding: 32px 20px 60px 20px; line-height: 1.6;
+  }
+  a{ color: var(--brand-dark); }
+  .back-link{ display:inline-block; margin-bottom: 20px; font-size: 13px; font-weight: 700; }
+  h1{ font-size: 22px; margin-bottom: 4px; }
+  .updated{ font-size: 12.5px; color: var(--ink-soft); margin-bottom: 28px; }
+  h2{ font-size: 16px; margin: 32px 0 10px 0; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  p, li{ font-size: 14px; color: #333; }
+  ul{ padding-left: 20px; }
+  .disclaimer-box{
+    background: #E7F0EB; border-left: 3px solid var(--brand); padding: 14px 16px;
+    border-radius: 8px; font-size: 13px; margin-bottom: 28px;
+  }
+  .stats{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin: 14px 0; }
+  .stat{ background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .stat strong{ display:block; font-size: 20px; color: var(--ink); }
+  .stat span{ font-size: 12.5px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="./index.html">← Retour à EasyEat</a>
+
+<h1>Qui sommes-nous et quelle fiabilité ?</h1>
+<p class="updated">Mis à jour le 16 octobre 2026</p>
+
+<div class="disclaimer-box">
+  <strong>À retenir :</strong> EasyEat aide à repérer les risques, mais ne remplace ni la vérification auprès du restaurant ou sur l'emballage, ni l'avis d'un médecin. En cas de doute, demandez toujours.
+</div>
+
+<h2>Qui développe EasyEat ?</h2>
+<p>EasyEat est développé par Valentin, de façon indépendante, pour rendre le quotidien des personnes cœliaques plus simple : au restaurant, en faisant les courses et en cuisinant.</p>
+<p>L'appli est <strong>gratuite et sans publicité</strong>. Vos données ne sont jamais vendues. Les photos envoyées pour une analyse ne sont pas conservées par EasyEat (détails dans les <a href="./mentions-legales.html">mentions légales</a>, qui donnent aussi l'adresse de contact).</p>
+
+<h2>Comment sont produits les verdicts ?</h2>
+<ul>
+  <li><strong>Menus et étiquettes en photo</strong> : une intelligence artificielle (modèles Gemini de Google) lit la photo, en suivant des règles écrites pour la cuisine française. Elle doit notamment vérifier le farinage des viandes et poissons, les sauces liées, les fritures partagées, les sauces asiatiques et le pain servi avec le plat.</li>
+  <li><strong>Garde-fous automatiques</strong> : certains plats presque toujours farinés (escalope, meunière, piccata…) ne peuvent jamais être déclarés « sûr », quoi que réponde l'IA. Un verdict incertain devient « à vérifier ».</li>
+  <li><strong>Codes-barres</strong> : les ingrédients, allergènes et traces viennent d'Open Food Facts, une base collaborative. Le verdict est calculé par des règles fixes, sans IA. Les rappels officiels de produits (RappelConso) sont vérifiés en même temps.</li>
+  <li><strong>« À vérifier »</strong> veut dire : rien ne prouve la présence de gluten, mais un piège courant existe. La question à poser au serveur est proposée sous le plat.</li>
+</ul>
+
+<h2>Comment la fiabilité est-elle mesurée ?</h2>
+<p>Les verdicts sont testés sur des menus créés pour l'occasion, dont chaque plat a un verdict attendu défini à l'avance. Une erreur « dangereuse » signifie qu'un plat contenant ou risquant de contenir du gluten a été déclaré « sûr ».</p>
+<div class="stats">
+  <div class="stat"><strong>0 / 120</strong><span>verdicts dangereux sur 60 plats pièges (2 essais chacun)</span></div>
+  <div class="stat"><strong>1 plat / 108</strong><span>en erreur sur des plats jamais vus pendant les réglages (escalope de dinde à la crème), corrigé depuis par un garde-fou</span></div>
+  <div class="stat"><strong>26 / 27</strong><span>étiquettes réelles correctement classées (13/14 avec gluten, 13/13 sans gluten)</span></div>
+</div>
+<p>Sur les mêmes plats inédits, une IA généraliste interrogée sans les règles d'EasyEat a donné une erreur dangereuse et beaucoup de réponses vagues. Les tests sont refaits après chaque modification importante, sur de nouveaux plats que le système n'a jamais vus.</p>
+<p>Ces chiffres viennent de tests internes : ils ne garantissent pas l'absence d'erreur sur un vrai menu (photo floue, plat inhabituel, recette propre au restaurant). <strong>Si un verdict vous semble faux, utilisez le bouton « 🚩 Signaler une erreur »</strong> sous le verdict : chaque signalement est relu et sert à corriger EasyEat.</p>
+
+<h2>D'où viennent les restaurants ?</h2>
+<ul>
+  <li>Les statuts viennent de sources publiques recoupées : annuaires spécialisés pour cœliaques (Atly, Find Me Gluten Free, Celiaquita…), offices de tourisme, presse locale, sites des restaurants.</li>
+  <li><strong>« Safe »</strong> est réservé aux établissements 100 % sans gluten, confirmés par au moins deux sources. <strong>« Mixte »</strong> signifie que le restaurant propose de vraies options sans gluten, mais que sa cuisine n'est pas dédiée.</li>
+  <li>Les avis de la communauté peuvent modifier un statut à partir de 3 avis. Un restaurant peut changer de recette ou de cuisinier : vérifiez toujours sur place.</li>
+  <li>Il manque un restaurant ? Utilisez « ➕ Un restaurant manque ? » dans l'onglet Restaurants.</li>
+</ul>
+
+<h2>Les limites, en toute transparence</h2>
+<ul>
+  <li>L'IA peut se tromper, surtout si la photo est floue ou si le menu ne décrit pas la préparation.</li>
+  <li>Open Food Facts est rempli par des bénévoles : une fiche peut être incomplète ou dépassée. L'emballage fait foi.</li>
+  <li>La contamination croisée en cuisine ne se voit pas sur un menu : seule la discussion avec le restaurant peut la limiter.</li>
+  <li>EasyEat ne donne aucun conseil médical. Pour la maladie cœliaque elle-même, voir <a href="./ressources.html">Comprendre la maladie cœliaque</a>.</li>
+</ul>
+
+</body>
+</html>
