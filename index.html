@@ -1451,21 +1451,30 @@ function attachReport(card, item, type){
         <option value="">Je ne sais pas</option><option>sûr</option><option>à vérifier</option><option>à éviter</option>
       </select>
       <textarea class="rp-comment" rows="2" maxlength="300" placeholder="Ce qui est faux (ex. : la viande est farinée, la sauce contient de la bière…)" aria-label="Ce qui est faux"></textarea>
+      <div class="cf-turnstile" style="margin-top:8px;"></div>
       <button type="button" class="rp-send">Envoyer</button> <span class="rp-msg"></span>`;
     card.appendChild(box);
+    let widgetId = null;
+    const ts = box.querySelector('.cf-turnstile');
+    const renderTs = () => { widgetId = window.turnstile.render(ts, { sitekey: TURNSTILE_SITE_KEY }); };
+    if (window.turnstile) renderTs();
+    else { const iv = setInterval(() => { if (window.turnstile){ clearInterval(iv); renderTs(); } }, 200); }
     box.querySelector('.rp-send').addEventListener('click', async (e) => {
       const msg = box.querySelector('.rp-msg');
+      const turnstileToken = (widgetId !== null && window.turnstile) ? window.turnstile.getResponse(widgetId) : null;
+      if (!turnstileToken){ msg.textContent = "Merci de valider la vérification anti-robot."; return; }
       e.target.disabled = true; msg.textContent = 'Envoi…';
       try{
         const resp = await fetch(`${WORKER_URL}/api/feedback`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type, plat: item.plat, verdict: item.risque, raison: item.raison,
-            correct: box.querySelector('.rp-correct').value, commentaire: box.querySelector('.rp-comment').value })
+            correct: box.querySelector('.rp-correct').value, commentaire: box.querySelector('.rp-comment').value, turnstileToken })
         });
         if (!resp.ok) throw new Error();
         box.innerHTML = '✅ Merci, c\'est transmis. Ça nous aide à corriger EasyEat.';
       } catch(err){
         e.target.disabled = false;
+        if (widgetId !== null) window.turnstile.reset(widgetId);
         msg.textContent = "Envoi impossible, réessaie plus tard.";
       }
     });
