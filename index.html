@@ -505,6 +505,10 @@
   .shop-qty{ margin-left:auto; color: var(--ink-soft); white-space:nowrap; padding-left:8px; }
   .shop-warn{ display:block; font-size:12px; color: var(--check); margin-top:2px; }
   .shop-group{ font-size:13px; font-weight:700; color: var(--brand-dark); margin:16px 0 4px; text-transform:uppercase; letter-spacing:.03em; }
+  .report-btn{ margin:10px 0 0 8px; background:none; border:none; padding:0; font:inherit; font-size:12px; color: var(--ink-soft); text-decoration:underline; cursor:pointer; }
+  .report-box{ margin-top:10px; padding:10px; border:1px dashed var(--line); border-radius:8px; font-size:13px; }
+  .report-box select, .report-box textarea{ width:100%; box-sizing:border-box; font:inherit; font-size:13px; padding:7px; margin-top:6px; border:1px solid var(--line); border-radius:8px; background: var(--surface); color: var(--ink); }
+  .report-box button{ margin-top:8px; font:inherit; font-size:13px; font-weight:700; padding:7px 12px; border-radius:8px; border:1px solid var(--line); background: var(--surface); color: var(--ink); cursor:pointer; }
   .menu-tools{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin:-4px 0 12px; }
   .menu-tools .share-btn{ margin-top:0; }
   .waiter-lang{ font-size:12.5px; color: var(--ink-soft); display:flex; align-items:center; gap:6px; }
@@ -1234,7 +1238,7 @@ function initGoogleSignIn(){
       document.querySelectorAll('.reviews-panel.active').forEach(p => {
         loadReviewsPanel(p.id.replace('reviews-panel-', ''), p);
       });
-      if (isAdmin()) { fetchPendingReviews(); fetchSuggestions(); }
+      if (isAdmin()) { fetchPendingReviews(); fetchSuggestions(); fetchFeedback(); }
       if (suggestOpen) renderSuggestBox();
       renderRestoList(); // révèle l'UI admin immédiatement si le compte connecté est le tien
     }
@@ -1432,6 +1436,42 @@ function waiterQuestionTranslated(d){
   return travelCardData[lang].questions[waiterQuestionIndex(d)] || '';
 }
 
+// « Signaler une erreur » sous un verdict : envoie le plat, le verdict donné,
+// le verdict jugé correct et un commentaire au worker (aucune donnée perso).
+function attachReport(card, item, type){
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'report-btn'; btn.textContent = '🚩 Signaler une erreur';
+  card.appendChild(btn);
+  btn.addEventListener('click', () => {
+    btn.remove();
+    const box = document.createElement('div');
+    box.className = 'report-box';
+    box.innerHTML = `Selon vous, le bon verdict serait :
+      <select class="rp-correct" aria-label="Verdict correct">
+        <option value="">Je ne sais pas</option><option>sûr</option><option>à vérifier</option><option>à éviter</option>
+      </select>
+      <textarea class="rp-comment" rows="2" maxlength="300" placeholder="Ce qui est faux (ex. : la viande est farinée, la sauce contient de la bière…)" aria-label="Ce qui est faux"></textarea>
+      <button type="button" class="rp-send">Envoyer</button> <span class="rp-msg"></span>`;
+    card.appendChild(box);
+    box.querySelector('.rp-send').addEventListener('click', async (e) => {
+      const msg = box.querySelector('.rp-msg');
+      e.target.disabled = true; msg.textContent = 'Envoi…';
+      try{
+        const resp = await fetch(`${WORKER_URL}/api/feedback`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, plat: item.plat, verdict: item.risque, raison: item.raison,
+            correct: box.querySelector('.rp-correct').value, commentaire: box.querySelector('.rp-comment').value })
+        });
+        if (!resp.ok) throw new Error();
+        box.innerHTML = '✅ Merci, c\'est transmis. Ça nous aide à corriger EasyEat.';
+      } catch(err){
+        e.target.disabled = false;
+        msg.textContent = "Envoi impossible, réessaie plus tard.";
+      }
+    });
+  });
+}
+
 let lastMenu = null; // derniers verdicts affichés, pour changer de langue ou tout partager
 function renderDishes(dishes, source){
   lastMenu = { dishes, source };
@@ -1453,6 +1493,7 @@ function renderDishes(dishes, source){
         'Verdict gluten EasyEat'
       );
     });
+    attachReport(card, d, source ? 'menu_url' : 'menu');
     dishList.appendChild(card);
   });
   resultsCountMenu.textContent = dishes.length + ' plat' + (dishes.length>1?'s':'') + ' analysé' + (dishes.length>1?'s':'');
@@ -1887,6 +1928,7 @@ async function lookupProduct(code){
 
     let productHtml = '';
     let productFound = false;
+    let reportItem = null;
 
     if (resp.ok){
       const data = await resp.json();
@@ -1948,6 +1990,7 @@ async function lookupProduct(code){
             </div>
             <div class="dish-reason">${escapeHtml(raison)}</div>
           </div>`;
+        reportItem = { plat: brand ? `${name} (${brand}) [${code}]` : `${name} [${code}]`, risque, raison };
         saveToHistory('barcode', [{ plat: brand ? `${name} (${brand})` : name, risque, raison }]);
       }
     }
@@ -1965,6 +2008,7 @@ async function lookupProduct(code){
     }
 
     productCard.insertAdjacentHTML('beforeend', productHtml); // l'éventuel rappel reste en tête
+    if (reportItem) attachReport(productCard.lastElementChild, reportItem, 'barcode');
     resultsBarcode.classList.add('active');
 
   } catch(err){
@@ -2071,6 +2115,7 @@ analyzeBtnLabel.addEventListener('click', async () => {
         <div class="dish-reason">${escapeHtml(result.raison)}</div>
         <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>
       </div>`;
+    attachReport(labelCard.querySelector('.dish-card'), { plat: result.produit, risque: result.risque, raison: result.raison }, 'label');
     labelCard.querySelector('.share-btn').addEventListener('click', () => {
       shareText(
         `EasyEat — verdict gluten\n"${result.produit}" : ${result.risque}\n${result.raison}\n\nVérifié avec EasyEat : ${location.href}`,
@@ -3342,6 +3387,43 @@ function renderPendingReviewsPanel(){
   return `<div style="margin-top:10px;">${items}</div>`;
 }
 
+// --- Verdicts signalés comme faux (admin) ---
+let feedbackCache = [];
+let feedbackPanelOpen = false;
+async function fetchFeedback(){
+  if (!isAdmin()) return;
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/feedback/list`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: googleUser.idToken })
+    });
+    const data = await resp.json();
+    feedbackCache = resp.ok ? (data.feedback || []) : [];
+  } catch(e){ feedbackCache = []; }
+  renderRestoAdminZone();
+}
+async function markFeedbackDone(id){
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/feedback/done`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, idToken: googleUser.idToken })
+    });
+    if (resp.status === 401 || resp.status === 403){ expireSession(); return; }
+    if (!resp.ok){ alert("Erreur, réessaie."); return; }
+    feedbackCache = feedbackCache.filter(x => x.id !== id);
+    renderRestoAdminZone();
+  } catch(e){ alert("Erreur réseau, réessaie."); }
+}
+function renderFeedbackPanel(){
+  return `<div style="margin-top:10px;">${feedbackCache.map(x => `<div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:8px;">
+      <div style="font-size:12.5px; font-weight:700;">${escapeHtml(x.plat)}</div>
+      <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(x.type)} · verdict donné : <strong>${escapeHtml(x.verdict)}</strong>${x.correct ? ` → selon l'utilisateur : <strong>${escapeHtml(x.correct)}</strong>` : ''} · ${escapeHtml(x.date || '')}</div>
+      ${x.raison ? `<div style="font-size:12px; margin-top:4px;">Raison de l'IA : ${escapeHtml(x.raison)}</div>` : ''}
+      ${x.commentaire ? `<div style="font-size:12.5px; margin-top:4px;">💬 ${escapeHtml(x.commentaire)}</div>` : ''}
+      <button class="act btn-secondary feedback-done" data-id="${escapeHtml(x.id)}" style="margin-top:8px; width:100%; padding:7px; font-size:12px;">✅ Traitée (retirer de la liste)</button>
+    </div>`).join('')}</div>`;
+}
+
 // --- Restaurants manquants proposés par les visiteurs ---
 let suggestionsCache = [];
 let suggestPanelOpen = false;
@@ -3473,9 +3555,16 @@ function renderRestoAdminZone(){
     const sBadge = suggestionsCache.length > 0
       ? ` · <button type="button" id="suggestAdminToggle" style="border:none; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline;">📬 ${suggestionsCache.length} restaurant(s) proposé(s) ${suggestPanelOpen ? '▲' : '▼'}</button>`
       : '';
-    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}${sBadge}</div>
+    const fBadge = feedbackCache.length > 0
+      ? ` · <button type="button" id="feedbackAdminToggle" style="border:none; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline;">🚩 ${feedbackCache.length} erreur(s) signalée(s) ${feedbackPanelOpen ? '▲' : '▼'}</button>`
+      : '';
+    zone.innerHTML = `<div style="font-size:12px; color: var(--brand-dark); font-weight:700;">🔓 Mode admin actif (${escapeHtml(googleUser.name)})${badge}${sBadge}${fBadge}</div>
       ${pendingPanelOpen ? renderPendingReviewsPanel() : ''}
-      ${suggestPanelOpen ? renderSuggestionsPanel() : ''}`;
+      ${suggestPanelOpen ? renderSuggestionsPanel() : ''}
+      ${feedbackPanelOpen ? renderFeedbackPanel() : ''}`;
+    const fToggle = document.getElementById('feedbackAdminToggle');
+    if (fToggle) fToggle.addEventListener('click', () => { feedbackPanelOpen = !feedbackPanelOpen; renderRestoAdminZone(); });
+    zone.querySelectorAll('.feedback-done').forEach(b => b.addEventListener('click', () => markFeedbackDone(b.dataset.id)));
     const sToggle = document.getElementById('suggestAdminToggle');
     if (sToggle) sToggle.addEventListener('click', () => { suggestPanelOpen = !suggestPanelOpen; renderRestoAdminZone(); });
     zone.querySelectorAll('.suggest-done').forEach(b => b.addEventListener('click', () => markSuggestionDone(b.dataset.id)));
