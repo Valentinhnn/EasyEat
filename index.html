@@ -831,10 +831,10 @@
           <select id="waiterLangSel" aria-label="Langue des questions au serveur">
             <option value="fr">français</option><option value="en">English</option><option value="es">Español</option>
             <option value="it">Italiano</option><option value="de">Deutsch</option><option value="pt">Português</option>
-            <option value="nl">Nederlands</option><option value="el">Ελληνικά</option><option value="tr">Türkçe</option>
-            <option value="pl">Polski</option><option value="ja">日本語</option><option value="zh">中文</option>
-            <option value="ko">한국어</option><option value="th">ไทย</option><option value="vi">Tiếng Việt</option>
-            <option value="ar">العربية</option>
+            <option value="nl">Nederlands</option><option value="el">Ελληνικά (non relue)</option><option value="tr">Türkçe (non relue)</option>
+            <option value="pl">Polski (non relue)</option><option value="ja">日本語 (non relue)</option><option value="zh">中文 (non relue)</option>
+            <option value="ko">한국어 (non relue)</option><option value="th">ไทย (non relue)</option><option value="vi">Tiếng Việt (non relue)</option>
+            <option value="ar">العربية (non relue)</option>
           </select>
         </label>
       </div>
@@ -1238,7 +1238,7 @@ function initGoogleSignIn(){
       document.querySelectorAll('.reviews-panel.active').forEach(p => {
         loadReviewsPanel(p.id.replace('reviews-panel-', ''), p);
       });
-      if (isAdmin()) { fetchPendingReviews(); fetchSuggestions(); fetchFeedback(); }
+      if (isAdmin()) { fetchPendingReviews(); fetchSuggestions(); fetchFeedback(); fetchRestoViews(); }
       if (suggestOpen) renderSuggestBox();
       renderRestoList(); // révèle l'UI admin immédiatement si le compte connecté est le tien
     }
@@ -1429,6 +1429,8 @@ function waiterQuestion(d){
   return i < WAITER_QUESTIONS.length ? WAITER_QUESTIONS[i][1]
     : "Ce plat contient-il du blé, de l'orge ou du seigle, même dans la sauce, et peut-il être préparé à part ?";
 }
+// Traductions pas encore relues par un locuteur natif : signalées à l'utilisateur.
+const WAITER_LANGS_UNREVIEWED = new Set(['el', 'tr', 'pl', 'ja', 'zh', 'ko', 'th', 'vi', 'ar']);
 // Traduction de la question dans la langue choisie, si la fiche voyage est chargée.
 function waiterQuestionTranslated(d){
   const lang = waiterLangSel.value;
@@ -1494,7 +1496,7 @@ function renderDishes(dishes, source){
         <div class="badge ${cls}">${escapeHtml(d.risque)}</div>
       </div>
       <div class="dish-reason">${escapeHtml(d.raison)}</div>
-      ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »${waiterQuestionTranslated(d) ? `<div class="dish-ask-tr" lang="${waiterLangSel.value}" dir="auto">${escapeHtml(waiterQuestionTranslated(d))}</div>` : ''}</div>` : ''}
+      ${d.risque === 'à vérifier' ? `<div class="dish-ask">💬 <strong>À demander :</strong> « ${escapeHtml(waiterQuestion(d))} »${waiterQuestionTranslated(d) ? `<div class="dish-ask-tr" lang="${waiterLangSel.value}" dir="auto">${escapeHtml(waiterQuestionTranslated(d))}</div>${WAITER_LANGS_UNREVIEWED.has(waiterLangSel.value) ? '<div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">Traduction pas encore relue par un locuteur natif : en cas de doute, montrez aussi la fiche voyage.</div>' : ''}` : ''}</div>` : ''}
       <button class="share-btn" type="button" aria-label="Partager ce verdict">🔗 Partager</button>`;
     card.querySelector('.share-btn').addEventListener('click', () => {
       shareText(
@@ -2898,6 +2900,7 @@ async function initRestoMapIfNeeded(){
       .addTo(restoMap)
       .bindPopup(`<strong>${escapeHtml(r.nom)}</strong><br>${escapeHtml(r.cuisine)}${r.adresse ? `<br><span style="color:var(--ink-soft);font-size:12px;">${escapeHtml(r.adresse)}</span>` : ''}<br><a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" style="font-size:12px;">📍 Plan & itinéraire</a>${safeUrl(r.site) ? ` · <a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener" style="font-size:12px;">🌐 Site</a>` : ''}`);
     marker.on('click', () => selectRestoFromMap(r.id));
+    marker.on('popupopen', () => trackResto(r.id, 'open'));
     restoMarkers[r.id] = marker;
   });
 
@@ -3286,6 +3289,34 @@ function telUrl(r){
   const n = String(r.telephone || '').split(/[;,]/)[0].replace(/[^+0-9]/g, '');
   return n.length >= 8 ? 'tel:' + n : '';
 }
+// Compte anonymement l'intérêt pour une fiche (worker /api/view).
+const viewSent = new Set();
+function trackResto(id, action){
+  const k = id + ':' + action;
+  if (viewSent.has(k)) return;
+  viewSent.add(k);
+  fetch(`${WORKER_URL}/api/view`, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ id: String(id), action }) }).catch(() => {});
+}
+let restoViewsCache = {}; // chiffres visibles par l'admin seulement
+async function fetchRestoViews(){
+  if (!isAdmin()) return;
+  try{
+    const resp = await fetch(`${WORKER_URL}/api/views/list`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: googleUser.idToken })
+    });
+    if (resp.ok){ restoViewsCache = (await resp.json()).views || {}; renderRestoList({ keepLimit: true }); }
+  } catch(e){}
+}
+function restoViewsLine(id){
+  const v = restoViewsCache[id];
+  if (!v) return '';
+  const parts = [['open', '👁', 'fiche ouverte'], ['maps', '📍', 'plan'], ['call', '📞', 'appel'], ['site', '🌐', 'site'], ['menu', '🔎', 'carte analysée'], ['avis', '💬', 'avis lus']]
+    .filter(([k]) => v[k]).map(([k, icon, label]) => `<span title="${label}">${icon} ${v[k]}</span>`);
+  return parts.length ? `<div class="resto-meta" style="margin-top:2px;">📊 ${parts.join(' · ')} <span style="opacity:.7">(stats admin)</span></div>` : '';
+}
+
 function googleMapsUrl(r){
   const query = r.adresse ? `${r.nom}, ${r.adresse}` : `${r.nom}, ${r.ville || 'Lyon'}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -3703,11 +3734,12 @@ function renderRestoList(opts = {}){
           ${r.horaires ? `<div class="resto-meta" style="margin-top:1px;">🕒 ${escapeHtml(r.horaires)}</div>` : ''}
           ${r.telephone && !telUrl(r) ? `<div class="resto-meta" style="margin-top:1px;">📞 ${escapeHtml(r.telephone)}</div>` : ''}
           <div class="resto-actions">
-            <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener">📍 Plan & itinéraire</a>
-            ${telUrl(r) ? `<a href="${telUrl(r)}">📞 Appeler</a>` : ''}
-            ${safeUrl(r.site) ? `<a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener">🌐 Site</a>` : ''}
+            <a href="${googleMapsUrl(r)}" target="_blank" rel="noopener" data-track="maps">📍 Plan & itinéraire</a>
+            ${telUrl(r) ? `<a href="${telUrl(r)}" data-track="call">📞 Appeler</a>` : ''}
+            ${safeUrl(r.site) ? `<a href="${escapeHtml(safeUrl(r.site))}" target="_blank" rel="noopener" data-track="site">🌐 Site</a>` : ''}
             ${safeUrl(r.site) ? `<button type="button" class="menu-url-btn">🔎 Analyser sa carte</button>` : ''}
           </div>
+          ${isAdmin() ? restoViewsLine(r.id) : ''}
         </div>
         <button class="fav-btn" type="button" aria-label="${isFavorite(r.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-id="${r.id}" style="background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; flex-shrink:0;">${isFavorite(r.id) ? '⭐' : '☆'}</button>
       </div>
@@ -3720,9 +3752,9 @@ function renderRestoList(opts = {}){
     `;
     const editSelect = card.querySelector('.resto-edit');
     const favBtn = card.querySelector('.fav-btn');
-    card.querySelectorAll('.resto-actions a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+    card.querySelectorAll('.resto-actions a').forEach(a => a.addEventListener('click', e => { e.stopPropagation(); trackResto(r.id, a.dataset.track); }));
     const menuUrlBtn = card.querySelector('.menu-url-btn');
-    if (menuUrlBtn) menuUrlBtn.addEventListener('click', e => { e.stopPropagation(); analyzeRestoMenu(r); });
+    if (menuUrlBtn) menuUrlBtn.addEventListener('click', e => { e.stopPropagation(); trackResto(r.id, 'menu'); analyzeRestoMenu(r); });
     favBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleFavorite(r.id);
@@ -3759,6 +3791,7 @@ function renderRestoList(opts = {}){
 
     toggleBtn.addEventListener('click', () => {
       panel.classList.toggle('active');
+      if (panel.classList.contains('active')) trackResto(r.id, 'avis');
       if (panel.classList.contains('active') && !panel.dataset.loaded){
         loadReviewsPanel(r.id, panel);
         panel.dataset.loaded = '1';
