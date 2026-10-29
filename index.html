@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
-<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 50 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 54 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
 <link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EasyEat">
 <meta property="og:title" content="EasyEat, manger sans y penser">
-<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 50 villes de France. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 54 villes de France. Gratuit, pensé pour les personnes cœliaques.">
 <meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
 <meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EasyEat, manger sans y penser">
-<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 50 villes de France et recettes. Gratuit.">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 54 villes de France et recettes. Gratuit.">
 <meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -2170,6 +2170,20 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
+  1107: 'mixed',  // Au Petit Bonheur (Le Grau-du-Roi), Options sans gluten, végétariennes et sans lactose
+  1108: 'mixed',  // Le Saint-Pierre (Le Grau-du-Roi), Plat adapté sans gluten à la demande
+  1109: 'mixed',  // La Cachette de Mamé (Le Grau-du-Roi), Options sans gluten
+  1110: 'mixed',  // Le Bistrot du Port (Le Grau-du-Roi), Options sans gluten
+  1111: 'mixed',  // La Table à Plancha (Le Grau-du-Roi), Options sans gluten, cuisine à la plancha
+  1112: 'mixed',  // La Maison des Délices (Le Grau-du-Roi), Large choix de glaces et sorbets sans gluten
+  1113: 'mixed',  // Le Radeau (Saintes-Maries-de-la-Mer), Plats sans gluten à la carte
+  1114: 'mixed',  // Le Revivre (Saintes-Maries-de-la-Mer), Adapté au régime sans gluten selon les avis
+  1115: 'mixed',  // Chante Clair (Saintes-Maries-de-la-Mer), Options sans gluten
+  1116: 'mixed',  // A Fleur de Sel (Chez Alexandra) (Saintes-Maries-de-la-Mer), Options sans gluten, réserver avant
+  1117: 'mixed',  // Casa Romana (Saintes-Maries-de-la-Mer), Options sans gluten, pas de carte dédiée
+  1118: 'mixed',  // L'Entracte (Lunel), Presque toute la carte sans gluten selon les avis
+  1119: 'mixed',  // L'Entre Potes (Lunel), Pain sans gluten, plats adaptables
+  1120: 'mixed',  // Anisette et Brochettes (Mauguio), Options sans gluten (brochettes sans marinade), friteuse dédiée signalée
   1101: 'mixed',  // Chez Jeanne (Aigues-Mortes), Plats sans gluten, cuisine maison et bio
   1102: 'mixed',  // Au Louis IX (Aigues-Mortes), Plats sans gluten, cuisine provençale faite maison
   1103: 'mixed',  // La Table (Villa Mazarin) (Aigues-Mortes), Plats sans gluten et sans lactose
@@ -2831,6 +2845,10 @@ const CITY_CENTERS = {
   'Cannes': { lat: 43.5520, lon: 7.0161, zoom: 14 },
   'Antibes': { lat: 43.5802, lon: 7.1246, zoom: 14 },
   'Aigues-Mortes': { lat: 43.5665, lon: 4.1911, zoom: 16 },
+  'Le Grau-du-Roi': { lat: 43.5268, lon: 4.1373, zoom: 15 },
+  'Saintes-Maries-de-la-Mer': { lat: 43.4523, lon: 4.4275, zoom: 15 },
+  'Lunel': { lat: 43.6782, lon: 4.1410, zoom: 15 },
+  'Mauguio': { lat: 43.5438, lon: 3.9766, zoom: 15 },
   'Toulon': { lat: 43.1218, lon: 5.9334, zoom: 14 },
   'Le Havre': { lat: 49.4966, lon: 0.1172, zoom: 14 },
   'Saint-Étienne': { lat: 45.4342, lon: 4.3906, zoom: 14 },
