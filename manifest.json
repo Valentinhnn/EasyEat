@@ -1,7 +1,7 @@
 {
   "name": "EasyEat, manger sans y penser",
   "short_name": "EasyEat",
-  "description": "Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés dans 49 villes de France et recettes sans gluten.",
+  "description": "Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants adaptés dans 50 villes de France et recettes sans gluten.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

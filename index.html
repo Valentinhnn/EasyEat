@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyEat, manger sans y penser</title>
-<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 49 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
+<meta name="description" content="EasyEat aide les personnes cœliaques et intolérantes au gluten à manger en sécurité en France : analyse de menu et d'étiquette par photo, scan de code-barres avec vérification des rappels officiels, restaurants adaptés dans 50 villes (Paris, Lyon, Marseille, Bordeaux, Toulouse, Nice…), et recettes sans gluten. Gratuit.">
 <link rel="canonical" href="https://valentinhnn.github.io/EasyEat/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EasyEat">
 <meta property="og:title" content="EasyEat, manger sans y penser">
-<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 49 villes de France. Gratuit, pensé pour les personnes cœliaques.">
+<meta property="og:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, et recettes sans gluten, avec des restaurants adaptés dans 50 villes de France. Gratuit, pensé pour les personnes cœliaques.">
 <meta property="og:url" content="https://valentinhnn.github.io/EasyEat/">
 <meta property="og:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EasyEat, manger sans y penser">
-<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 49 villes de France et recettes. Gratuit.">
+<meta name="twitter:description" content="Analyse de menu et d'étiquette par photo, scan de code-barres, restaurants sans gluten dans 50 villes de France et recettes. Gratuit.">
 <meta name="twitter:image" content="https://valentinhnn.github.io/EasyEat/favicon-192.png">
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -2170,6 +2170,12 @@ const COMMUNITY_THRESHOLD = 3; // dès ce nombre d'avis, le vote communautaire p
 // ci-dessus (id 501+). Utilisés seulement si aucun statut admin/communauté
 // n'existe encore, l'admin ou la communauté peuvent toujours les corriger.
 const DEFAULT_STATUSES = {
+  1101: 'mixed',  // Chez Jeanne (Aigues-Mortes), Plats sans gluten, cuisine maison et bio
+  1102: 'mixed',  // Au Louis IX (Aigues-Mortes), Plats sans gluten, cuisine provençale faite maison
+  1103: 'mixed',  // La Table (Villa Mazarin) (Aigues-Mortes), Plats sans gluten et sans lactose
+  1104: 'mixed',  // Le Galion (Aigues-Mortes), Quelques plats sans gluten (surtout desserts), précautions contre la contamination jugées moyennes
+  1105: 'mixed',  // Le Dit-Vin (Aigues-Mortes), Attention aux clients cœliaques saluée par les avis
+  1106: 'mixed',  // Lady Glagla (Aigues-Mortes), Crêpes et brunch, adapté aux intolérances au gluten selon les avis
   1030: 'mixed',  // Grand Ours (Halles Notre-Dame) (Poitiers), Cuisine maison, options sans gluten
   1031: 'mixed',  // Manhattan Café (Poitiers), Serveur au fait du gluten, pain burger sans gluten
   1032: 'mixed',  // L'Essentiel (Poitiers), Pain sans gluten servi sur demande
@@ -2824,6 +2830,7 @@ const CITY_CENTERS = {
   'Vannes': { lat: 47.6588, lon: -2.7543, zoom: 14 },
   'Cannes': { lat: 43.5520, lon: 7.0161, zoom: 14 },
   'Antibes': { lat: 43.5802, lon: 7.1246, zoom: 14 },
+  'Aigues-Mortes': { lat: 43.5665, lon: 4.1911, zoom: 16 },
   'Toulon': { lat: 43.1218, lon: 5.9334, zoom: 14 },
   'Le Havre': { lat: 49.4966, lon: 0.1172, zoom: 14 },
   'Saint-Étienne': { lat: 45.4342, lon: 4.3906, zoom: 14 },
