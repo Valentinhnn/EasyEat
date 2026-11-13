@@ -105,8 +105,9 @@
 <h3>Sous-traitants et destinataires des données</h3>
 <table>
   <tr><th>Sous-traitant</th><th>Données reçues</th></tr>
-  <tr><td>Google (API Gemini)</td><td>Photos de menus et d'étiquettes envoyées pour l'analyse du gluten. Sur l'offre gratuite utilisée par ce projet, Google peut utiliser ces échanges pour améliorer ses modèles (contrairement à une offre payante). Voir la <a href="https://ai.google.dev/gemini-api/terms" target="_blank">politique de Google AI</a>.</td></tr>
+  <tr><td>Google (API Gemini)</td><td>Photos de menus et d'étiquettes envoyées pour l'analyse du gluten, ainsi que le nom du plat demandé pour une recette et le texte de la carte en ligne d'un restaurant (lue sur son site quand vous utilisez « Analyser sa carte »). Sur l'offre gratuite utilisée par ce projet, Google peut utiliser ces échanges pour améliorer ses modèles (contrairement à une offre payante). Voir la <a href="https://ai.google.dev/gemini-api/terms" target="_blank">politique de Google AI</a>.</td></tr>
   <tr><td>Google Identity Services</td><td>Informations standards de connexion Google (nom, email, identifiant Google), utilisées pour authentifier les avis et les droits admin.</td></tr>
+  <tr><td>jsDelivr (CDN)</td><td>Fournit les bibliothèques de la carte et du lecteur de code-barres, téléchargées à l'ouverture de l'onglet concerné. Votre adresse IP lui est transmise à ce moment-là, sans autre donnée.</td></tr>
   <tr><td>Open Food Facts</td><td>Code-barres scanné uniquement, aucune donnée personnelle transmise.</td></tr>
   <tr><td>Cloudflare</td><td>Héberge le serveur qui traite l'ensemble des requêtes ci-dessus (adresse IP incluse, pour la limite de scans gratuits).</td></tr>
   <tr><td>Cloudflare Turnstile</td><td>Vérification anti-robot sur les formulaires d'avis, de signalement et de proposition de restaurant. Chargé seulement à l'ouverture de l'onglet Restaurants ou d'un signalement (adresse IP et éléments techniques du navigateur, pas de cookie publicitaire).</td></tr>
@@ -121,7 +122,7 @@
   <li><strong>Avis</strong> : conservés tant qu'ils ne sont pas supprimés par leur auteur (bouton « Supprimer mon avis », une fois connecté avec le même compte Google), retirés par modération, ou supprimés sur demande adressée à <a href="mailto:hannavalentin269@gmail.com">hannavalentin269@gmail.com</a> (traitée sous un mois).</li>
   <li><strong>Restaurants proposés</strong> : supprimés dès que la proposition est traitée (ajoutée à la carte ou écartée).</li>
   <li><strong>Signalements</strong> : l'identifiant Google du signalant est conservé 90 jours.</li>
-  <li><strong>Adresse IP</strong> : compteur de scans conservé 48 heures maximum, compteur anti-spam des avis 2 heures maximum.</li>
+  <li><strong>Adresse IP</strong> : compteur de scans conservé 48 heures maximum. Les compteurs anti-spam des avis et des propositions sont liés à l'identifiant Google (2 heures à 48 heures maximum), pas à l'adresse IP.</li>
   <li><strong>Photos</strong> : non conservées par EasyEat.</li>
 </ul>
 

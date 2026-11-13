@@ -814,9 +814,9 @@
     </div>
 
     <div class="status" id="statusMenu"><div class="spinner"></div><span>Analyse en cours…</span></div>
-    <div class="error-box" id="errorMenu"></div>
+    <div class="error-box" id="errorMenu" role="alert"></div>
 
-    <div class="results" id="resultsMenu">
+    <div class="results" id="resultsMenu" aria-live="polite">
       <div class="results-header">
         <span class="results-title">Résultats</span>
         <span class="results-count" id="resultsCountMenu"></span>
@@ -877,9 +877,9 @@
       </div>
 
       <div class="status" id="statusBarcode"><div class="spinner"></div><span>Recherche du produit…</span></div>
-      <div class="error-box" id="errorBarcode"></div>
+      <div class="error-box" id="errorBarcode" role="alert"></div>
 
-      <div class="results" id="resultsBarcode">
+      <div class="results" id="resultsBarcode" aria-live="polite">
         <div class="results-header">
           <span class="results-title">Résultat</span>
         </div>
@@ -913,9 +913,9 @@
       </div>
 
       <div class="status" id="statusLabel"><div class="spinner"></div><span>Analyse en cours…</span></div>
-      <div class="error-box" id="errorLabel"></div>
+      <div class="error-box" id="errorLabel" role="alert"></div>
 
-      <div class="results" id="resultsLabel">
+      <div class="results" id="resultsLabel" aria-live="polite">
         <div class="results-header"><span class="results-title">Résultat</span></div>
         <div id="labelCard"></div>
       </div>
@@ -1040,9 +1040,9 @@
     <button type="button" class="panel-link" id="hostCardBtn">🏠 Invité chez quelqu'un ? Envoie-lui la fiche hôte</button>
 
     <div class="status" id="statusRecipe"><div class="spinner"></div><span>Génération en cours…</span></div>
-    <div class="error-box" id="errorRecipe"></div>
+    <div class="error-box" id="errorRecipe" role="alert"></div>
 
-    <div class="results" id="resultsRecipe">
+    <div class="results" id="resultsRecipe" aria-live="polite">
       <div class="results-header"><span class="results-title">Résultat</span></div>
       <div id="recipeCard"></div>
     </div>
@@ -4199,6 +4199,9 @@ document.getElementById('restoNearMeBtn').addEventListener('click', () => {
 });
 
 window.addEventListener('load', handleUrlShortcut);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.travel-card-overlay.active').forEach(o => o.classList.remove('active'));
+});
 
 /* ============================================================
    RECETTE, formulaire "plat + nb de personnes" → ingrédients (Gemini,
