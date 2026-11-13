@@ -47,9 +47,7 @@
   } catch (e) { /* localStorage indisponible : thème clair */ }
 </script>
 <!-- Intégrité (SRI) : si le CDN servait un fichier modifié, le navigateur refuserait de l'exécuter. -->
-<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.12.1/dist/quagga.min.js" integrity="sha384-ZJs/WA0v1/wkDHl7QklRGGJe837hXnRR0k8lSFjjc0w2bGtl2Q1M/3JSFn9IJRFU" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <!-- Police Fraunces auto-hébergée (fichier unique, pas d'appel à fonts.googleapis.com : évite l'envoi de l'IP du visiteur à Google) -->
 <style>
 @font-face {
@@ -1227,6 +1225,21 @@ function isAdmin(){
 // Google et Turnstile ne sont chargés qu'au moment où ils servent (onglet
 // Restaurants, signalement d'un verdict) : aucun visiteur n'envoie son adresse
 // IP à ces services en ouvrant simplement la page.
+// Bibliothèques lourdes (carte, lecteur de code-barres) : téléchargées seulement
+// à l'ouverture de l'onglet qui s'en sert, avec contrôle d'intégrité (SRI).
+const LEAFLET_LIB = ['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js', 'sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH'];
+const QUAGGA_LIB = ['https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.12.1/dist/quagga.min.js', 'sha384-ZJs/WA0v1/wkDHl7QklRGGJe837hXnRR0k8lSFjjc0w2bGtl2Q1M/3JSFn9IJRFU'];
+const libPromises = {};
+function loadLib([src, integrity]){
+  return libPromises[src] ??= new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.integrity = integrity; s.crossOrigin = 'anonymous';
+    s.onload = resolve;
+    s.onerror = () => { delete libPromises[src]; reject(new Error('lib_load_failed')); }; // réessayé au prochain appel
+    document.head.appendChild(s);
+  });
+}
+
 const loadedScripts = new Set();
 function loadScriptOnce(src, onload){
   if (loadedScripts.has(src)) return;
@@ -1745,9 +1758,12 @@ async function nativeLoop(){
   nativeLoopId = requestAnimationFrame(nativeLoop);
 }
 
-function startQuaggaScanner(){
+async function startQuaggaScanner(){
   usingQuagga = true;
   const mySession = scanSession;
+  try { await loadLib(QUAGGA_LIB); }
+  catch (e) { stopScanner(); showBarcodeError("Le lecteur de code-barres n'a pas pu se charger. Vérifie ta connexion ou saisis le code à la main."); return; }
+  if (mySession !== scanSession) return; // scan arrêté ou relancé pendant le chargement
   // Quagga.stop() ne retire PAS les écouteurs : sans offDetected, chaque
   // nouveau scan en ajoutait un, et la double lecture de sécurité était
   // comptée en double (une seule lecture suffisait à valider).
@@ -2930,7 +2946,7 @@ function recenterMapOnFilters(ville, quartier){
 async function initRestoMapIfNeeded(){
   loadSignIn();
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
-  try { await loadRestoData(); }
+  try { await Promise.all([loadRestoData(), loadLib(LEAFLET_LIB)]); }
   catch (e) {
     document.getElementById("restoCount").textContent = "Impossible de charger les restaurants. Vérifie ta connexion puis rouvre l'onglet.";
     return;
