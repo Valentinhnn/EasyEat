@@ -50,8 +50,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.12.1/dist/quagga.min.js" integrity="sha384-ZJs/WA0v1/wkDHl7QklRGGJe837hXnRR0k8lSFjjc0w2bGtl2Q1M/3JSFn9IJRFU" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <!-- Police Fraunces auto-hébergée (fichier unique, pas d'appel à fonts.googleapis.com : évite l'envoi de l'IP du visiteur à Google) -->
 <style>
 @font-face {
@@ -1226,6 +1224,30 @@ function isAdmin(){
   return !!(googleUser && googleUser.email && googleUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 }
 
+// Google et Turnstile ne sont chargés qu'au moment où ils servent (onglet
+// Restaurants, signalement d'un verdict) : aucun visiteur n'envoie son adresse
+// IP à ces services en ouvrant simplement la page.
+const loadedScripts = new Set();
+function loadScriptOnce(src, onload){
+  if (loadedScripts.has(src)) return;
+  loadedScripts.add(src);
+  const s = document.createElement('script');
+  s.src = src; s.async = true;
+  if (onload) s.onload = onload;
+  s.onerror = () => loadedScripts.delete(src); // réessayé à la prochaine ouverture
+  document.head.appendChild(s);
+}
+const loadTurnstile = () => loadScriptOnce('https://challenges.cloudflare.com/turnstile/v0/api.js');
+function loadSignIn(){
+  loadTurnstile();
+  loadScriptOnce('https://accounts.google.com/gsi/client', () => {
+    initGoogleSignIn();
+    renderRestoAdminZone(); // affiche le bouton de connexion maintenant que Google est chargé
+    if (suggestOpen) renderSuggestBox();
+    document.querySelectorAll('.reviews-panel.active').forEach(p => loadReviewsPanel(p.id.replace('reviews-panel-', ''), p));
+  });
+}
+
 function initGoogleSignIn(){
   if (!window.google || GOOGLE_CLIENT_ID.startsWith("REMPLACE")) return;
   google.accounts.id.initialize({
@@ -1445,6 +1467,7 @@ function attachReport(card, item, type){
   btn.type = 'button'; btn.className = 'report-btn'; btn.textContent = '🚩 Signaler une erreur';
   card.appendChild(btn);
   btn.addEventListener('click', () => {
+    loadTurnstile();
     btn.remove();
     const box = document.createElement('div');
     box.className = 'report-box';
@@ -2905,6 +2928,7 @@ function recenterMapOnFilters(ville, quartier){
 }
 
 async function initRestoMapIfNeeded(){
+  loadSignIn();
   if (restoMap) { setTimeout(() => restoMap.invalidateSize(), 50); return; }
   try { await loadRestoData(); }
   catch (e) {
@@ -3135,10 +3159,17 @@ async function loadReviewsPanel(restaurantId, panel, opts = {}){
       btn.disabled = true;
       btn.textContent = 'Signalement…';
       try{
+        const turnstileToken = await new Promise(resolve => {
+          if (!window.turnstile) return resolve(null);
+          const holder = document.createElement('div');
+          btn.after(holder);
+          const done = t => { holder.remove(); resolve(t); };
+          window.turnstile.render(holder, { sitekey: TURNSTILE_SITE_KEY, callback: done, 'error-callback': () => done(null) });
+        });
         const resp = await fetch(`${WORKER_URL}/api/reviews/report`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ restaurantId, reviewId, idToken: googleUser.idToken })
+          body: JSON.stringify({ restaurantId, reviewId, idToken: googleUser.idToken, turnstileToken })
         });
         const data = await resp.json().catch(() => ({}));
         if (resp.status === 401){ expireSession(); return; }
@@ -4151,17 +4182,7 @@ document.getElementById('restoNearMeBtn').addEventListener('click', () => {
   );
 });
 
-window.addEventListener('load', () => {
-  let tries = 0;
-  const tryInit = setInterval(() => {
-    tries++;
-    if (window.google || tries > 20){
-      clearInterval(tryInit);
-      initGoogleSignIn();
-    }
-  }, 250);
-  handleUrlShortcut();
-});
+window.addEventListener('load', handleUrlShortcut);
 
 /* ============================================================
    RECETTE, formulaire "plat + nb de personnes" → ingrédients (Gemini,
